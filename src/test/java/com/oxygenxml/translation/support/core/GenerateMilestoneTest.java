@@ -53,18 +53,6 @@ public class GenerateMilestoneTest {
 				"        <md5>5c24a78aec732e9626a4a7114efd98b1</md5>\n" + 
 				"        <relativePath>testIteration/dir2/md5_no2.txt</relativePath>\n" + 
 				"    </info-resource>\n" + 
-				"    <info-resource>\n" + 
-				"        <md5>33095daf2f434bf50c134e236a1b0a57</md5>\n" + 
-				"        <relativePath>tests/GenerateDescriptorTest.class</relativePath>\n" + 
-				"    </info-resource>\n" + 
-				"    <info-resource>\n" + 
-				"        <md5>f322b478d747815c097dafc9f5541218</md5>\n" + 
-				"        <relativePath>tests/JaxbTest.class</relativePath>\n" + 
-				"    </info-resource>\n" + 
-				"    <info-resource>\n" + 
-				"        <md5>5a97486ecdad6b48740a42e04129e4d8</md5>\n" + 
-				"        <relativePath>tests/Md5Test.class</relativePath>\n" + 
-				"    </info-resource>\n" + 
 				"</resources>\n" + 
 				"";
 		

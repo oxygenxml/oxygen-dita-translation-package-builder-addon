@@ -17,7 +17,7 @@ import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
 public class JaxbTest {
 
-	private URL resource = getClass().getClassLoader().getResource("JAXB");
+	private URL resource = getClass().getClassLoader().getResource("JAXB-test");
 
 	private File rootDir = new File(resource.getPath());
 
@@ -56,11 +56,8 @@ public class JaxbTest {
 	public void testUnmarshaller() throws JAXBException, IOException {
 
 		ArrayList<ResourceInfo> list = ChangeDetector.loadMilestoneFile(rootDir);
-		for(ResourceInfo aux : list){
-			Assert.assertEquals("12345", aux.getMd5());
-			Assert.assertEquals("dir1/test.txt", aux.getRelativePath());
-		}
-
+		String dump = DumpUtil.dump(list);
+		Assert.assertEquals("dir1/test.txt  12345\n", dump);;
 	}
 
 }
