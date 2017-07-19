@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources>
+    <info-resource>
+        <md5>f5e45edee5ee0e2dffe9fbe6a736ab02</md5>
+        <relativePath>testGenerate/md5.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>521304ca436443d97ccf68ee919c03b3</md5>
+        <relativePath>testGenerate/md5_no2.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>1308e502a17d62d0585d1487228b204c</md5>
+        <relativePath>testIteration/dir1/md5.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>521304ca436443d97ccf68ee919c03b3</md5>
+        <relativePath>testIteration/dir1/md5_no2.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>55047487acf9f525244b12cff4bfc49c</md5>
+        <relativePath>testIteration/dir2/md5.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>5c24a78aec732e9626a4a7114efd98b1</md5>
+        <relativePath>testIteration/dir2/md5_no2.txt</relativePath>
+    </info-resource>
+</resources>

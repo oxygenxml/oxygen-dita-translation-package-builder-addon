@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources>
+    <info-resource>
+        <md5>12345</md5>
+        <relativePath>dir1/test.txt</relativePath>
+    </info-resource>
+</resources>

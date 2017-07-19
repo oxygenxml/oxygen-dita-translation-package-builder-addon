@@ -1,0 +1,2 @@
+A content to generate MD5
+Am modificat testIteration/dir1/md5.txt
