@@ -20,7 +20,7 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                 <div>
                     <p>This plugin is a helper for sending DITA files to translation. It contributes a sub-menu
                         named "Translation Package Builder" in the <b>DITA Maps Manager</b>'s contextual menu. The 
-                    actions present in this group are:</p>
+                    actions present in this group are: </p>
                     <ol>
                         <li><b>Generate Milestone</b> - this action is the first one to use. It will generate an unique hash 
                         for each documentation resource. This information will be used by the second action to detect which files 
