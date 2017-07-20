@@ -7,19 +7,17 @@ import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-
 import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.ChangeDetector;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
 public class ModifiedFilesTest {
 
 	@Test
-	public void test_Modifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException {
+	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException {
 		
 		//File rootDir = new File("src/test/resources/modifiedFiles-Test");		
 		
@@ -27,7 +25,7 @@ public class ModifiedFilesTest {
 
 		File rootDir = new File(resource.getPath());
 		
-		ArrayList<ResourceInfo> actualResult = ChangeDetector.generateModifiedResources(rootDir);
+		ArrayList<ResourceInfo> actualResult = PackageBuilder.generateModifiedResources(rootDir);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		ResourceInfo first = new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt");
@@ -37,7 +35,7 @@ public class ModifiedFilesTest {
 		Assert.assertEquals(DumpUtil.dump(expectedResult), DumpUtil.dump(actualResult));
 		
 		//Load and assert the milestone content.
-		ArrayList<ResourceInfo> actualResourcesFromMilestone = ChangeDetector.loadMilestoneFile(rootDir);
+		ArrayList<ResourceInfo> actualResourcesFromMilestone = PackageBuilder.loadMilestoneFile(rootDir);
 		
 		ArrayList<ResourceInfo> expectedResultMilestone = new ArrayList<ResourceInfo>();
 		expectedResultMilestone.add(new ResourceInfo("0330c493e6a1efda89242d99195c6eca" , "dir1/dir1.1/test.txt"));

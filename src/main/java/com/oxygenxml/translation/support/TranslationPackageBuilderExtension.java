@@ -25,7 +25,7 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.support.core.ChangeDetector;
+import com.oxygenxml.translation.support.core.PackageBuilder;
 import com.oxygenxml.translation.support.util.ZipFileUtil;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -44,6 +44,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class); 
 
   /**
+   * TODO Not great to duplicate the one from ChangeDetector.
+   * 
    * Predefined name of the file that stores a hash for each file.
    */
   private final static String MILESTONE_FILE_NAME = "milestone.xml";
@@ -86,7 +88,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         menuItemPakage.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_3, ActionEvent.ALT_MASK));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);
-        menuItemPakage.setToolTipText("Creates a package with all the files that were modified (after generating a milestone.xml file) at a chosen location.");
+        menuItemPakage.setToolTipText("Creates a package with all the files that were modified (since the last generation of a milestone.xml file) at a chosen location.");
         
         // Action 3: Unzip package that came from translation.
         JMenuItem menuItemApply = new JMenuItem("Apply Package");
@@ -100,7 +102,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         submenu.add(menuItemApply);
         
         popUp.add(submenu);
-
       }
     });
   }
@@ -126,7 +127,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
           File rootDir = new File(editorLocation.getPath()).getParentFile();
 
-          ChangeDetector.generateChangeMilestone(rootDir);
+          PackageBuilder.generateChangeMilestone(rootDir);
 
           pluginWorkspaceAccess.showInformationMessage("Milestone created at: " + rootDir);
         } catch (Exception e) {
@@ -161,6 +162,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           try {
             // What to do if the milestone file doesn't exist? 
             // Inform the user and offer the possibility to pack the entire dir
+            // TODO Don't make assumptions about the location and name of the milestone file.
+            //      Let's define a method in ChangeDetector
             File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
             if(!milestoneFile.exists()){
 
@@ -180,7 +183,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               }
 
             }else{
-              ChangeDetector.generateChangedFilesPackage(rootDir, chosenDir);
+              PackageBuilder.generateChangedFilesPackage(rootDir, chosenDir);
               pluginWorkspaceAccess.showInformationMessage("Package created.");
             }
           } catch (Exception e) {
@@ -234,6 +237,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             //text.setText("Package applied over the current map. The overridden files are : ");
             for(String path : list){
               text.append(path);
+              // TODO Might be better to iterate with an index and put a new line
+              //      for all lines except the first one. 
               if(!path.equals(list.get(list.size()-1))){
                 text.append("\n");
               }

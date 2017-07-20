@@ -25,9 +25,9 @@ import com.oxygenxml.translation.support.util.ZipFileUtil;
 import de.schlichtherle.io.FileInputStream;
 
 
-public class ChangeDetector {
+public class PackageBuilder {
 
-  private static Logger logger = Logger.getLogger(ChangeDetector.class); 
+  private static Logger logger = Logger.getLogger(PackageBuilder.class); 
   /**
    * Predefined name of the file that stores a hash for each file.
    */
@@ -190,7 +190,7 @@ public class ChangeDetector {
     ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir);
     
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
-    ChangeDetector.computeResourceInfo(rootDir, new Stack<String>(), currentStates);
+    computeResourceInfo(rootDir, new Stack<String>(), currentStates);
 
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
     // Compare serializedResources with newly generated hashes.

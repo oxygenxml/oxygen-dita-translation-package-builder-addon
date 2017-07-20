@@ -24,7 +24,7 @@ public class GenerateResourceInfoTest {
 		File dirPath = new File(resource.getPath());
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-		ChangeDetector.computeResourceInfo(dirPath, new Stack<String>(), list);
+		PackageBuilder.computeResourceInfo(dirPath, new Stack<String>(), list);
 		
 		Assert.assertEquals(
 				"dir1/md5.txt      1308e502a17d62d0585d1487228b204c\n" + 
@@ -45,7 +45,7 @@ public class GenerateResourceInfoTest {
 		File dirPath = new File(resource.getPath());
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-		ChangeDetector.computeResourceInfo(dirPath, new Stack<String>(), list);
+		PackageBuilder.computeResourceInfo(dirPath, new Stack<String>(), list);
 		
 		String expectedResult = "md5.txt      f5e45edee5ee0e2dffe9fbe6a736ab02\n" + 
 								"md5_no2.txt  521304ca436443d97ccf68ee919c03b3\n";

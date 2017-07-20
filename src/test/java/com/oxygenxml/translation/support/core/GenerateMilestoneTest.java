@@ -15,16 +15,36 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class GenerateMilestoneTest {
+  
+  @Test
+  public void testMd5_File() throws Exception {
+    URL resource = getClass().getClassLoader().getResource("md5Test.txt");
+    System.out.println(resource.getPath());
+    File file = new File(resource.getPath());
+    
+    String cksum = PackageBuilder.generateMD5(file);
+    System.out.println(cksum);
+    Assert.assertEquals("c439e0812a8e0a5434bffa6f063d4bec", cksum);
+    
+    
+    resource = getClass().getClassLoader().getResource("generateMD5-test.txt");
+
+    file = new File(resource.getPath());
+
+    //FileCheckSum cksumDigester=new FileCheckSum();
+    cksum = PackageBuilder.generateMD5(file);
+    System.out.println(cksum);
+    Assert.assertEquals("95bcd2d5a06b5f63b84551ddd8ec1483", cksum);
+  }
 
 	@Test
-	public void test_ChangeMilestone() throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException {
-		
+	public void testChangeMilestone() throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException {
 		URL resource = getClass().getClassLoader().getResource("generateMilestone-test");
 		System.out.println(resource.getPath());
 		File rootDir = new File(resource.getPath());
 
 		
-		File file = ChangeDetector.generateChangeMilestone(rootDir);
+		File file = PackageBuilder.generateChangeMilestone(rootDir);
 		
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 

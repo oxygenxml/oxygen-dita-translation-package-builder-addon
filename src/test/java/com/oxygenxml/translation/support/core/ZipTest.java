@@ -11,7 +11,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.ChangeDetector;
 import com.oxygenxml.translation.support.util.ZipFileUtil;
 
 public class ZipTest {
@@ -28,18 +27,12 @@ public class ZipTest {
 	
 	@Test
 	public void testPackageUnzip() throws Exception {
-
-		
-		
 		File packageLocation = new File(tempDir, "changedFiles.zip");
 		
 		/* 
 		 * Generate the milestone for rootDir.
 		 */
-//		InfoResources info = new InfoResources(ChangeDetector.computeResourceInfo(rootDir, new Stack<String>()));
-//		ChangeDetector.storeMilestoneFile(info, rootDir);
-		
-		ChangeDetector.generateChangedFilesPackage(rootDir, packageLocation);
+		PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation);
 		
 		ArrayList<String> actualResults = ZipFileUtil.unzipDirectory(packageLocation , tempDir);
 
