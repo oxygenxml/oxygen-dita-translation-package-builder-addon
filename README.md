@@ -1,18 +1,13 @@
-# sample-plugin-workspace-access
-Sample Maven-based workspace access plugin.
+# Translation Package Builder
+This plugin is a helper for sending DITA files to translation. It contributes a sub-menu named *Translation Package Builder* in the *DITA Maps Manager*'s contextual menu. The actions present in this group are:
+1. *Generate Milestone* - this action is the first one to use. It will generate an unique hash for each documentation resource. This information will be used by the second action to detect which files have been modified. A milestone file should be generated the first time you install this plugin and, afterwards, after each package sent to translators.
+2. *Create Modified Files Package* - this action detects which files have been changed since the last generated milestone. These files are packed insdie a ZIP file that can be send to translators. After doing this you can also generate a new milestone so that the next package will contain just the new changes.
+3. *Apply Package* - when  the translated files arrive from the translator you should open the DITA map that corresponds to the received language (open dita-map-french.ditamap if the package contains the french translation). Invoking this action will extract the changed files inside the map's directory.
 
-This sample plugin implements the plugin extension API: 
+How to install
+---------
+Inside Oxygen, go to Help->Install new add-ons... and paste the following URL:
 
-            ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension
+https://raw.githubusercontent.com/DalinaBivolan/Translation-Package-Builder/master/build/addon.xml
 
-which allows you to add new toolbar, menu and contextual menu buttons, custom views and to interract with the opened XML documents.
-
-For more details see: http://www.oxygenxml.com/doc/ug-editor/index.html#topics/workspace-access-plugin.html
-
-If you are using the Eclipse workbench you can clone the project locally and use in the Eclipse the "Import->Existing Maven Projects" functionality.
-
-Afterwards you can run "mvn install" (either from the command line or from the IDE) to create a JAR containing the plugin folder in the project's "target" folder. 
-
-In the same "target" folder there will be an "addon.xml" file allowing you to install the plugin directly from Oxygen (Help menu->Install new add-ons). Or you can manually unpack the JAR in the "OXYGEN_INSTALL_DIR/plugins" folder.
-
-If you want to debug your Java code and do not want to run "mvn install" and to install the plugin in Oxygen all the time, in the "OXYGEN_INSTALL_DIR\plugins" folder you can create a folder with any name (for example "sample") in which you place a file called "plugin.redirect" containing the full file path reference to your project (for example in my case "C:\Users\radu_coravu\Documents\sample-plugin-workspace-access"). After this, when Oxygen will start it will automatically load the plugin from your project location. So you will just need to modify the Java code, the IDE will automatically compile it, then restart Oxygen and test your changes.
+Follow the installation. After restarting Oxygen, open a DITA map inside the *DITA Maps Manager* and invoke the contextual menu to find the contributed actions.
