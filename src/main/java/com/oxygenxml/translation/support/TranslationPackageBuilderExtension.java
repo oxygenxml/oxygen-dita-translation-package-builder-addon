@@ -84,7 +84,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             + " ditamap which contains an unique hash and the relative path of every file in that directory.");
         
         // Action 2: Create Changed Files Package
-        JMenuItem menuItemPakage = new JMenuItem("Create Modified Files Pakage");
+        JMenuItem menuItemPakage = new JMenuItem("Create Modified Files Package");
         menuItemPakage.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_3, ActionEvent.ALT_MASK));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);

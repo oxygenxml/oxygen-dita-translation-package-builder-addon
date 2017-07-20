@@ -11,20 +11,29 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
         <xt:oxy_version>17.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Oxygen XML Editor</xt:author>
-        <xt:name>WorkspaceAccess</xt:name>
+        <xt:name>Translation Package Builder</xt:name>
         <xt:description><html xmlns="http://www.w3.org/1999/xhtml">
             <head>
-                <title>Sample Workspace Access plugin</title>
+                <title>Translation Package Builder</title>
             </head>
             <body>
                 <div>
-                    <p>This plugin installs access to the &lt;oXygen/&gt; workspace. That enables
-                        &lt;oXygen/&gt; to open/save/close resources, access the editors content,
-                        etc. Such a plugin must implement an WorkspacePluginExtension. </p>
-                    <p>For more details see <a
-                        href="http://www.oxygenxml.com/doc/ug-oxygen/index.html?q=/doc/ug-oxygen/concepts/workspace-access-plugin.html"
-                        >http://www.oxygenxml.com/doc/ug-oxygen/index.html?q=/doc/ug-oxygen/concepts/workspace-access-plugin.html</a>
-                    </p>
+                    <p>This plugin is a helper for sending DITA files to translation. It contributes a sub-menu
+                        named "Translation Package Builder" in the <b>DITA Maps Manager</b>'s contextual menu. The 
+                    actions present in this group are:</p>
+                    <ol>
+                        <li><b>Generate Milestone</b> - this action is the first one to use. It will generate an unique hash 
+                        for each documentation resource. This information will be used by the second action to detect which files 
+                        have been modified. A milestone file should be generated the first time you install this plugin and, afterwards,
+                        after each package sent to translators.</li>
+                        <li><b>Create Modified Files Package</b> - this action detects which files have been changed since the last
+                        generated milestone. These files are packed insdie a ZIP file that can be send to translators. After doing this
+                        you can also generate a new milestone so that the next package will contain just the new changes.</li>
+                        <li><b>Apply Package</b> - when  the translated files arrive from the translator you should open the DITA map
+                        that corresponds to the received language (open dita-map-french.ditamap if the package contains the french translation). Invoking this action will extract the changed files inside 
+                        the map's directory.</li>
+                    </ol>
+                    
                 </div>
             </body>
         </html>
