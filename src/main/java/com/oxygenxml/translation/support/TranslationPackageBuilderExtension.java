@@ -184,31 +184,21 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 
                 javax.swing.SwingUtilities.invokeLater(new Runnable() {
                   public void run() {
+                    // 1. Start the processing. (the ZIP Worker)
+                    // 2. Show the dialog. 
+                    // 3. The ZIP worker notifies the dialog.
                     JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
+                    // The ProgressDialog is a ProgressChangeListener
                     final ProgressDialog dialog = new ProgressDialog(frame , "Zipping directory");
                     ZipWorker zipTask = new ZipWorker(rootDir, chosenDirectory, dialog);
                     zipTask.execute();
                     dialog.setLocationRelativeTo(frame);
                     dialog.setVisible(true);
-                    //createAndShowGUIZip();
-
                   }
                 });
-                
-
-//                try {
-//                  ArchiveBuilder.zipDirectory(rootDir, chosenDirectory);
-//                  pluginWorkspaceAccess.showInformationMessage("Package created.");
-//                } catch (IOException e1) {
-//                  logger.error(e1, e1);
-//                  pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e1.getMessage());
-//                }
               }
 
             }else{
-              
-              //PackageBuilder.generateChangedFilesPackage(rootDir, chosenDir);
-              //pluginWorkspaceAccess.showInformationMessage("Package created.");
               javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                   JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
@@ -218,8 +208,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   packModifiedFilesTask.execute();
                   dialog.setLocationRelativeTo(frame);
                   dialog.setVisible(true);
-                  //createAndShowGUIModifiedFiles();
-
                 }
               });
 
@@ -283,10 +271,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 unzipTask.execute();
                 dialog.setVisible(true);
                 
-                //createAndShowGUIUnzip();
-
-                //ArrayList<String> list = ArchiveBuilder.unzipDirectory(chosenDir, rootDir);
-
                 try{
                   if(dialog.isDone()){
                     ArrayList<String> list = unzipTask.getList();
@@ -299,10 +283,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                       for(int i = 1; i < list.size(); i++){
                         text.append("\n");
                         text.append(list.get(i));
-
-                        //                      if(!path.equals(list.get(list.size()-1))){
-                        //                        text.append("\n");
-                        //                      }
                       }
                       text.setLineWrap(true);
                       text.setWrapStyleWord(true);
@@ -365,34 +345,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     //You can reject the application closing here
     return true;
   }
-  
-  //private void createAndShowGUIZip() throws IOException {
-    // Use dialogs. JDialog. Maybe ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog
-    // GIve the parent like this: pluginWorkspaceAccess.getParentFrame()
-    
-    //  Statics are bad!!!!
-    // 1. Start the processing. (the ZIP Worker)
-    // 2. Show the dialog. 
-    // 3. The ZIP worker notifies the dialog.
-    
-    //ProgressDialog dialog = new ProgressDialog(pluginWorkspaceAccess.getParentFrame(), "");
-    
-    //-----------------------------
-    // START THE PROCESSING
-    //---------------------------
-    // The ProgressDIlaog is a ProgressChangeListener
-//    zipTask = new ZipWorker(rootDir, chosenDir, new ProgressChangeListener() {
-//      public boolean isCanceled() {
-//        // return true if the user has pressed Cancel in teh dialog.
-//        return false;
-//      }
-//      
-//      public void change(ProgressChangeEvent progress) {
-//        //Take data from event and put it in the dialog.
-//        
-//      }
-//    });
-//}
   
   public int allFilesInDir(File dirPath) throws IOException{
     File[] everythingInThisDir = dirPath.listFiles();
