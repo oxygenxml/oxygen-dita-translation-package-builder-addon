@@ -12,6 +12,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import com.oxygenxml.translation.progress.ProgressChangeEvent;
+import com.oxygenxml.translation.progress.ProgressChangeListener;
+import com.oxygenxml.translation.progress.StoppedByUserException;
+
 /**
  * 
  * This class contains 2 methods : 
@@ -19,23 +23,34 @@ import java.util.zip.ZipOutputStream;
  * - unzipDirectory - this method extracts the content of an archive at a specified location
  *
  */
-public final class ZipFileUtil {
-
+public final class ArchiveBuilder {
+  
+  private ProgressChangeListener listener;
+  
+  public ArchiveBuilder(){
+    
+  }
+  
+  public ArchiveBuilder(ProgressChangeListener listener) {
+    this.listener = listener;
+  }
+  
   /**
    * 
    * @param dir  The location of the file/directory we want to zip.
    * @param zipFile  The location of the package.
    * @throws IOException  Problems reading the file.
+   * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public static void zipDirectory(File dir, File zipFile) throws IOException {
+  public void zipDirectory(File dir, File zipFile) throws IOException, StoppedByUserException {
     zipFile.getParentFile().mkdirs();
-
+    
     FileOutputStream fout = null;
     ZipOutputStream zout = null;
     try {
       fout = new FileOutputStream(zipFile);
       zout = new ZipOutputStream(fout);
-      zipSubDirectory("", dir, zout);
+      zipSubDirectory("", dir, zout, 0);
     } finally{
       zout.close();
     }
@@ -46,9 +61,13 @@ public final class ZipFileUtil {
    * @param basePath  It helps us create the relative path of every file from dir.
    * @param dir  The location of the file/directory we want to zip.
    * @param zout  Where we create the archive.
+   * @param resourceCounter Counter the number of resources added in the archive.
+   * 
+   * 
    * @throws IOException  Problems reading the files.
+   * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  private static void zipSubDirectory(String basePath, File dir, ZipOutputStream zout) throws IOException {
+  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int resourceCounter) throws IOException, StoppedByUserException {
     byte[] buffer = new byte[4096];
     File[] files = dir.listFiles();
     if (files != null) {
@@ -56,7 +75,12 @@ public final class ZipFileUtil {
         if (file.isDirectory()) {
           String path = basePath + file.getName() + "/";
           zout.putNextEntry(new ZipEntry(path));
-          zipSubDirectory(path, file, zout);
+          
+          if(listener.isCanceled()){
+            throw new StoppedByUserException("You pressed the Cancel button.");
+          }
+          
+          zipSubDirectory(path, file, zout, resourceCounter);
           zout.closeEntry();
         } else {
           FileInputStream fin = null;
@@ -66,8 +90,22 @@ public final class ZipFileUtil {
             int length;
             while ((length = fin.read(buffer)) > 0) {
               zout.write(buffer, 0, length);
+//              int iterations = 10 ;
+//              for (int i = 0 ; i < iterations-1 ; i ++) {
+//                zout.write(buffer, i*(length/iterations), (length/iterations));
+//                //System.out.format("%d%%  atat an scris din : "+ file.getName() +"\n", (i+1)*10 ) ;
+//              }
+//              zout.write(buffer, (iterations-1)*(length/iterations), length - (iterations-1)*(length/iterations));
+              //System.out.format("100%%  arhivat "+ file.getName() +"\n") ;
             }
-          }finally{
+            if(listener.isCanceled()){
+              throw new StoppedByUserException("You pressed the Cancel button.");
+            }
+            resourceCounter++;
+            ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter, resourceCounter + " files packed.");
+            listener.change(progress);
+            
+          } finally{
             zout.closeEntry();
             fin.close();
           }
@@ -76,18 +114,21 @@ public final class ZipFileUtil {
     }
   }
 
+
   /**
    *    
    * @param packageLocation  The location of the package.
    * @param destDir Where to extract the package content.
    * @return A list with the relative path of every extracted file.
+   * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public static ArrayList<String> unzipDirectory(File packageLocation, File destDir){
+  public ArrayList<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException{
 
     //File baseDir = destDir.getParentFile();
 
     ArrayList<String> nameList = new ArrayList<String>();
-
+    int counter = 0;
+    
     try {
       // Open the zip file
       ZipFile zipFile = new ZipFile(packageLocation);
@@ -128,6 +169,14 @@ public final class ZipFileUtil {
           }
           
           nameList.add(name);
+          
+          if(listener.isCanceled()){
+            throw new StoppedByUserException("You pressed the Cancel button.");
+          }
+          
+          counter++;
+          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files unpacked.");
+          listener.change(progress);
           
         }
       }finally{

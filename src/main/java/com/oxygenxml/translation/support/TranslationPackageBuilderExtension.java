@@ -25,8 +25,11 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.translation.progress.ModifiedFilesWorker;
+import com.oxygenxml.translation.progress.ProgressDialog;
+import com.oxygenxml.translation.progress.UnzipWorker;
+import com.oxygenxml.translation.progress.ZipWorker;
 import com.oxygenxml.translation.support.core.PackageBuilder;
-import com.oxygenxml.translation.support.util.ZipFileUtil;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -45,10 +48,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
   /**
    * TODO Not great to duplicate the one from ChangeDetector.
-   * 
-   * Predefined name of the file that stores a hash for each file.
-   */
-  private final static String MILESTONE_FILE_NAME = "milestone.xml";
   /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
@@ -115,7 +114,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private AbstractAction createMilestoneAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Generate Milestone") {
-      public void actionPerformed(ActionEvent actionevent) {
+      /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+	public void actionPerformed(ActionEvent actionevent) {
 
         // 1. Extract the parent directory of the current map.
         // 2. Generate the milestone file in the dir
@@ -148,43 +152,77 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private AbstractAction createChangedFilesZipAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Create Modified Files Package") {
-      public void actionPerformed(ActionEvent actionevent) {
+      /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
-        File chosenDir = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
-
+	public void actionPerformed(ActionEvent actionevent) {
+        
+        final File chosenDir = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
+        
         if(chosenDir != null){
           WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
 
           // 1. Extract the parent directory of the current map. This is the rootDir
           URL editorLocation = editor.getEditorLocation();
-          File rootDir = new File(editorLocation.getPath()).getParentFile();
+          final File rootDir = new File(editorLocation.getPath()).getParentFile();
 
           try {
             // What to do if the milestone file doesn't exist? 
             // Inform the user and offer the possibility to pack the entire dir
             // TODO Don't make assumptions about the location and name of the milestone file.
             //      Let's define a method in ChangeDetector
-            File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
+            File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());
             if(!milestoneFile.exists()){
 
               int buttonId = pluginWorkspaceAccess.showConfirmDialog("Didn't find \"milestone.xml\"", "The milestone file doesn't exist."
                   + " Do you want to pack the entire directory?", new String[] {"Yes", "No"}, new int[] {0, 1});
 
               if(buttonId == 0){
-                File chosenDirectory = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
+                final File chosenDirectory = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
+                
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                  public void run() {
+                    JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
+                    final ProgressDialog dialog = new ProgressDialog(frame , "Zipping directory");
+                    ZipWorker zipTask = new ZipWorker(rootDir, chosenDirectory, dialog);
+                    zipTask.execute();
+                    dialog.setLocationRelativeTo(frame);
+                    dialog.setVisible(true);
+                    //createAndShowGUIZip();
 
-                try {
-                  ZipFileUtil.zipDirectory(rootDir, chosenDirectory);
-                  pluginWorkspaceAccess.showInformationMessage("Package created.");
-                } catch (IOException e1) {
-                  logger.error(e1, e1);
-                  pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e1.getMessage());
-                }
+                  }
+                });
+                
+
+//                try {
+//                  ArchiveBuilder.zipDirectory(rootDir, chosenDirectory);
+//                  pluginWorkspaceAccess.showInformationMessage("Package created.");
+//                } catch (IOException e1) {
+//                  logger.error(e1, e1);
+//                  pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e1.getMessage());
+//                }
               }
 
             }else{
-              PackageBuilder.generateChangedFilesPackage(rootDir, chosenDir);
-              pluginWorkspaceAccess.showInformationMessage("Package created.");
+              
+              //PackageBuilder.generateChangedFilesPackage(rootDir, chosenDir);
+              //pluginWorkspaceAccess.showInformationMessage("Package created.");
+              javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
+                  
+                  final ProgressDialog dialog = new ProgressDialog(frame , "Pack modified files");
+                  ModifiedFilesWorker packModifiedFilesTask = new ModifiedFilesWorker(rootDir, chosenDir, dialog);
+                  packModifiedFilesTask.execute();
+                  dialog.setLocationRelativeTo(frame);
+                  dialog.setVisible(true);
+                  //createAndShowGUIModifiedFiles();
+
+                }
+              });
+
             }
           } catch (Exception e) {
             //  Preset error to user.
@@ -207,6 +245,11 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Apply Package") {
       /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+	/**
        * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
        */
       public void actionPerformed(ActionEvent actionevent) {
@@ -220,63 +263,89 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
          * 4. Unzip the package in the root directory of the map
          */
 
-        File chosenDir = pluginWorkspaceAccess.chooseFile("Choose the translated package", new String[] {"zip"},  null);
+        final File chosenDir = pluginWorkspaceAccess.chooseFile("Choose the translated package", new String[] {"zip"},  null);
 
         if(chosenDir != null) {
           WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
 
           URL editorLocation = editor.getEditorLocation();
-          File rootDir = new File(editorLocation.getFile()).getParentFile();
-
+          final File rootDir = new File(editorLocation.getFile()).getParentFile();
+          
           try {
-            //Perhaps present a log with the overridden files.
-            ArrayList<String> list = ZipFileUtil.unzipDirectory(chosenDir, rootDir);
+            //Perhaps present a log with the overridden files.         
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
 
-            JTextArea text = new JTextArea(10, 40);
+                final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
+                UnzipWorker unzipTask = new UnzipWorker(chosenDir, rootDir, dialog);
+                dialog.setLocationRelativeTo(frame);
+                unzipTask.execute();
+                dialog.setVisible(true);
+                
+                //createAndShowGUIUnzip();
 
-            //text.setText("Package applied over the current map. The overridden files are : ");
-            for(String path : list){
-              text.append(path);
-              // TODO Might be better to iterate with an index and put a new line
-              //      for all lines except the first one. 
-              if(!path.equals(list.get(list.size()-1))){
-                text.append("\n");
+                //ArrayList<String> list = ArchiveBuilder.unzipDirectory(chosenDir, rootDir);
+
+                try{
+                  if(dialog.isDone()){
+                    ArrayList<String> list = unzipTask.getList();
+                    if(!list.isEmpty() && list != null){
+                      JTextArea text = new JTextArea(10, 40);
+
+                      // TODO Might be better to iterate with an index and put a new line
+                      //                  for all lines except the first one. 
+                      text.append(list.get(0));
+                      for(int i = 1; i < list.size(); i++){
+                        text.append("\n");
+                        text.append(list.get(i));
+
+                        //                      if(!path.equals(list.get(list.size()-1))){
+                        //                        text.append("\n");
+                        //                      }
+                      }
+                      text.setLineWrap(true);
+                      text.setWrapStyleWord(true);
+                      text.setEditable(false);
+
+                      JScrollPane scroll = new JScrollPane(text);
+                      scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+                      JPanel panel = new JPanel(new GridBagLayout());
+
+                      GridBagConstraints gbcLabel = new GridBagConstraints();
+                      gbcLabel.gridx = 0;
+                      gbcLabel.gridy = 0;
+                      gbcLabel.gridwidth = 1;
+                      gbcLabel.gridheight = 1;
+                      gbcLabel.weightx = 0;
+                      gbcLabel.weighty = 0;
+                      gbcLabel.fill = GridBagConstraints.HORIZONTAL;
+                      gbcLabel.anchor = GridBagConstraints.NORTH;
+
+                      panel.add(new JLabel("Package applied over the current map. The overridden files are : "), gbcLabel);
+
+                      GridBagConstraints gbcScroll = new GridBagConstraints();
+                      gbcScroll.gridx = 0;
+                      gbcScroll.gridy = 1;
+                      gbcLabel.gridwidth = 1;
+                      gbcLabel.gridheight = 1;
+                      gbcLabel.weightx = 0;
+                      gbcLabel.weighty = 0;
+                      gbcScroll.fill = GridBagConstraints.BOTH;
+                      gbcScroll.anchor = GridBagConstraints.LINE_START;
+                      panel.add(scroll , gbcScroll);
+
+
+                      JOptionPane.showMessageDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), panel, "Applied files", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                  }
+                }catch (Exception e){
+                  logger.error(e, e);
+                  pluginWorkspaceAccess.showErrorMessage("Failed show the overridden files because of: " + e.getMessage());
+                }
               }
-            }
-            text.setLineWrap(true);
-            text.setWrapStyleWord(true);
-            text.setEditable(false);
-
-            JScrollPane scroll = new JScrollPane(text);
-            scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-            JPanel panel = new JPanel(new GridBagLayout());
-            
-            GridBagConstraints gbcLabel = new GridBagConstraints();
-            gbcLabel.gridx = 0;
-            gbcLabel.gridy = 0;
-            gbcLabel.gridwidth = 1;
-            gbcLabel.gridheight = 1;
-            gbcLabel.weightx = 0;
-            gbcLabel.weighty = 0;
-            gbcLabel.fill = GridBagConstraints.HORIZONTAL;
-            gbcLabel.anchor = GridBagConstraints.NORTH;
-            
-            panel.add(new JLabel("Package applied over the current map. The overridden files are : "), gbcLabel);
-            
-            GridBagConstraints gbcScroll = new GridBagConstraints();
-            gbcScroll.gridx = 0;
-            gbcScroll.gridy = 1;
-            gbcLabel.gridwidth = 1;
-            gbcLabel.gridheight = 1;
-            gbcLabel.weightx = 0;
-            gbcLabel.weighty = 0;
-            gbcScroll.fill = GridBagConstraints.BOTH;
-            gbcScroll.anchor = GridBagConstraints.LINE_START;
-            panel.add(scroll , gbcScroll);
-            
-
-            JOptionPane.showMessageDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), panel, "Applied files", JOptionPane.INFORMATION_MESSAGE);
+            });
           } catch (Exception e) {
             // Preset error to user.
             logger.error(e, e);
@@ -296,4 +365,57 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     //You can reject the application closing here
     return true;
   }
+  
+  //private void createAndShowGUIZip() throws IOException {
+    // Use dialogs. JDialog. Maybe ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog
+    // GIve the parent like this: pluginWorkspaceAccess.getParentFrame()
+    
+    //  Statics are bad!!!!
+    // 1. Start the processing. (the ZIP Worker)
+    // 2. Show the dialog. 
+    // 3. The ZIP worker notifies the dialog.
+    
+    //ProgressDialog dialog = new ProgressDialog(pluginWorkspaceAccess.getParentFrame(), "");
+    
+    //-----------------------------
+    // START THE PROCESSING
+    //---------------------------
+    // The ProgressDIlaog is a ProgressChangeListener
+//    zipTask = new ZipWorker(rootDir, chosenDir, new ProgressChangeListener() {
+//      public boolean isCanceled() {
+//        // return true if the user has pressed Cancel in teh dialog.
+//        return false;
+//      }
+//      
+//      public void change(ProgressChangeEvent progress) {
+//        //Take data from event and put it in the dialog.
+//        
+//      }
+//    });
+//}
+  
+  public int allFilesInDir(File dirPath) throws IOException{
+    File[] everythingInThisDir = dirPath.listFiles();
+    int nr = 0;
+    if (everythingInThisDir != null){
+      for (File name : everythingInThisDir) {
+
+        if (name.isDirectory()){  
+          //nr++ ; 
+          int suma = allFilesInDir(name);
+          nr = nr + suma;
+        }
+        else if (name.isFile()
+            // Do not put the milestone file into the package.
+            && !name.getName().equals("milestone.xml")){          
+          nr++;
+        }
+      }
+    } else{
+      throw new IOException("Please select a directory.");
+    }
+
+    return nr;
+  }
+  
 }

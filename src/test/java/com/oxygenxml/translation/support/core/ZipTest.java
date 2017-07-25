@@ -11,7 +11,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.util.ZipFileUtil;
+import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 public class ZipTest {
 	/**
@@ -32,9 +32,9 @@ public class ZipTest {
 		/* 
 		 * Generate the milestone for rootDir.
 		 */
-		PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation);
+		PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation, null);
 		
-		ArrayList<String> actualResults = ZipFileUtil.unzipDirectory(packageLocation , tempDir);
+		ArrayList<String> actualResults = new ArchiveBuilder().unzipDirectory(packageLocation , tempDir);
 
 		ArrayList<String> expectedResults = new ArrayList<String>();
 		expectedResults.add("testGenerate/newAdded.txt");

@@ -18,9 +18,12 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.translation.progress.ProgressChangeEvent;
+import com.oxygenxml.translation.progress.ProgressChangeListener;
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.ZipFileUtil;
+import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 import de.schlichtherle.io.FileInputStream;
 
@@ -32,6 +35,10 @@ public class PackageBuilder {
    * Predefined name of the file that stores a hash for each file.
    */
   private final static String MILESTONE_FILE_NAME = "milestone.xml";
+  
+  public static String getMilestoneFileName() {
+    return MILESTONE_FILE_NAME;
+  }
 
   /**
    * Reads a file and generates an MD5 from its content.
@@ -210,13 +217,18 @@ public class PackageBuilder {
    * 
    * @param rootDir The location of the directory we want to see what files were changed.
    * @param packageLocation The location of the generated ZIP file.
+   * @param listener A ProgressChangedListener for sending the updates.
    * 	
    * @throws IOException  Problems reading the file/directory.
    * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
    * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
+   * @throws StoppedByUserException The user pressed the Cancel button.
 
    */
-  public static void generateChangedFilesPackage(File rootDir, File packageLocation) throws NoSuchAlgorithmException, JAXBException, IOException  {
+  public static void generateChangedFilesPackage(
+      File rootDir, 
+      File packageLocation,
+      ProgressChangeListener listener) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException  {
 
     /**
      * 4. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
@@ -226,6 +238,7 @@ public class PackageBuilder {
 
     //The list with all modified files.
     ArrayList<ResourceInfo> modifiedResources = generateModifiedResources(rootDir);
+    int counter = 0;
     if (!modifiedResources.isEmpty()) {
       File tempDir = new File(rootDir, "toArchive");
 
@@ -238,8 +251,16 @@ public class PackageBuilder {
           dest.getParentFile().mkdirs();
 
           FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
+          
+          if(listener.isCanceled()){
+            throw new StoppedByUserException("You pressed the Cancel button.");
+          }
+          
+          counter++;
+          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files copied in a temp dir.", modifiedResources.size());
+          listener.change(progress);
         }
-        ZipFileUtil.zipDirectory(tempDir, packageLocation);
+        new ArchiveBuilder(listener).zipDirectory(tempDir, packageLocation);
       } finally {
         FileUtils.deleteDirectory(tempDir);
       }
