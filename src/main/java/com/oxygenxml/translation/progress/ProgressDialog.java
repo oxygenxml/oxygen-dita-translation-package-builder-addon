@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 public class ProgressDialog extends OKCancelDialog implements ProgressChangeListener {
 
   private JProgressBar progressBar;
-	private JLabel label;
+  private JLabel label;
 	/**
 	 *  True if the Cancel button is clicked.
 	 */

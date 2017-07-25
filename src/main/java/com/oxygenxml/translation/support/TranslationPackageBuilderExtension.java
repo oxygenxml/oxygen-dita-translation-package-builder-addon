@@ -177,7 +177,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
               if(buttonId == 0){
                 final File chosenDirectory = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
-                
+
                 javax.swing.SwingUtilities.invokeLater(new Runnable() {
                   public void run() {
                     // 1. Start the processing. (the ZIP Worker)

@@ -228,7 +228,7 @@ public class PackageBuilder {
   public static void generateChangedFilesPackage(
       File rootDir, 
       File packageLocation,
-      ProgressChangeListener listener) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException  {
+      final ProgressChangeListener listener) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException  {
 
     /**
      * 4. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
@@ -237,8 +237,9 @@ public class PackageBuilder {
      */
 
     //The list with all modified files.
-    ArrayList<ResourceInfo> modifiedResources = generateModifiedResources(rootDir);
+    final ArrayList<ResourceInfo> modifiedResources = generateModifiedResources(rootDir);
     int counter = 0;
+    final int numberOfModifiedfiles = modifiedResources.size();
     if (!modifiedResources.isEmpty()) {
       File tempDir = new File(rootDir, "toArchive");
 
@@ -257,10 +258,23 @@ public class PackageBuilder {
           }
           
           counter++;
-          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files copied in a temp dir.", modifiedResources.size());
+          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files copied in a temp dir.", 2*numberOfModifiedfiles);
           listener.change(progress);
         }
-        new ArchiveBuilder(listener).zipDirectory(tempDir, packageLocation);
+        new ArchiveBuilder(new ProgressChangeListener() {
+          public boolean isCanceled() {
+            return listener.isCanceled();
+          }
+          
+          public void done() {
+            listener.done();
+          }
+          
+          public void change(ProgressChangeEvent progress) {
+            // TODO Auto-generated method stub
+            listener.change(new ProgressChangeEvent(progress.getCounter()+numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles));
+          }
+        }).zipDirectory(tempDir, packageLocation);
       } finally {
         FileUtils.deleteDirectory(tempDir);
       }

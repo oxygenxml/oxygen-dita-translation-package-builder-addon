@@ -48,9 +48,11 @@ public class UnzipWorker extends SwingWorker<Void, Void> {
 
   /**
    * Main task. Executed in background thread.
+   * 
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException {
+    
     list = new ArchiveBuilder(listener).unzipDirectory(zipDir, rootDir);
 
     return null;

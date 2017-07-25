@@ -50,7 +50,7 @@ public final class ArchiveBuilder {
     try {
       fout = new FileOutputStream(zipFile);
       zout = new ZipOutputStream(fout);
-      zipSubDirectory("", dir, zout, 0);
+      zipSubDirectory("", dir, zout, new int[] {0});
     } finally{
       zout.close();
     }
@@ -67,7 +67,7 @@ public final class ArchiveBuilder {
    * @throws IOException  Problems reading the files.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int resourceCounter) throws IOException, StoppedByUserException {
+  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int[] resourceCounter) throws IOException, StoppedByUserException {
     byte[] buffer = new byte[4096];
     File[] files = dir.listFiles();
     if (files != null) {
@@ -90,19 +90,12 @@ public final class ArchiveBuilder {
             int length;
             while ((length = fin.read(buffer)) > 0) {
               zout.write(buffer, 0, length);
-//              int iterations = 10 ;
-//              for (int i = 0 ; i < iterations-1 ; i ++) {
-//                zout.write(buffer, i*(length/iterations), (length/iterations));
-//                //System.out.format("%d%%  atat an scris din : "+ file.getName() +"\n", (i+1)*10 ) ;
-//              }
-//              zout.write(buffer, (iterations-1)*(length/iterations), length - (iterations-1)*(length/iterations));
-              //System.out.format("100%%  arhivat "+ file.getName() +"\n") ;
             }
             if(listener.isCanceled()){
               throw new StoppedByUserException("You pressed the Cancel button.");
             }
-            resourceCounter++;
-            ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter, resourceCounter + " files packed.");
+            resourceCounter[0]++;
+            ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + " files packed.");
             listener.change(progress);
             
           } finally{
