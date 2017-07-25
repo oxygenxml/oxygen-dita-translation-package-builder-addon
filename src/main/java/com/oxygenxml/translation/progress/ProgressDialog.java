@@ -45,7 +45,7 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     
     JPanel mainPanel = new JPanel(new GridBagLayout());
     progressBar = new JProgressBar();
-    label = new JLabel();
+    label = new JLabel("Here you'll see informations about the progress.");
     
     progressBar.setValue(0);
     progressBar.setStringPainted(true);
@@ -113,7 +113,6 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
    *  Returns true if the Cancel button was pressed by the user.
    */
   public boolean isCanceled() {
-    // TODO don't use isSelected().
     if(isCancelButtonPressed){
       return true;      
     }

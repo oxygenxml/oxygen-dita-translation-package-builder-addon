@@ -47,8 +47,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class); 
 
   /**
-   * TODO Not great to duplicate the one from ChangeDetector.
-  /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
@@ -171,8 +169,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           try {
             // What to do if the milestone file doesn't exist? 
             // Inform the user and offer the possibility to pack the entire dir
-            // TODO Don't make assumptions about the location and name of the milestone file.
-            //      Let's define a method in ChangeDetector
             File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());
             if(!milestoneFile.exists()){
 
@@ -191,8 +187,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                     // The ProgressDialog is a ProgressChangeListener
                     final ProgressDialog dialog = new ProgressDialog(frame , "Zipping directory");
                     ZipWorker zipTask = new ZipWorker(rootDir, chosenDirectory, dialog);
-                    zipTask.execute();
                     dialog.setLocationRelativeTo(frame);
+                    zipTask.execute();
                     dialog.setVisible(true);
                   }
                 });
@@ -205,8 +201,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   
                   final ProgressDialog dialog = new ProgressDialog(frame , "Pack modified files");
                   ModifiedFilesWorker packModifiedFilesTask = new ModifiedFilesWorker(rootDir, chosenDir, dialog);
-                  packModifiedFilesTask.execute();
                   dialog.setLocationRelativeTo(frame);
+                  packModifiedFilesTask.execute();
                   dialog.setVisible(true);
                 }
               });
@@ -277,8 +273,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                     if(!list.isEmpty() && list != null){
                       JTextArea text = new JTextArea(10, 40);
 
-                      // TODO Might be better to iterate with an index and put a new line
-                      //                  for all lines except the first one. 
+                      // Iterate with an index and put a new line
+                      //    for all lines except the first one. 
                       text.append(list.get(0));
                       for(int i = 1; i < list.size(); i++){
                         text.append("\n");
