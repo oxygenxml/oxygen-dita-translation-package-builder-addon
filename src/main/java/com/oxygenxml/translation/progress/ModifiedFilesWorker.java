@@ -39,13 +39,13 @@ public class ModifiedFilesWorker extends SwingWorker<Void, Void>{
    * Main task. Executed in background thread.
    */
   @Override
-  public Void doInBackground() throws IOException, NoSuchAlgorithmException, JAXBException, StoppedByUserException {
-    try{
+  public Void doInBackground() throws NoSuchAlgorithmException, JAXBException, StoppedByUserException {
+    try {
       PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation, listener);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-    catch (IOException e) {
-    }
-    
+
     return null;
   }
 

@@ -261,7 +261,8 @@ public class PackageBuilder {
           ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files copied in a temp dir.", 2*numberOfModifiedfiles);
           listener.change(progress);
         }
-        new ArchiveBuilder(new ProgressChangeListener() {
+        ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+        archiveBuilder.addListener(new ProgressChangeListener() {
           public boolean isCanceled() {
             return listener.isCanceled();
           }
@@ -271,10 +272,11 @@ public class PackageBuilder {
           }
           
           public void change(ProgressChangeEvent progress) {
-            // TODO Auto-generated method stub
-            listener.change(new ProgressChangeEvent(progress.getCounter()+numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles));
+            listener.change(new ProgressChangeEvent(progress.getCounter() + numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles));
           }
-        }).zipDirectory(tempDir, packageLocation);
+        });
+      
+        archiveBuilder.zipDirectory(tempDir, packageLocation);
       } finally {
         FileUtils.deleteDirectory(tempDir);
       }

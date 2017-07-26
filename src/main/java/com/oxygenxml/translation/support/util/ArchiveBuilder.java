@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -25,14 +26,14 @@ import com.oxygenxml.translation.progress.StoppedByUserException;
  */
 public final class ArchiveBuilder {
   
-  private ProgressChangeListener listener;
+  private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
   
   public ArchiveBuilder(){
     
   }
   
-  public ArchiveBuilder(ProgressChangeListener listener) {
-    this.listener = listener;
+  public void addListener(ProgressChangeListener listener) {
+    this.listeners.add(listener);
   }
   
   /**
@@ -76,7 +77,7 @@ public final class ArchiveBuilder {
           String path = basePath + file.getName() + "/";
           zout.putNextEntry(new ZipEntry(path));
           
-          if(listener.isCanceled()){
+          if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
           
@@ -91,12 +92,12 @@ public final class ArchiveBuilder {
             while ((length = fin.read(buffer)) > 0) {
               zout.write(buffer, 0, length);
             }
-            if(listener.isCanceled()){
+            if(isCanceled()){
               throw new StoppedByUserException("You pressed the Cancel button.");
             }
             resourceCounter[0]++;
             ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + " files packed.");
-            listener.change(progress);
+            fireChangeEvent(progress);
             
           } finally{
             zout.closeEntry();
@@ -107,6 +108,22 @@ public final class ArchiveBuilder {
     }
   }
 
+
+  private void fireChangeEvent(ProgressChangeEvent progress) {
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      progressChangeListener.change(progress);
+    }
+  }
+
+  private boolean isCanceled() {
+    boolean result = false;
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      if (progressChangeListener.isCanceled()) {
+        result =  true;
+      }
+    }
+    return result;
+  }
 
   /**
    *    
@@ -163,13 +180,13 @@ public final class ArchiveBuilder {
           
           nameList.add(name);
           
-          if(listener.isCanceled()){
+          if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
           
           counter++;
           ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files unpacked.");
-          listener.change(progress);
+          fireChangeEvent(progress);
           
         }
       }finally{

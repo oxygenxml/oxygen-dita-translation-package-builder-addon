@@ -30,20 +30,16 @@ public class UnzipWorker extends SwingWorker<Void, Void> {
   /**
    *  A listener for notifying the changes.
    */
-  private ProgressChangeListener listener;
-  
+  private ArrayList<ProgressChangeListener> listeners;
+
   public ArrayList<String> getList() {
     return list;
   }
 
-  public UnzipWorker(File zipDir, File rootDir, ProgressChangeListener listener) {
+  public UnzipWorker(File zipDir, File rootDir, ArrayList<ProgressChangeListener> listeners) {
     this.rootDir = rootDir;
     this.zipDir = zipDir;
-    this.listener = listener;
-  }
-  
-  public UnzipWorker() {
-    
+    this.listeners = listeners;
   }
 
   /**
@@ -52,8 +48,12 @@ public class UnzipWorker extends SwingWorker<Void, Void> {
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException {
-    
-    list = new ArchiveBuilder(listener).unzipDirectory(zipDir, rootDir);
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+    for (ProgressChangeListener l : listeners) {
+      archiveBuilder.addListener(l);
+    }
+
+    list = archiveBuilder.unzipDirectory(zipDir, rootDir);
 
     return null;
   }
@@ -63,7 +63,9 @@ public class UnzipWorker extends SwingWorker<Void, Void> {
    */
   @Override
   public void done() {
-    listener.done();
+    for(ProgressChangeListener listener : listeners){
+      listener.done();
+    }
   }
 
 }

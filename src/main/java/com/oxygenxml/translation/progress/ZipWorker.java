@@ -2,6 +2,7 @@ package com.oxygenxml.translation.progress;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.SwingWorker;
 
@@ -25,13 +26,13 @@ public class ZipWorker extends SwingWorker<Void, Void> {
   /**
    *  A listener for notifying the changes.
    */
-  private ProgressChangeListener listener;
+  private ArrayList<ProgressChangeListener> listeners;
   
   
-  public ZipWorker(File rootDir, File zipDir, ProgressChangeListener listener) {
+  public ZipWorker(File rootDir, File zipDir, ArrayList<ProgressChangeListener> listeners) {
     this.rootDir = rootDir;
     this.zipDir = zipDir;
-    this.listener = listener;
+    this.listeners = listeners;
   }
 
   /**
@@ -39,11 +40,13 @@ public class ZipWorker extends SwingWorker<Void, Void> {
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException {
-    try{
-      new ArchiveBuilder(listener).zipDirectory(rootDir, zipDir);
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+    for (ProgressChangeListener l : listeners) {
+      archiveBuilder.addListener(l);
     }
-    catch (IOException e) {
-    }
+
+    archiveBuilder.zipDirectory(rootDir, zipDir);
+
 
     return null;
   }
@@ -53,6 +56,8 @@ public class ZipWorker extends SwingWorker<Void, Void> {
    */
   @Override
   public void done() {
-    listener.done();
+    for(ProgressChangeListener listener : listeners){
+      listener.done();
+    }
   }
 }

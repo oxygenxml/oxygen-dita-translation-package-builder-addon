@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.Timer;
 
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 /**
@@ -28,10 +29,14 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
 	/**
 	 *  True if the background task was finished.
 	 */
-	private boolean isDone = false;
-
-  public boolean isDone() {
-    return isDone;
+	private boolean isTaskDone = false;
+	/**
+	 *  True if the dialog is displayed to the user.
+	 */
+  protected boolean isDialogVisible = false;
+	
+  private boolean isTaskDone() {
+    return isTaskDone;
   }
 
   /**
@@ -41,6 +46,9 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
   */
   public ProgressDialog(Frame parentFrame, String title) {
     super(parentFrame, title, true);
+    
+    setLocationRelativeTo(parentFrame);
+    
     getOkButton().setVisible(false);
     
     JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -91,23 +99,43 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     pack();
     setResizable(false);
     
+    scheduleStart();
+    
   }
+  private void scheduleStart() {
+    Timer timer = new Timer(2000, new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if(!isTaskDone()){
+          setVisible(true);
+          isDialogVisible = true;
+        }
+      }
+    });
+    timer.start();
+    timer.setRepeats(false); 
+  }
+  
+
   /**
    *  Modifies the dialog content while receiving events from the ProgressChangeListener listeners.
    */
   public void change(ProgressChangeEvent progress) {
-    
-    progressBar.setValue(progress.getCounter());
-    label.setText(progress.getMessage());
-    // If we don't now the maximum value for the progress bar we set it to indeterminate mode.
-    if(progress.getTotalFiles() == -1){
-      progressBar.setIndeterminate(true);
-      progressBar.setStringPainted(false);
-    }
-    // else we set the progress bar's maximum value.
-    else{
-      progressBar.setMaximum(progress.getTotalFiles());
-    }
+    // TODO If the dialog is not visible don't update.
+    //if(isDialogVisible){
+    //if(isShowing()){
+      progressBar.setValue(progress.getCounter());
+      label.setText(progress.getMessage());
+      // If we don't now the maximum value for the progress bar we set it to indeterminate mode.
+      if(progress.getTotalFiles() == -1){
+        progressBar.setIndeterminate(true);
+        progressBar.setStringPainted(false);
+      }
+      // else we set the progress bar's maximum value.
+      else{
+        progressBar.setMaximum(progress.getTotalFiles());
+      }
+   // }
+    //}
   }
   /**
    *  Returns true if the Cancel button was pressed by the user.
@@ -124,7 +152,7 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
    */
   public void done() {
     setVisible(false);
-    isDone = true;
+    isTaskDone = true;
   }
 
 }
