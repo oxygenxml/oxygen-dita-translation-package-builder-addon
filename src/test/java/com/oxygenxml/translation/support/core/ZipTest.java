@@ -11,6 +11,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.progress.ProgressChangeEvent;
+import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 public class ZipTest {
@@ -32,7 +34,16 @@ public class ZipTest {
 		/* 
 		 * Generate the milestone for rootDir.
 		 */
-		PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation, null);
+		PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation, new ProgressChangeListener() {
+      public boolean isCanceled() {
+        return false;
+      }
+      public void done() {
+      }
+      
+      public void change(ProgressChangeEvent progress) {
+      }
+    });
 		
 		ArrayList<String> actualResults = new ArchiveBuilder().unzipDirectory(packageLocation , tempDir);
 
