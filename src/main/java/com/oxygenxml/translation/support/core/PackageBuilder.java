@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Stack;
 
 import javax.xml.bind.JAXBContext;
@@ -29,6 +30,17 @@ import de.schlichtherle.io.FileInputStream;
 
 
 public class PackageBuilder {
+  private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+  
+  public PackageBuilder(){
+    
+  }
+  
+  public void addListener(ProgressChangeListener listener) {
+    this.listeners.add(listener);
+  }
+  
+  
 
   private static Logger logger = Logger.getLogger(PackageBuilder.class); 
   /**
@@ -225,10 +237,10 @@ public class PackageBuilder {
    * @throws StoppedByUserException The user pressed the Cancel button.
 
    */
-  public static void generateChangedFilesPackage(
+  public void generateChangedFilesPackage(
       File rootDir, 
-      File packageLocation,
-      final ProgressChangeListener listener) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException  {
+      File packageLocation
+      ) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException  {
 
     /**
      * 4. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
@@ -253,26 +265,26 @@ public class PackageBuilder {
 
           FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
           
-          if(listener.isCanceled()){
+          if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
           
           counter++;
           ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files copied in a temp dir.", 2*numberOfModifiedfiles);
-          listener.change(progress);
+          fireChangeEvent(progress);
         }
         ArchiveBuilder archiveBuilder = new ArchiveBuilder();
         archiveBuilder.addListener(new ProgressChangeListener() {
           public boolean isCanceled() {
-            return listener.isCanceled();
+            return listeners.get(0).isCanceled();
           }
           
           public void done() {
-            listener.done();
+            listeners.get(0).done();
           }
           
           public void change(ProgressChangeEvent progress) {
-            listener.change(new ProgressChangeEvent(progress.getCounter() + numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles));
+            listeners.get(0).change(new ProgressChangeEvent(progress.getCounter() + numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles));
           }
         });
       
@@ -306,6 +318,23 @@ public class PackageBuilder {
     computeResourceInfo(rootDir, new Stack<String>(), list);
     
     return storeMilestoneFile(new InfoResources(list), rootDir);
+  }
+  
+
+  private void fireChangeEvent(ProgressChangeEvent progress) {
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      progressChangeListener.change(progress);
+    }
+  }
+
+  private boolean isCanceled() {
+    boolean result = false;
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      if (progressChangeListener.isCanceled()) {
+        result =  true;
+      }
+    }
+    return result;
   }
 
 }

@@ -32,7 +32,7 @@ public class ZipTest {
 		/* 
 		 * Generate the milestone for rootDir.
 		 */
-		PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation, null);
+		new PackageBuilder().generateChangedFilesPackage(rootDir, packageLocation);
 		
 		ArrayList<String> actualResults = new ArchiveBuilder().unzipDirectory(packageLocation , tempDir);
 

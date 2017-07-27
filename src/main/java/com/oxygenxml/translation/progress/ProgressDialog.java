@@ -99,7 +99,9 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     pack();
     setResizable(false);
     
+   
     scheduleStart();
+   
     
   }
   private void scheduleStart() {
@@ -120,9 +122,8 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
    *  Modifies the dialog content while receiving events from the ProgressChangeListener listeners.
    */
   public void change(ProgressChangeEvent progress) {
-    // TODO If the dialog is not visible don't update.
-    //if(isDialogVisible){
-    //if(isShowing()){
+    //If the dialog is not visible don't update.
+    if(isShowing()){
       progressBar.setValue(progress.getCounter());
       label.setText(progress.getMessage());
       // If we don't now the maximum value for the progress bar we set it to indeterminate mode.
@@ -134,8 +135,7 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
       else{
         progressBar.setMaximum(progress.getTotalFiles());
       }
-   // }
-    //}
+    }
   }
   /**
    *  Returns true if the Cancel button was pressed by the user.

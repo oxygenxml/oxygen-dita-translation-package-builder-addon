@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -199,6 +200,51 @@ public final class ArchiveBuilder {
     return nameList;
   }
 
+  public void copyDirectory(File sourceLocation , File targetLocation) throws IOException, StoppedByUserException {
+    int counter = 0;
+    if (sourceLocation.isDirectory()) {
+      if (!targetLocation.exists()) {
+        targetLocation.mkdir();
+      }
+
+      String[] children = sourceLocation.list();
+      for (int i=0; i<children.length; i++) {
+        copyDirectory(new File(sourceLocation, children[i]),
+            new File(targetLocation, children[i]));
+        if(isCanceled()){
+          throw new StoppedByUserException("You pressed the Cancel button.");
+        }
+      }
+    }
+    else {
+
+      InputStream in = null;
+      OutputStream out = null;
+
+      // Copy the bits from instream to outstream
+      try{
+        in = new FileInputStream(sourceLocation);
+        out = new FileOutputStream(targetLocation);
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+          out.write(buf, 0, len);
+        }
+      }
+      finally{
+        in.close();
+        out.close();
+      }
+      if(isCanceled()){
+        throw new StoppedByUserException("You pressed the Cancel button.");
+      }
+      counter++;
+      ProgressChangeEvent progress = new ProgressChangeEvent(counter, " Copying files...");
+      fireChangeEvent(progress);
+      
+    }
+  }
+  
 }
 
 

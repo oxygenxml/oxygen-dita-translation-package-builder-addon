@@ -3,6 +3,7 @@ package com.oxygenxml.translation.progress;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 import javax.swing.SwingWorker;
 import javax.xml.bind.JAXBException;
@@ -27,24 +28,27 @@ public class ModifiedFilesWorker extends SwingWorker<Void, Void>{
   /**
    *  A listener for notifying the changes.
    */
-  private ProgressChangeListener listener;
+  private ArrayList<ProgressChangeListener> listeners;
   
-  public ModifiedFilesWorker(File rootDir, File zipDir, ProgressChangeListener listener) {
+  public ModifiedFilesWorker(File rootDir, File zipDir, ArrayList<ProgressChangeListener> listeners) {
     this.rootDir = rootDir;
     this.packageLocation = zipDir;
-    this.listener = listener;
+    this.listeners = listeners;
   }
 
   /**
    * Main task. Executed in background thread.
+   * @throws IOException 
    */
   @Override
-  public Void doInBackground() throws NoSuchAlgorithmException, JAXBException, StoppedByUserException {
-    try {
-      PackageBuilder.generateChangedFilesPackage(rootDir, packageLocation, listener);
-    } catch (IOException e) {
-      e.printStackTrace();
+  public Void doInBackground() throws NoSuchAlgorithmException, JAXBException, StoppedByUserException, IOException {
+    PackageBuilder packageBuilder = new PackageBuilder();
+    for (ProgressChangeListener l : listeners) {
+      packageBuilder.addListener(l);
     }
+   
+    packageBuilder.generateChangedFilesPackage(rootDir, packageLocation);
+  
 
     return null;
   }
@@ -54,7 +58,9 @@ public class ModifiedFilesWorker extends SwingWorker<Void, Void>{
    */
   @Override
   public void done() {
-    listener.done();
+    for(ProgressChangeListener listener : listeners){
+      listener.done();
+    }
   }
 
 }
