@@ -45,4 +45,14 @@ public class CompoundProgressChangeListener implements ProgressChangeListener {
     }
   }
 
+  public void operationFailed(Exception ex) {
+    if (a != null) {
+      a.operationFailed(ex);
+    }
+    
+    if (b != null) {
+      b.operationFailed(ex);
+    }
+  }
+
 }

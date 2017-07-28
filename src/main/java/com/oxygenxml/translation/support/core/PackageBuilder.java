@@ -276,16 +276,19 @@ public class PackageBuilder {
         ArchiveBuilder archiveBuilder = new ArchiveBuilder();
         archiveBuilder.addListener(new ProgressChangeListener() {
           public boolean isCanceled() {
-            return listeners.get(0).isCanceled();
+            return PackageBuilder.this.isCanceled();
           }
           
           public void done() {
-            listeners.get(0).done();
+            fireDoneEvent();
           }
           
           public void change(ProgressChangeEvent progress) {
-            listeners.get(0).change(new ProgressChangeEvent(progress.getCounter() + numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles));
+            ProgressChangeEvent event = new ProgressChangeEvent(progress.getCounter() + numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles);
+            fireChangeEvent(event);
           }
+
+          public void operationFailed(Exception ex) {}
         });
       
         archiveBuilder.zipDirectory(tempDir, packageLocation);
@@ -324,6 +327,12 @@ public class PackageBuilder {
   private void fireChangeEvent(ProgressChangeEvent progress) {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.change(progress);
+    }
+  }
+  
+  private void fireDoneEvent() {
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      progressChangeListener.done();
     }
   }
 

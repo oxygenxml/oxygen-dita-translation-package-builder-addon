@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -26,13 +25,13 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.progress.ModifiedFilesWorker;
 import com.oxygenxml.translation.progress.PreviewDialog;
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.ProgressDialog;
-import com.oxygenxml.translation.progress.UnzipWorker;
-import com.oxygenxml.translation.progress.ZipWorker;
+import com.oxygenxml.translation.progress.worker.ModifiedFilesWorker;
+import com.oxygenxml.translation.progress.worker.UnzipWorker;
+import com.oxygenxml.translation.progress.worker.ZipWorker;
 import com.oxygenxml.translation.support.core.PackageBuilder;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -192,23 +191,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                     return false;
                   }                      
                   public void done() {
-                    
-                    try {
-                      // The processing has ended. Check if it ended with exception.
-                      zipTask.get();
-                    } catch (InterruptedException e) {
-                      logger.error(e, e);
-                      pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e.getMessage());
-                      return;
-                    } catch (ExecutionException e) {
-                      logger.error(e, e);
-                      pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e.getMessage());
-                      return;
-                    }
-
                     JOptionPane.showMessageDialog(frame, "The directory was packed.", "Applied files", JOptionPane.INFORMATION_MESSAGE);
                   }                      
                   public void change(ProgressChangeEvent progress) { }
+                  public void operationFailed(Exception ex) {
+                    pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
+                  }
                 });
 
                 zipTask.execute();
@@ -227,23 +215,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   return false;
                 }                      
                 public void done() {
-                  
-                  try {
-                    // The processing has ended. Check if it ended with exception.
-                    packModifiedFilesTask.get();
-                  } catch (InterruptedException e) {
-                    logger.error(e, e);
-                    pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e.getMessage());
-                    return;
-                  } catch (ExecutionException e) {
-                    logger.error(e, e);
-                    pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e.getMessage());
-                    return;
-                  }
-
                   JOptionPane.showMessageDialog(frame, "The modified files were packed.", "Applied files", JOptionPane.INFORMATION_MESSAGE);
                 }                      
                 public void change(ProgressChangeEvent progress) { }
+                public void operationFailed(Exception ex) {
+                  pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
+                }
               });
               // TODO The listener looks the same for both branches (except a little message).
 //              ProgressChangeListener l2 = new ProgressChangeListener() {                    
@@ -336,28 +313,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir, listeners);
 
             listeners.add(new ProgressChangeListener() {
-
               public boolean isCanceled() {             
                 return false;
               }            
               public void done() { 
-                try {
-                  unzipTask.get();
-                } catch (InterruptedException e) {
-                  logger.error(e, e);
-                  pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
-                  return;
-                } catch (ExecutionException e) {
-                  logger.error(e, e);
-                  pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
-                  return;
-                }
-
                 new PreviewDialog(frame, "Show preview", unzipTask.getList(), rootDir, tempDir);
-
               }
 
               public void change(ProgressChangeEvent progress) { }
+              public void operationFailed(Exception ex) {
+                pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + ex.getMessage());
+              }
             });
             unzipTask.execute();
           }
@@ -462,19 +428,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           }
 
           public void done() {
-
-            try {
-              unzipTask.get();
-            } catch (InterruptedException e) {
-              logger.error(e, e);
-              pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
-              return;
-            } catch (ExecutionException e) {
-              logger.error(e, e);
-              pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
-              return;
-            }
-
             try {
               showReport(pluginWorkspaceAccess, unzipTask.getList());
             } catch (IOException e) {
@@ -485,6 +438,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           }
 
           public void change(ProgressChangeEvent progress) { }
+
+          public void operationFailed(Exception ex) {
+            pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + ex.getMessage());
+          }
         });
         unzipTask.execute();
 

@@ -1,11 +1,11 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.progress.worker;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.SwingWorker;
-
+import com.oxygenxml.translation.progress.ProgressChangeListener;
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 /**
@@ -14,7 +14,7 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
  * @author Bivolan Dalina
  *
  */
-public class UnzipWorker extends SwingWorker<Void, Void> {
+public class UnzipWorker extends AbstractWorker {
   /**
    *  Where to put the extracted files.
    */
@@ -27,19 +27,15 @@ public class UnzipWorker extends SwingWorker<Void, Void> {
    *  A list containig the relative paths of all files that were extracted from the archive.
    */
   private ArrayList<String> list;
-  /**
-   *  A listener for notifying the changes.
-   */
-  private ArrayList<ProgressChangeListener> listeners;
 
   public ArrayList<String> getList() {
     return list;
   }
 
   public UnzipWorker(File zipDir, File rootDir, ArrayList<ProgressChangeListener> listeners) {
+    super(listeners);
     this.rootDir = rootDir;
     this.zipDir = zipDir;
-    this.listeners = listeners;
   }
 
   /**
@@ -57,15 +53,4 @@ public class UnzipWorker extends SwingWorker<Void, Void> {
 
     return null;
   }
-
-  /**
-   * Executed in event dispatching thread
-   */
-  @Override
-  public void done() {
-    for(ProgressChangeListener listener : listeners){
-      listener.done();
-    }
-  }
-
 }

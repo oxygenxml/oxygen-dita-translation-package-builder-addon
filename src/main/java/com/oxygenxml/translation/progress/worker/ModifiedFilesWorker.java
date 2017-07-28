@@ -1,13 +1,14 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.progress.worker;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import javax.swing.SwingWorker;
 import javax.xml.bind.JAXBException;
 
+import com.oxygenxml.translation.progress.ProgressChangeListener;
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.PackageBuilder;
 
 /**
@@ -16,7 +17,8 @@ import com.oxygenxml.translation.support.core.PackageBuilder;
  * @author Bivolan Dalina
  *
  */
-public class ModifiedFilesWorker extends SwingWorker<Void, Void>{
+public class ModifiedFilesWorker extends AbstractWorker {
+  
   /**
    *  The directory were we want to see what files were changed.
    */
@@ -25,15 +27,11 @@ public class ModifiedFilesWorker extends SwingWorker<Void, Void>{
    * Were to make the archive with the modified files.
    */
   private File packageLocation;
-  /**
-   *  A listener for notifying the changes.
-   */
-  private ArrayList<ProgressChangeListener> listeners;
   
   public ModifiedFilesWorker(File rootDir, File zipDir, ArrayList<ProgressChangeListener> listeners) {
+    super(listeners);
     this.rootDir = rootDir;
     this.packageLocation = zipDir;
-    this.listeners = listeners;
   }
 
   /**
@@ -52,15 +50,4 @@ public class ModifiedFilesWorker extends SwingWorker<Void, Void>{
 
     return null;
   }
-
-  /**
-   * Executed in event dispatching thread
-   */
-  @Override
-  public void done() {
-    for(ProgressChangeListener listener : listeners){
-      listener.done();
-    }
-  }
-
 }

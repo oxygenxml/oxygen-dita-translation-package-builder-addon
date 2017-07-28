@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -29,6 +28,8 @@ import javax.swing.ScrollPaneConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.translation.progress.worker.CopyDirectoryWorker;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
@@ -39,6 +40,9 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class PreviewDialog extends OKCancelDialog {
+  /**
+   * Logger for logging.
+   */
   private static Logger logger = Logger.getLogger(PreviewDialog.class); 
   /**
    *  The list that contains the relative paths of every file in the package.
@@ -91,27 +95,25 @@ public class PreviewDialog extends OKCancelDialog {
             return false;
           }
           public void done() {
-            try {
-              copyDirTask.get();
-            } catch (InterruptedException e) {
-              logger.error(e, e);
-              ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage("Couldn't apply files because of: " + e.getMessage());
-              return;
-            } catch (ExecutionException e) {
-              logger.error(e, e);
-              ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage("Couldn't apply files because of: " + e.getMessage());
-              return;
-            }
-            
             ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).showInformationMessage("The translated files have been applied.");
             try {
               FileUtils.deleteDirectory(tempDir);
             } catch (IOException e) {
-              e.printStackTrace();
+              logger.error(e, e);
             }
           }
           
           public void change(ProgressChangeEvent progress) { }
+          public void operationFailed(Exception ex) {
+            ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(
+                "Couldn't apply files because of: " + ex.getMessage());
+            
+            try {
+              FileUtils.deleteDirectory(tempDir);
+            } catch (IOException e) {
+              logger.error(e, e);
+            }
+          }
         });
         copyDirTask.execute();
       }

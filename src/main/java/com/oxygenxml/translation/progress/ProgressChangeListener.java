@@ -21,5 +21,12 @@ public interface ProgressChangeListener {
    *  Closes the ProgressDialog.
    */
   void done();
+  
+  /**
+   * The watched operation has failed.
+   * 
+   * @param ex The exception that stopped the operation.
+   */
+  void operationFailed(Exception ex);
 
 }

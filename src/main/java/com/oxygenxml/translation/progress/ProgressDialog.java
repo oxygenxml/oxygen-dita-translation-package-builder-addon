@@ -156,4 +156,9 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     isTaskDone = true;
   }
 
+  public void operationFailed(Exception ex) {
+    // Just close the dialog.
+    done();
+  }
+
 }

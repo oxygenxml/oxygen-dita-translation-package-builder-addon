@@ -1,11 +1,11 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.progress.worker;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.SwingWorker;
-
+import com.oxygenxml.translation.progress.ProgressChangeListener;
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 /**
@@ -14,7 +14,7 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
  * @author Bivolan Dalina
  *
  */
-public class ZipWorker extends SwingWorker<Void, Void> {
+public class ZipWorker extends AbstractWorker {
   /**
    *  The file we want to zip.
    */
@@ -23,16 +23,11 @@ public class ZipWorker extends SwingWorker<Void, Void> {
    *  Where to put the created package.
    */
   private File zipDir;
-  /**
-   *  A listener for notifying the changes.
-   */
-  private ArrayList<ProgressChangeListener> listeners;
-  
   
   public ZipWorker(File rootDir, File zipDir, ArrayList<ProgressChangeListener> listeners) {
+    super(listeners);
     this.rootDir = rootDir;
     this.zipDir = zipDir;
-    this.listeners = listeners;
   }
 
   /**
@@ -49,15 +44,5 @@ public class ZipWorker extends SwingWorker<Void, Void> {
 
 
     return null;
-  }
-
-  /**
-   * Executed in event dispatching thread
-   */
-  @Override
-  public void done() {
-    for(ProgressChangeListener listener : listeners){
-      listener.done();
-    }
   }
 }
