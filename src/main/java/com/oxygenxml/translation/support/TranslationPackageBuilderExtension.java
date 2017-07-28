@@ -116,10 +116,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private AbstractAction createMilestoneAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Generate Milestone") {
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
 
       public void actionPerformed(ActionEvent actionevent) {
 
@@ -219,9 +215,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               }
 
             } else{
-              /**
-               * TODO Catch errors
-               */
              
               final ProgressDialog dialog = new ProgressDialog(frame , "Pack modified files");
               ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
@@ -321,64 +314,66 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // 3. Present a dialog with the list of unzipped files. Use aJList.
         // 4. When the user double clicks an entry launch the DIFF (left is LOCAL, RIGHT is FROM_PACKAGE)
         // 5. In dialog the user presses Apply to copy all.
-
-        int buttonId = pluginWorkspaceAccess.showConfirmDialog("Show preview", "Do you want to see a preview? "
-                                                              , new String[] {"Yes", "No"}, new int[] {0, 1});
-        if(buttonId == 0){
-          File tempFile = null;
-          try {            
-            tempFile = File.createTempFile("tempFile", null);
-          } catch (IOException e) {
-            logger.error(e, e);
-            pluginWorkspaceAccess.showErrorMessage("Failed to create temp file because of: " + e.getMessage());
-          }
-          final File tempDir = new File(tempFile.getParentFile(), "TranslatedPackage");
-          
-          System.out.println(tempDir.getAbsolutePath());
-          
-          final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
-          ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-          listeners.add(dialog);
-          
-          final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir, listeners);
-          
-          listeners.add(new ProgressChangeListener() {
-            
-            public boolean isCanceled() {             
-              return false;
-            }            
-            public void done() { 
-              try {
-                unzipTask.get();
-              } catch (InterruptedException e) {
-                logger.error(e, e);
-                pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
-                return;
-              } catch (ExecutionException e) {
-                logger.error(e, e);
-                pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
-                return;
-              }
-              
-                new PreviewDialog(null, "Show preview", unzipTask.getList(), rootDir, tempDir, chosenDir);
-              
+        if(chosenDir != null){
+          int buttonId = pluginWorkspaceAccess.showConfirmDialog("Show preview", "Do you want to see a preview? ",
+                                                      new String[] {"Yes", "No"}, new int[] {0, 1});
+          if(buttonId == 0){
+            File tempFile = null;
+            try {            
+              tempFile = File.createTempFile("tempFile", null);
+            } catch (IOException e) {
+              logger.error(e, e);
+              pluginWorkspaceAccess.showErrorMessage("Failed to create temp file because of: " + e.getMessage());
             }
-            
-            public void change(ProgressChangeEvent progress) { }
-          });
-          unzipTask.execute();
-          
-          
-          
-          
-        }
-        else{
-          overrideTranslatedFiles(pluginWorkspaceAccess, frame, rootDir, chosenDir); 
+            final File tempDir = new File(tempFile.getParentFile(), "TranslatedPackage");
+
+            System.out.println(tempDir.getAbsolutePath());
+
+            final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
+            ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+            listeners.add(dialog);
+
+            final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir, listeners);
+
+            listeners.add(new ProgressChangeListener() {
+
+              public boolean isCanceled() {             
+                return false;
+              }            
+              public void done() { 
+                try {
+                  unzipTask.get();
+                } catch (InterruptedException e) {
+                  logger.error(e, e);
+                  pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
+                  return;
+                } catch (ExecutionException e) {
+                  logger.error(e, e);
+                  pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
+                  return;
+                }
+
+                new PreviewDialog(frame, "Show preview", unzipTask.getList(), rootDir, tempDir);
+
+              }
+
+              public void change(ProgressChangeEvent progress) { }
+            });
+            unzipTask.execute();
+          }
+          else{
+            overrideTranslatedFiles(pluginWorkspaceAccess, frame, rootDir, chosenDir); 
+          }
         }
       }
     };
   }
-
+/**
+ * 
+ * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
+ * @param list  The relative paths of the unzipped files.
+ * @throws IOException  Problems reading the files.
+ */
   private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
       ArrayList<String> list) throws IOException {
     //Perhaps present a log with the overridden files.
@@ -442,10 +437,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   }
 
   /**
-   * @param pluginWorkspaceAccess
-   * @param frame
-   * @param rootDir
-   * @param chosenDir
+   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
+   * @param frame  The parent frame component used by the Progress Dialog.
+   * @param rootDir Where to unzip the archive.
+   * @param chosenDir The location of the package.
    */
   public void overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess, final JFrame frame,
       final File rootDir, final File chosenDir) {

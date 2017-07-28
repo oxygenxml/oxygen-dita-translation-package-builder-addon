@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import javax.swing.SwingWorker;
 
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-
+/**
+ *  Creates a SwingWorker for copying the  files from a source directory to a destination directory.
+ *  
+ * @author Bivolan Dalina
+ *
+ */
 public class CopyDirectoryWorker extends SwingWorker<Void, Void> {
     /**
      *  The location of the destination directory.
@@ -21,8 +26,7 @@ public class CopyDirectoryWorker extends SwingWorker<Void, Void> {
      *  A listener for notifying the changes.
      */
     private ArrayList<ProgressChangeListener> listeners;
-    
-    int counter = 0;
+        
     public CopyDirectoryWorker(File rootDir, File tempDir, ArrayList<ProgressChangeListener> listeners) {
       this.rootDir = rootDir;
       this.temDir = tempDir;
@@ -38,7 +42,7 @@ public class CopyDirectoryWorker extends SwingWorker<Void, Void> {
       for (ProgressChangeListener l : listeners) {
         archiveBuilder.addListener(l);
       }
-      archiveBuilder.copyDirectory(temDir, rootDir);
+      archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0});
 
       return null;
     }

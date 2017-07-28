@@ -23,7 +23,7 @@ import com.oxygenxml.translation.progress.StoppedByUserException;
  * This class contains 2 methods : 
  * - zipDirectory - this method makes an archive of a directory at the specified location
  * - unzipDirectory - this method extracts the content of an archive at a specified location
- *
+ * - copyDirectory - this method copies the content of a source directory into a destination directory.
  */
 public final class ArchiveBuilder {
   
@@ -199,9 +199,16 @@ public final class ArchiveBuilder {
 
     return nameList;
   }
-
-  public void copyDirectory(File sourceLocation , File targetLocation) throws IOException, StoppedByUserException {
-    int counter = 0;
+  /**
+   * 
+   * @param sourceLocation The location of the files that are about to be copied.
+   * @param targetLocation  Where to copy the files.
+   * @param counter  Computes the number of copied files.
+   * @throws IOException Problems reading the files.
+   * @throws StoppedByUserException  The user pressed the Cancel button.
+   */
+  public void copyDirectory(File sourceLocation , File targetLocation, int[] counter) throws IOException, StoppedByUserException {
+    
     if (sourceLocation.isDirectory()) {
       if (!targetLocation.exists()) {
         targetLocation.mkdir();
@@ -210,7 +217,7 @@ public final class ArchiveBuilder {
       String[] children = sourceLocation.list();
       for (int i=0; i<children.length; i++) {
         copyDirectory(new File(sourceLocation, children[i]),
-            new File(targetLocation, children[i]));
+            new File(targetLocation, children[i]), counter);
         if(isCanceled()){
           throw new StoppedByUserException("You pressed the Cancel button.");
         }
@@ -230,6 +237,7 @@ public final class ArchiveBuilder {
         while ((len = in.read(buf)) > 0) {
           out.write(buf, 0, len);
         }
+        counter[0]++;
       }
       finally{
         in.close();
@@ -238,8 +246,8 @@ public final class ArchiveBuilder {
       if(isCanceled()){
         throw new StoppedByUserException("You pressed the Cancel button.");
       }
-      counter++;
-      ProgressChangeEvent progress = new ProgressChangeEvent(counter, " Copying files...");
+      
+      ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + " files copied.");
       fireChangeEvent(progress);
       
     }

@@ -141,10 +141,11 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
    *  Returns true if the Cancel button was pressed by the user.
    */
   public boolean isCanceled() {
+    boolean result = false;
     if(isCancelButtonPressed){
-      return true;      
+      result = true;      
     }
-    return false;
+    return result;
   }
   /**
    *  Closes the dialog and sets isDone to true.

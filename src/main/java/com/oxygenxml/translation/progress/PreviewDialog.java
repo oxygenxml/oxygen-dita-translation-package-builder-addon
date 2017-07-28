@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -49,11 +51,30 @@ public class PreviewDialog extends OKCancelDialog {
    *  The relative paths of the unzipped files.
    */
   private JList<String> relativePaths;
-
-  public PreviewDialog(final Frame parentFrame, String title, ArrayList<String> list, final File rootDir, final File tempDir, final File chosenDir) {
+  /**
+   * 
+   * @param parentFrame   The parent frame of the dialog.
+   * @param title   The title of the dialog.
+   * @param list    The relative paths of all the unpacked files.
+   * @param rootDir   Where to copy the unpacked files.
+   * @param tempDir  The location of the unpacked files.
+   */
+  public PreviewDialog(final Frame parentFrame, String title, ArrayList<String> list, final File rootDir, final File tempDir) {
     super(parentFrame, title, false);
     this.list = list;
-
+    
+    JButton cancel = getCancelButton();
+    cancel.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setVisible(false);
+        try {
+          FileUtils.deleteDirectory(tempDir);
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    
     JButton apply = getOkButton();
     apply.setText("Apply");
     apply.addActionListener(new ActionListener() {
@@ -83,7 +104,11 @@ public class PreviewDialog extends OKCancelDialog {
             }
             
             ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).showInformationMessage("The translated files have been applied.");
-            
+            try {
+              FileUtils.deleteDirectory(tempDir);
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
           }
           
           public void change(ProgressChangeEvent progress) { }
