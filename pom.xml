@@ -25,6 +25,7 @@
 	    <groupId>junit</groupId>
 	    <artifactId>junit</artifactId>
 	    <version>4.12</version>
+	    <scope>test</scope>
 	</dependency>
 
     <dependency>
@@ -46,6 +47,7 @@
       <artifactId>maven-javadoc-plugin</artifactId>
       <version>2.10.4</version>
       <type>maven-plugin</type>
+      <scope>provided</scope>
     </dependency>
     
  
