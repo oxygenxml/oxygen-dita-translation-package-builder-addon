@@ -167,6 +167,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());
             if(!milestoneFile.exists()){
 
+              // TODO Present the directory path as well.
               int buttonId = pluginWorkspaceAccess.showConfirmDialog("Didn't find \"milestone.xml\"", "The milestone file doesn't exist."
                   + " Do you want to pack the entire directory?", new String[] {"Yes", "No"}, new int[] {0, 1});
 
@@ -292,8 +293,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // 4. When the user double clicks an entry launch the DIFF (left is LOCAL, RIGHT is FROM_PACKAGE)
         // 5. In dialog the user presses Apply to copy all.
         if(chosenDir != null){
-          int buttonId = pluginWorkspaceAccess.showConfirmDialog("Show preview", "Do you want to see a preview? ",
-                                                      new String[] {"Yes", "No"}, new int[] {0, 1});
+          int buttonId = pluginWorkspaceAccess.showConfirmDialog(
+              "Review changes", 
+              "Do you want you to review all the changes that will be made before applying them? ",
+              new String[] {"Yes", "No"}, new int[] {0, 1});
           if(buttonId == 0){
             File tempFile = null;
             try {            
@@ -302,8 +305,15 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               logger.error(e, e);
               pluginWorkspaceAccess.showErrorMessage("Failed to create temp file because of: " + e.getMessage());
             }
+            // TODO Exception handling. If the creation of the temp file fails, this will fail as well.
             final File tempDir = new File(tempFile.getParentFile(), "TranslatedPackage");
 
+            // TODO Replace all System.out.println with 
+            /*
+             * if (logger.isDebugEnabled()) {
+             *   logger.debug();
+             * }
+             */
             System.out.println(tempDir.getAbsolutePath());
 
             final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
@@ -317,7 +327,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 return false;
               }            
               public void done() { 
-                new PreviewDialog(frame, "Show preview", unzipTask.getList(), rootDir, tempDir);
+                new PreviewDialog(frame, "Preview", unzipTask.getList(), rootDir, tempDir);
               }
 
               public void change(ProgressChangeEvent progress) { }
