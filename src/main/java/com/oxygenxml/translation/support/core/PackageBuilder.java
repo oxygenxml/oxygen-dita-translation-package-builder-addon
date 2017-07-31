@@ -30,9 +30,17 @@ import de.schlichtherle.io.FileInputStream;
 
 
 public class PackageBuilder {
+<<<<<<< HEAD
   /**
    *  A list of custom listeners.
    */
+=======
+  private static Logger logger = Logger.getLogger(PackageBuilder.class); 
+  /**
+   * Predefined name of the file that stores a hash for each file.
+   */
+  private final static String MILESTONE_FILE_NAME = "milestone.xml";
+>>>>>>> 3d20847ea4786ff831ffc233551dfee8ba33b3d1
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
   
   public PackageBuilder(){
@@ -42,6 +50,7 @@ public class PackageBuilder {
   public void addListener(ProgressChangeListener listener) {
     this.listeners.add(listener);
   }
+<<<<<<< HEAD
   /**
    *  Logger for logging.
    */
@@ -50,6 +59,8 @@ public class PackageBuilder {
    * Predefined name of the file that stores a hash for each file.
    */
   private final static String MILESTONE_FILE_NAME = "milestone.xml";
+=======
+>>>>>>> 3d20847ea4786ff831ffc233551dfee8ba33b3d1
   
   public static String getMilestoneFileName() {
     return MILESTONE_FILE_NAME;

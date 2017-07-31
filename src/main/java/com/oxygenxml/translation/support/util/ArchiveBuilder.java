@@ -194,6 +194,7 @@ public final class ArchiveBuilder {
         zipFile.close();
       }
     } catch (IOException e) {
+      // TODO Fire a notification ProgressChangeListener.operationFailed(Exception)
       e.printStackTrace();
     }
 
