@@ -8,7 +8,7 @@ import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 /**
- *  Creates a SwingWorker for copying the  files from a source directory to a destination directory.
+ *  Creates an AbstractWorker for copying the  files from a source directory to a destination directory.
  *  
  * @author Bivolan Dalina
  *

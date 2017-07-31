@@ -30,6 +30,9 @@ import de.schlichtherle.io.FileInputStream;
 
 
 public class PackageBuilder {
+  /**
+   *  A list of custom listeners.
+   */
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
   
   public PackageBuilder(){
@@ -39,9 +42,9 @@ public class PackageBuilder {
   public void addListener(ProgressChangeListener listener) {
     this.listeners.add(listener);
   }
-  
-  
-
+  /**
+   *  Logger for logging.
+   */
   private static Logger logger = Logger.getLogger(PackageBuilder.class); 
   /**
    * Predefined name of the file that stores a hash for each file.
@@ -92,6 +95,7 @@ public class PackageBuilder {
 
   /**
    * Iterates over the descendents of the given files and computes a hash and a relative path.
+   * 
    * The computed relative paths are relative to the entry point. For example:
    * Entry point: c:testIteration
    * Relative path: dir1/test.txt
@@ -164,9 +168,9 @@ public class PackageBuilder {
   /**
    * Loads the information about file changes from disk.
    * 
-   * @param rootDir The location of the "special file".
+   * @param rootDir The location of the "special file"(milestone file).
    * 
-   * @return	The content of the "special file"
+   * @return	The content of the "special file"(milestone).
    * 
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    */
@@ -187,7 +191,7 @@ public class PackageBuilder {
   }
 
   /**
-   * Computes what resources were changed since the last created milestore.
+   * Computes what resources were changed since the last created milestone.
    * 
    * @param rootDir The location of the directory we want to see what files were changed.
    * 
@@ -244,8 +248,8 @@ public class PackageBuilder {
 
     /**
      * 4. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
-     * 5. ZIP the "destinationDir" at "packageLocation"
-     * 6. Delete the "destinationDir"
+     * 5. ZIP the "destinationDir" at "packageLocation".
+     * 6. Delete the "destinationDir".
      */
 
     //The list with all modified files.

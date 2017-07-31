@@ -15,7 +15,7 @@ public class TranslationPackageBuilderPlugin extends Plugin {
   /**
    * Constructs the plugin.
    * 
-   * @param descriptor The plugin descriptor
+   * @param descriptor The plugin descriptor.
    */
   public TranslationPackageBuilderPlugin(PluginDescriptor descriptor) {
     super(descriptor);

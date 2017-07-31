@@ -1,7 +1,7 @@
 package com.oxygenxml.translation.progress;
 
 /**
- * Creates an object used for notifying the listener about the progress of the task.
+ * Creates an object used to notify the listener about the progress of the task.
  * 
  * @author Bivolan Dalina
  *
@@ -16,7 +16,7 @@ public class ProgressChangeEvent {
    */
   private String message;
   /**
-   *  The numer of files that are about to be processed.
+   *  The number of files that are about to be processed.
    */
   private int totalFiles = -1;
   

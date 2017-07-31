@@ -9,7 +9,7 @@ import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 /**
- * Creates a SwingWorker for unpacking a zip file.
+ * Creates an AbstractWorker for unpacking a zip file.
  * 
  * @author Bivolan Dalina
  *
