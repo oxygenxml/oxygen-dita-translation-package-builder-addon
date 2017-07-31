@@ -58,9 +58,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     //		  pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
     // Check In action
 
-    //You can access the content inside each opened WSEditor depending on the current editing page (Text/Grid or Author).  
-    // A sample action which will be mounted on the main menu, toolbar and contextual menu.
-
+    //You can access the submenu Translation Package Builder only from the DITA Maps area.
+    // The submenu contains these 3 actions.
     final Action generateMilestoneAction = createMilestoneAction(pluginWorkspaceAccess);
     final Action generateChangedFilesZipAction = createChangedFilesZipAction(pluginWorkspaceAccess);
     final Action applyTranslatedFilesAction = createApplyTranslatedFilesAction(pluginWorkspaceAccess);
@@ -107,10 +106,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   }
 
   /**
-   * Creates an action that store the state of the files.
+   * Creates an action that stores the state of the files.
    * 
-   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area
-   * @return A new action called "Generate Milestone"
+   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
+   * @return A new action called "Generate Milestone".
    */
   private AbstractAction createMilestoneAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
@@ -143,8 +142,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   /**
    * Creates an action that packs the changed files into an archive.
    * 
-   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area
-   * @return  A new action called "Create Modified Files Package"
+   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
+   * @return  A new action called "Create Modified Files Package".
    */
   private AbstractAction createChangedFilesZipAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
@@ -204,7 +203,15 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               }
 
             } else{
+              /**
+               * TODO only one worker for zipWorker and ModifiedFilesWorker
+               */
+              
+              // 1. Start the processing. (the ModifiedFiles Worker)
+              // 2. Show the dialog. 
+              // 3. The ModifiedFilesWorker notifies the dialog.
              
+              // The ProgressDialog is a ProgressChangeListener
               final ProgressDialog dialog = new ProgressDialog(frame , "Pack modified files");
               ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
               listeners.add(dialog);
@@ -223,21 +230,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
                 }
               });
-              // TODO The listener looks the same for both branches (except a little message).
-//              ProgressChangeListener l2 = new ProgressChangeListener() {                    
-//                public boolean isCanceled() {
-//                  return false;
-//                }                    
-//                public void done() {
-//                 
-//                  JOptionPane.showMessageDialog(frame, "The modified files were packed.", "Applied files", JOptionPane.INFORMATION_MESSAGE);
-//                }                    
-//                public void change(ProgressChangeEvent progress) {}
-//              };
-              
-              //CompoundProgressChangeListener c = new CompoundProgressChangeListener(dialog, l2);
-              
-               
+          
                packModifiedFilesTask.execute();
             }
           } catch (Exception e) {
@@ -253,9 +246,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   /**
    * Creates the action that applies the translated files.
    * 
-   * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area
+   * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
    * 
-   * @return  A new action called "Apply Package"
+   * @return  A new action called "Apply Package".
    */
   private AbstractAction createApplyTranslatedFilesAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
@@ -269,28 +262,22 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         /**
          * Flow.
          * 
-         * 1. The user opens map-french.ditamap.
-         * 2. From the contextual menu chooses "Apply package"
-         * 3. The action presents a chooser so that the user can select the ZIP
-         * 4. Unzip the package in the root directory of the map
+         * 1. The user opens for example : map-french.ditamap.
+         * 2. From the contextual menu chooses "Apply package".
+         * 3. The action presents a chooser so that the user can select the ZIP.
+         * 4. Unzip the package in the root directory of the map.
          */
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
         URL editorLocation = editor.getEditorLocation();
         final File rootDir = new File(editorLocation.getFile()).getParentFile();
-        //        URL leftURL = null;
-        //        try {
-        //          leftURL = rootDir.toURI().toURL();
-        //        } catch (MalformedURLException e2) {
-        //          e2.printStackTrace();
-        //        }
 
         final File chosenDir = pluginWorkspaceAccess.chooseFile("Choose the translated package", new String[] {"zip"},  null);
         
         // DIFF FLOW
-        // 1. Ask user if he wants a preview
+        // 1. Ask user if he wants a preview.
         // 2. If yes, then extract to temp dir.
         // 3. Present a dialog with the list of unzipped files. Use aJList.
-        // 4. When the user double clicks an entry launch the DIFF (left is LOCAL, RIGHT is FROM_PACKAGE)
+        // 4. When the user double clicks an entry launch the DIFF (left is LOCAL, RIGHT is FROM_PACKAGE).
         // 5. In dialog the user presses Apply to copy all.
         if(chosenDir != null){
           int buttonId = pluginWorkspaceAccess.showConfirmDialog(
@@ -338,6 +325,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             unzipTask.execute();
           }
           else{
+            //Unpack the chosen archive over the root directory of the DITA map.
             overrideTranslatedFiles(pluginWorkspaceAccess, frame, rootDir, chosenDir); 
           }
         }
@@ -345,6 +333,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     };
   }
 /**
+ *  Shows a message dialog with the unpacked/overriden files.
  * 
  * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
  * @param list  The relative paths of the unzipped files.
@@ -352,7 +341,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
  */
   private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
       ArrayList<String> list) throws IOException {
-    //Perhaps present a log with the overridden files.
+    // Present a log with the overridden files.
     if(list != null && !list.isEmpty()){
       JTextArea text = new JTextArea(10, 40);
 
@@ -413,10 +402,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   }
 
   /**
+   * Overrides the files contained in a chosen archive.
+   * 
    * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
    * @param frame  The parent frame component used by the Progress Dialog.
    * @param rootDir Where to unzip the archive.
-   * @param chosenDir The location of the package.
+   * @param chosenDir The location of the chosen package.
    */
   public void overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess, final JFrame frame,
       final File rootDir, final File chosenDir) {
@@ -462,32 +453,4 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       }
     }
   }
-
-/**
- *  Computes the number of files inside a directory and returns the number of files found.
- */
-//  public int allFilesInDir(File dirPath) throws IOException{
-//    File[] everythingInThisDir = dirPath.listFiles();
-//    int nr = 0;
-//    if (everythingInThisDir != null){
-//      for (File name : everythingInThisDir) {
-//
-//        if (name.isDirectory()){  
-//          //nr++ ; 
-//          int suma = allFilesInDir(name);
-//          nr = nr + suma;
-//        }
-//        else if (name.isFile()
-//            // Do not put the milestone file into the package.
-//            && !name.getName().equals("milestone.xml")){          
-//          nr++;
-//        }
-//      }
-//    } else{
-//      throw new IOException("Please select a directory.");
-//    }
-//
-//    return nr;
-//  }
-
 }

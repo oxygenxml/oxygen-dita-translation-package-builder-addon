@@ -9,7 +9,7 @@ import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 /**
- * Creates a SwingWorker for packing a directory.
+ * Creates an AbstractWorker for packing a directory.
  * 
  * @author Bivolan Dalina
  *

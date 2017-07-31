@@ -7,7 +7,7 @@ import javax.swing.SwingWorker;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 
 /**
- * Creates a SwingWorker for packing a directory.
+ * Creates an Abstract SwingWorker.
  * 
  * @author Bivolan Dalina
  *

@@ -12,7 +12,7 @@ import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.PackageBuilder;
 
 /**
- * Creates a SwingWorker for packing all the modified files inside a directory.
+ * Creates an AbstractWorker for packing all the modified files inside a directory.
  * 
  * @author Bivolan Dalina
  *
@@ -24,7 +24,7 @@ public class ModifiedFilesWorker extends AbstractWorker {
    */
   private File rootDir;
   /**
-   * Were to make the archive with the modified files.
+   * Where to make the archive with the modified files.
    */
   private File packageLocation;
   
@@ -36,7 +36,7 @@ public class ModifiedFilesWorker extends AbstractWorker {
 
   /**
    * Main task. Executed in background thread.
-   * @throws IOException 
+   * @throws IOException  Problems reading the files.
    */
   @Override
   public Void doInBackground() throws NoSuchAlgorithmException, JAXBException, StoppedByUserException, IOException {

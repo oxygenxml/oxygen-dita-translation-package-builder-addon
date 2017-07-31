@@ -15,12 +15,18 @@ import javax.swing.Timer;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 /**
  * Creates a dialog to show the progress of a time consuming task.
+ * 
  * @author Bivolan Dalina
  *
  */
 public class ProgressDialog extends OKCancelDialog implements ProgressChangeListener {
-
+  /**
+   *  A swing progress bar.
+   */
   private JProgressBar progressBar;
+  /**
+   *  A swing label.
+   */
   private JLabel label;
 	/**
 	 *  True if the Cancel button is clicked.
@@ -40,11 +46,12 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
   }
 
   /**
-  * @param parentFrame  The parent frame
-  * @param title The dialog title
-  * @param modal  True if modal
+  * @param parentFrame  The parent frame.
+  * @param title The dialog title.
+  * @param modal  True if you want a modal dialog.
   */
   public ProgressDialog(Frame parentFrame, String title) {
+    //----------------------- modal
     super(parentFrame, title, true);
     
     setLocationRelativeTo(parentFrame);
@@ -104,6 +111,9 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
    
     
   }
+  /**
+   *  A 2 seconds timer. After the 2 seconds the dialog is visible to the user.
+   */
   private void scheduleStart() {
     Timer timer = new Timer(2000, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -155,7 +165,9 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     setVisible(false);
     isTaskDone = true;
   }
-
+  /**
+   *  The watched operation has failed.
+   */
   public void operationFailed(Exception ex) {
     // Just close the dialog.
     done();

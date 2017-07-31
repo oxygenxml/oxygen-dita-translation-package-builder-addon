@@ -1,7 +1,7 @@
 package com.oxygenxml.translation.progress;
 
 /**
- * A custom listener
+ * A custom listener.
  * 
  * @author Bivolan Dalina
  *
@@ -18,7 +18,7 @@ public interface ProgressChangeListener {
    */
   boolean isCanceled();
   /**
-   *  Closes the ProgressDialog.
+   *  Executed after the task is completed. It's used to perform different operations like closing the ProgressDialog.
    */
   void done();
   

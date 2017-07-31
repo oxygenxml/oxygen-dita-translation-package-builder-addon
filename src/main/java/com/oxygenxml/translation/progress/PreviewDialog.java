@@ -47,10 +47,8 @@ public class PreviewDialog extends OKCancelDialog {
   /**
    *  The list that contains the relative paths of every file in the package.
    */
-  private ArrayList<String> list = new ArrayList<String>();
-  public ArrayList<String> getList() {
-    return list;
-  }
+  @SuppressWarnings("unused")
+  private ArrayList<String> filePaths = new ArrayList<String>();
   /**
    *  The relative paths of the unzipped files.
    */
@@ -60,19 +58,20 @@ public class PreviewDialog extends OKCancelDialog {
    * @param parentFrame   The parent frame of the dialog.
    * @param title   The title of the dialog.
    * @param list    The relative paths of all the unpacked files.
-   * @param rootDir   Where to copy the unpacked files.
-   * @param tempDir  The location of the unpacked files.
+   * @param filesOnDisk   Where to copy the unpacked files.
+   * @param translatedFiles  Where to extract the archive. These files will be copied in rootDir.
    */
-  public PreviewDialog(final Frame parentFrame, String title, ArrayList<String> list, final File rootDir, final File tempDir) {
+  public PreviewDialog(final Frame parentFrame, String title, ArrayList<String> list, final File filesOnDisk, final File translatedFiles) {
     super(parentFrame, title, false);
-    this.list = list;
+    this.filePaths = list;
     
     JButton cancel = getCancelButton();
+    // Delete the translatedFiles directory if the user presses the Cancel button.
     cancel.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         setVisible(false);
         try {
-          FileUtils.deleteDirectory(tempDir);
+          FileUtils.deleteDirectory(translatedFiles);
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -81,6 +80,9 @@ public class PreviewDialog extends OKCancelDialog {
     
     JButton apply = getOkButton();
     apply.setText("Apply");
+    // 1. Start the processing. (the CopyDirectoryWorker)
+    // 2. Show the dialog. 
+    // 3. The CopyDirectoryWorker notifies the dialog.
     apply.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -88,7 +90,7 @@ public class PreviewDialog extends OKCancelDialog {
         ProgressDialog dialog = new ProgressDialog(parentFrame, "Applying files");
         ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
         listeners.add(dialog);
-        final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(rootDir, tempDir, listeners);
+        final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(filesOnDisk, translatedFiles, listeners);
         
         listeners.add(new ProgressChangeListener() {
           public boolean isCanceled() {
@@ -97,19 +99,20 @@ public class PreviewDialog extends OKCancelDialog {
           public void done() {
             ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).showInformationMessage("The translated files have been applied.");
             try {
-              FileUtils.deleteDirectory(tempDir);
+              FileUtils.deleteDirectory(translatedFiles);
             } catch (IOException e) {
               logger.error(e, e);
             }
           }
           
           public void change(ProgressChangeEvent progress) { }
+          // Show an error message and delete the translatedFiles directory when the watched operation has failed.
           public void operationFailed(Exception ex) {
             ((StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace()).showErrorMessage(
                 "Couldn't apply files because of: " + ex.getMessage());
             
             try {
-              FileUtils.deleteDirectory(tempDir);
+              FileUtils.deleteDirectory(translatedFiles);
             } catch (IOException e) {
               logger.error(e, e);
             }
@@ -138,14 +141,14 @@ public class PreviewDialog extends OKCancelDialog {
           
           URL leftURL = null;
           try {
-            leftURL = new File(rootDir, selectedPath).toURI().toURL();
+            leftURL = new File(filesOnDisk, selectedPath).toURI().toURL();
           } catch (MalformedURLException e2) {
             e2.printStackTrace();
           }
 
           URL rightURL = null;
           try {
-            rightURL = new File(tempDir, selectedPath).toURI().toURL();
+            rightURL = new File(translatedFiles, selectedPath).toURI().toURL();
           } catch (MalformedURLException e2) {
             e2.printStackTrace();
           }
