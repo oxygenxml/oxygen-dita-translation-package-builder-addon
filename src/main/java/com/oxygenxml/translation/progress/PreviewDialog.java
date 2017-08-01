@@ -137,8 +137,10 @@ public class PreviewDialog extends OKCancelDialog {
         if (me.getClickCount() == 2) {
           String selectedPath = relativePaths.getSelectedValue();
           
-          System.out.println("selected "+relativePaths.getSelectedValue());
-          
+          if (logger.isDebugEnabled()) {
+            logger.debug(relativePaths.getSelectedValue());
+          }
+         
           URL leftURL = null;
           try {
             leftURL = new File(filesOnDisk, selectedPath).toURI().toURL();

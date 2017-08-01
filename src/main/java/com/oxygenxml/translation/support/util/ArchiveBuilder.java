@@ -38,6 +38,7 @@ public final class ArchiveBuilder {
   }
   
   /**
+   * Packs a directory.
    * 
    * @param dir  The location of the file/directory we want to zip.
    * @param zipFile  The location of the package.
@@ -59,6 +60,7 @@ public final class ArchiveBuilder {
   }
 
   /**
+   *  Packs a directory.
    * 
    * @param basePath  It helps us create the relative path of every file from dir.
    * @param dir  The location of the file/directory we want to zip.
@@ -110,23 +112,9 @@ public final class ArchiveBuilder {
   }
 
 
-  private void fireChangeEvent(ProgressChangeEvent progress) {
-    for (ProgressChangeListener progressChangeListener : listeners) {
-      progressChangeListener.change(progress);
-    }
-  }
-
-  private boolean isCanceled() {
-    boolean result = false;
-    for (ProgressChangeListener progressChangeListener : listeners) {
-      if (progressChangeListener.isCanceled()) {
-        result =  true;
-      }
-    }
-    return result;
-  }
 
   /**
+   *  Unzips an archive into a given directory.
    *    
    * @param packageLocation  The location of the package.
    * @param destDir Where to extract the package content.
@@ -194,13 +182,13 @@ public final class ArchiveBuilder {
         zipFile.close();
       }
     } catch (IOException e) {
-      // TODO Fire a notification ProgressChangeListener.operationFailed(Exception)
-      e.printStackTrace();
+      fireOperationFailed(e);
     }
 
     return nameList;
   }
   /**
+   *  Copies all the files from a source directory to a destination directory.
    * 
    * @param sourceLocation The location of the files that are about to be copied.
    * @param targetLocation  Where to copy the files.
@@ -251,6 +239,29 @@ public final class ArchiveBuilder {
       ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + " files copied.");
       fireChangeEvent(progress);
       
+    }
+  }
+  
+
+  private void fireChangeEvent(ProgressChangeEvent progress) {
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      progressChangeListener.change(progress);
+    }
+  }
+
+  private boolean isCanceled() {
+    boolean result = false;
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      if (progressChangeListener.isCanceled()) {
+        result =  true;
+      }
+    }
+    return result;
+  }
+  
+  private void fireOperationFailed(Exception ex) {
+    for (ProgressChangeListener progressChangeListener : listeners) {
+      progressChangeListener.operationFailed(ex);
     }
   }
   

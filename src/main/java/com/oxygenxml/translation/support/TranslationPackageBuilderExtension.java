@@ -29,7 +29,6 @@ import com.oxygenxml.translation.progress.PreviewDialog;
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.ProgressDialog;
-import com.oxygenxml.translation.progress.worker.ModifiedFilesWorker;
 import com.oxygenxml.translation.progress.worker.UnzipWorker;
 import com.oxygenxml.translation.progress.worker.ZipWorker;
 import com.oxygenxml.translation.support.core.PackageBuilder;
@@ -48,7 +47,13 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class); 
-
+  /**
+   * True if the user wants to pack the entire directory.
+   */
+  private static boolean packAll = false;
+  public static boolean isPackAll() {
+    return packAll;
+  }
   /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
@@ -148,7 +153,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private AbstractAction createChangedFilesZipAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Create Modified Files Package") {
-                
+
       public void actionPerformed(ActionEvent actionevent) {
         final JFrame frame = (JFrame) pluginWorkspaceAccess.getParentFrame();
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
@@ -159,84 +164,66 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         final File chosenDir = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
 
         if(chosenDir != null){              
-         
+
           try {
             // What to do if the milestone file doesn't exist? 
             // Inform the user and offer the possibility to pack the entire dir
             File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());
+
+            File chosenDirectory = null;
             if(!milestoneFile.exists()){
 
-              // TODO Present the directory path as well.
               int buttonId = pluginWorkspaceAccess.showConfirmDialog("Didn't find \"milestone.xml\"", "The milestone file doesn't exist."
-                  + " Do you want to pack the entire directory?", new String[] {"Yes", "No"}, new int[] {0, 1});
-
+                  + " Do you want to pack the entire directory : "+ rootDir.getPath() +"?", new String[] {"Yes", "No"}, new int[] {0, 1});
               if(buttonId == 0){
-                final File chosenDirectory = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
-
-
-                // 1. Start the processing. (the ZIP Worker)
-                // 2. Show the dialog. 
-                // 3. The ZIP worker notifies the dialog.
-               
-                // The ProgressDialog is a ProgressChangeListener
-                final ProgressDialog dialog = new ProgressDialog(frame , "Zipping directory");
-
-                ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-                listeners.add(dialog);
-                
-                final ZipWorker zipTask = new ZipWorker(rootDir, chosenDirectory, listeners);
-                
-                listeners.add(new ProgressChangeListener() {                      
-                  public boolean isCanceled() {
-                    return false;
-                  }                      
-                  public void done() {
-                    JOptionPane.showMessageDialog(frame, "The directory was packed.", "Applied files", JOptionPane.INFORMATION_MESSAGE);
-                  }                      
-                  public void change(ProgressChangeEvent progress) { }
-                  public void operationFailed(Exception ex) {
-                    pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
-                  }
-                });
-
-                zipTask.execute();
+                packAll = true;
+                chosenDirectory = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
+              }else{
+                return;
               }
-
-            } else{
-              /**
-               * TODO only one worker for zipWorker and ModifiedFilesWorker
-               */
-              
-              // 1. Start the processing. (the ModifiedFiles Worker)
-              // 2. Show the dialog. 
-              // 3. The ModifiedFilesWorker notifies the dialog.
-             
-              // The ProgressDialog is a ProgressChangeListener
-              final ProgressDialog dialog = new ProgressDialog(frame , "Pack modified files");
-              ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-              listeners.add(dialog);
-              
-              final ModifiedFilesWorker packModifiedFilesTask = new ModifiedFilesWorker(rootDir, chosenDir, listeners);
-              
-              listeners.add(new ProgressChangeListener() {                      
-                public boolean isCanceled() {
-                  return false;
-                }                      
-                public void done() {
-                  JOptionPane.showMessageDialog(frame, "The modified files were packed.", "Applied files", JOptionPane.INFORMATION_MESSAGE);
-                }                      
-                public void change(ProgressChangeEvent progress) { }
-                public void operationFailed(Exception ex) {
-                  pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
-                }
-              });
-          
-               packModifiedFilesTask.execute();
             }
+
+
+            // 1. Start the processing. (the ZIP Worker)
+            // 2. Show the dialog. 
+            // 3. The ZIP worker notifies the dialog.
+
+            // The ProgressDialog is a ProgressChangeListener
+            final ProgressDialog dialog = new ProgressDialog(frame , "Zipping directory");
+
+            ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+            listeners.add(dialog);
+            final ZipWorker zipTask;
+            if(packAll){
+              zipTask = new ZipWorker(rootDir, chosenDirectory, listeners);
+            }
+            else{
+              zipTask = new ZipWorker(rootDir, chosenDir, listeners);
+            }
+
+            listeners.add(new ProgressChangeListener() {                      
+              public boolean isCanceled() {
+                return false;
+              }                      
+              public void done() {
+                if(packAll){
+                  JOptionPane.showMessageDialog(frame, "The directory was packed.", "All files packed", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else{
+                  JOptionPane.showMessageDialog(frame, "The modified files were packed.", "Modified files packed", JOptionPane.INFORMATION_MESSAGE);
+                }
+              }                      
+              public void change(ProgressChangeEvent progress) { }
+              public void operationFailed(Exception ex) {
+                pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
+              }
+            });
+            zipTask.execute();
+            
           } catch (Exception e) {
             //  Preset error to user.
             logger.error(e, e);
-            pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + e.getMessage());
+            pluginWorkspaceAccess.showErrorMessage("Failed because of: " + e.getMessage());
           }
         }
       }
@@ -272,7 +259,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         final File rootDir = new File(editorLocation.getFile()).getParentFile();
 
         final File chosenDir = pluginWorkspaceAccess.chooseFile("Choose the translated package", new String[] {"zip"},  null);
-        
+
         // DIFF FLOW
         // 1. Ask user if he wants a preview.
         // 2. If yes, then extract to temp dir.
@@ -292,37 +279,34 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               logger.error(e, e);
               pluginWorkspaceAccess.showErrorMessage("Failed to create temp file because of: " + e.getMessage());
             }
-            // TODO Exception handling. If the creation of the temp file fails, this will fail as well.
-            final File tempDir = new File(tempFile.getParentFile(), "TranslatedPackage");
+            if(tempFile.exists()){
+              final File tempDir = new File(tempFile.getParentFile(), "TranslatedPackage");
 
-            // TODO Replace all System.out.println with 
-            /*
-             * if (logger.isDebugEnabled()) {
-             *   logger.debug();
-             * }
-             */
-            System.out.println(tempDir.getAbsolutePath());
-
-            final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
-            ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-            listeners.add(dialog);
-
-            final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir, listeners);
-
-            listeners.add(new ProgressChangeListener() {
-              public boolean isCanceled() {             
-                return false;
-              }            
-              public void done() { 
-                new PreviewDialog(frame, "Preview", unzipTask.getList(), rootDir, tempDir);
+              if (logger.isDebugEnabled()) {
+                logger.debug(tempDir.getAbsolutePath());
               }
 
-              public void change(ProgressChangeEvent progress) { }
-              public void operationFailed(Exception ex) {
-                pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + ex.getMessage());
-              }
-            });
-            unzipTask.execute();
+              final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
+              ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+              listeners.add(dialog);
+
+              final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir, listeners);
+
+              listeners.add(new ProgressChangeListener() {
+                public boolean isCanceled() {             
+                  return false;
+                }            
+                public void done() { 
+                  new PreviewDialog(frame, "Preview", unzipTask.getList(), rootDir, tempDir);
+                }
+
+                public void change(ProgressChangeEvent progress) { }
+                public void operationFailed(Exception ex) {
+                  pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + ex.getMessage());
+                }
+              });
+              unzipTask.execute();
+            }
           }
           else{
             //Unpack the chosen archive over the root directory of the DITA map.
@@ -332,13 +316,13 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       }
     };
   }
-/**
- *  Shows a message dialog with the unpacked/overriden files.
- * 
- * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
- * @param list  The relative paths of the unzipped files.
- * @throws IOException  Problems reading the files.
- */
+  /**
+   *  Shows a message dialog with the unpacked/overriden files.
+   * 
+   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
+   * @param list  The relative paths of the unzipped files.
+   * @throws IOException  Problems reading the files.
+   */
   private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
       ArrayList<String> list) throws IOException {
     // Present a log with the overridden files.
