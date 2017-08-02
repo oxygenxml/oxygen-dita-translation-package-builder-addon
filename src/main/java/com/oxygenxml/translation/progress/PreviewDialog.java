@@ -50,6 +50,8 @@ public class PreviewDialog extends OKCancelDialog {
    */
   private static Logger logger = Logger.getLogger(PreviewDialog.class); 
   /**
+   * TODO If is unused then its best to remove it. 
+   * 
    *  The list that contains the relative paths of every file in the package.
    */
   @SuppressWarnings("unused")
@@ -173,6 +175,7 @@ public class PreviewDialog extends OKCancelDialog {
     
     DefaultMutableTreeNode root = new DefaultMutableTreeNode(filesOnDisk.getName());
     DefaultTreeModel treeModel = new DefaultTreeModel(root);
+    // TODO Create the tree lazy, the first time the user clicks the switch button.
     final JTree tree = new JTree(treeModel);
     
     for (String data : filePaths) {
