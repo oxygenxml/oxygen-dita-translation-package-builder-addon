@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -245,6 +246,20 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
        * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
        */
       public void actionPerformed(ActionEvent actionevent) {
+        
+        File image = new File("C:\\Users\\intern1\\Documents\\userguide-hotfixes-19.0\\userguide-hotfixes-19.0\\DITA\\img\\applet.png");
+        File txt = new File("C:\\Users\\intern1\\Documents\\OxygenXMLEditor\\samples\\dita\\flowers\\topics\\test\\a.txt");
+        File zip = new File("D:\\gar.zip");
+        
+        try {
+          System.out.println("image : " + pluginWorkspaceAccess.getUtilAccess().isUnhandledBinaryResourceURL(image.toURI().toURL()));
+          System.out.println("txt file : " + pluginWorkspaceAccess.getUtilAccess().isUnhandledBinaryResourceURL(txt.toURI().toURL()));
+          System.out.println("zip file : " + pluginWorkspaceAccess.getUtilAccess().isUnhandledBinaryResourceURL(zip.toURI().toURL()));
+        } catch (MalformedURLException e) {
+          e.printStackTrace();
+          logger.error(e, e);
+        }
+        
         final JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
         /**
          * Flow.
