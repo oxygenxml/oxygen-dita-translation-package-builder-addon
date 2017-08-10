@@ -84,7 +84,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         menuItemMilestone.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_2, ActionEvent.ALT_MASK));
         menuItemMilestone.addActionListener(generateMilestoneAction);
-        menuItemMilestone.setToolTipText("Generates a predefined file called \"milestone.xml\" in the root directory of the selected"
+        menuItemMilestone.setToolTipText("Generates a predefined file called \"translation_builder_milestone.xml\" in the root directory of the selected"
             + " ditamap which contains an unique hash and the relative path of every file in that directory.");
 
         // Action 2: Create Changed Files Package
@@ -92,7 +92,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         menuItemPakage.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_3, ActionEvent.ALT_MASK));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);
-        menuItemPakage.setToolTipText("Creates a package with all the files that were modified (since the last generation of a milestone.xml file) at a chosen location.");
+        menuItemPakage.setToolTipText("Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.");
 
         // Action 3: Unzip package that came from translation.
         JMenuItem menuItemApply = new JMenuItem("Apply Package");
@@ -173,7 +173,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             File chosenDirectory = null;
             if(!milestoneFile.exists()){
 
-              int buttonId = pluginWorkspaceAccess.showConfirmDialog("Didn't find \"milestone.xml\"", "The milestone file doesn't exist."
+              int buttonId = pluginWorkspaceAccess.showConfirmDialog("Didn't find \"translation_builder_milestone.xml\"", "The milestone file doesn't exist."
                   + " Do you want to pack the entire directory : "+ rootDir.getPath() +"?", new String[] {"Yes", "No"}, new int[] {0, 1});
               if(buttonId == 0){
                 packAll = true;

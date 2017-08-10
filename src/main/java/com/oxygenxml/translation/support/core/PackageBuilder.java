@@ -37,7 +37,7 @@ public class PackageBuilder {
   /**
    * Predefined name of the file that stores a hash for each file.
    */
-  private final static String MILESTONE_FILE_NAME = "milestone.xml";
+  private final static String MILESTONE_FILE_NAME = "translation_builder_milestone.xml";
   /**
    *  A list of custom listeners.
    */

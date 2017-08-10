@@ -103,8 +103,8 @@ public class PreviewDialog extends OKCancelDialog {
         }
       }
     });
-    
-    JButton apply = getOkButton();
+    getOkButton().setVisible(false);
+    JButton apply = new JButton();
     apply.setText("Apply");
     // 1. Start the processing. (the CopyDirectoryWorker)
     // 2. Show the dialog. 
@@ -123,10 +123,13 @@ public class PreviewDialog extends OKCancelDialog {
     apply.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
+        ArrayList<File> selectedTreeFiles = new ArrayList<File>();
+        ArrayList<File> selectedListFiles = new ArrayList<File>();
+        ArrayList<File> unSelectedListFiles = new ArrayList<File>();
         
         if(treeButton.getText() == "Switch to List View"){
             TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
-            ArrayList<File> selectedFiles = new ArrayList<File>();
+           
             for (TreePath treePath : treePaths) {
                  Object[] obj = treePath.getPath();
                  int length = obj.length;
@@ -143,21 +146,31 @@ public class PreviewDialog extends OKCancelDialog {
                    logger.debug(new File(translatedFiles.getPath(), relativePath));
                  }
                  File selectedFile = new File(translatedFiles.getPath(), relativePath);
-                 selectedFiles.add(selectedFile);
+                 selectedTreeFiles.add(selectedFile);
             }
-            try {
-              deleteUnselectedFileFromDir(translatedFiles, selectedFiles);
-            } catch (IOException e1) { 
-              e1.printStackTrace();
-              logger.error(e1, e1);
+            if(!selectedTreeFiles.isEmpty()){
+              try {
+                deleteUnselectedFileFromDir(translatedFiles, selectedTreeFiles);
+              } catch (IOException e1) { 
+                e1.printStackTrace();
+                logger.error(e1, e1);
+              }
             }
         }
         else{
           for (int i = 0; i < tableModel.getRowCount(); i++) {
             Boolean value = (Boolean) tableModel.getValueAt(i, 0);
-            if (!value) {
-              File unselectedFile = new File(translatedFiles.getPath(), (String)tableModel.getValueAt(i, 1));
-              
+            if(value) {
+              File selected = new File(translatedFiles.getPath(), (String)tableModel.getValueAt(i, 1));
+              selectedListFiles.add(selected);
+            } else {
+              File unselected = new File(translatedFiles.getPath(), (String)tableModel.getValueAt(i, 1));
+              unSelectedListFiles.add(unselected);
+            }
+          }
+          if (!selectedListFiles.isEmpty()) {
+            for (File unselectedFile : unSelectedListFiles) {
+
               if (logger.isDebugEnabled()) {
                 logger.debug(unselectedFile.getAbsolutePath());
               }
@@ -166,13 +179,19 @@ public class PreviewDialog extends OKCancelDialog {
                 if (logger.isDebugEnabled()) {
                   logger.debug("Deleted : " + unselectedFile.getAbsolutePath());
                 }
+                System.out.println("Deleted : " + unselectedFile.getAbsolutePath());
               } catch (IOException e1) {
                 e1.printStackTrace();
                 logger.error(e1, e1);
               }
-            }
+            } 
           }
         }
+
+        if((selectedTreeFiles.isEmpty() && treeButton.getText() == "Switch to List View") || 
+            (selectedListFiles.isEmpty() && treeButton.getText() == "Switch to Tree View")){
+          pluginWorkspace.showErrorMessage("You haven't selected anything.");
+        } else {
           setVisible(false);
           ProgressDialog dialog = new ProgressDialog(parentFrame, "Applying selected files");
           ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
@@ -205,6 +224,7 @@ public class PreviewDialog extends OKCancelDialog {
             }
           });
           copyDirTask.execute();
+        }
       }
     });
 
@@ -379,11 +399,11 @@ public class PreviewDialog extends OKCancelDialog {
       }
     });
     
-    panel.add(label, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
-    panel.add(selectAll, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
-    panel.add(scrollPane, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 1, 1, 1), 1, 1));
+    panel.add(label, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
+    panel.add(selectAll, new GridBagConstraints(0, 1, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
+    panel.add(scrollPane, new GridBagConstraints(0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 1, 1, 1), 1, 1));
     panel.add(treeButton, new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
-   
+    panel.add(apply, new GridBagConstraints(1, 3, 1, 1, 0, 0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
     
     getContentPane().add(panel, BorderLayout.CENTER);
 

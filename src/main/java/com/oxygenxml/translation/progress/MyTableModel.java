@@ -143,6 +143,20 @@ public class MyTableModel extends AbstractTableModel{
     }
     return true;
   }
+  /**
+   *   Checks if all the checkboxes in the table are deselected.
+   * 
+   * @return  True if all the checkboxes on the first column are deselected.
+   */
+  public boolean isEverythingDeselected(){
+    for(int i = 0; i < loadPaths.size(); i++){
+      CheckboxTableItem item = loadPaths.get(i);
+      if(item.isSelected() == Boolean.TRUE){
+        return false;
+      }
+    }
+    return true;
+  }
   
 }
 
