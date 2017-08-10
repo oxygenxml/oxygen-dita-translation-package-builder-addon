@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -47,7 +46,7 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 /**
- *  The dialog that shows the preview before applying a package.
+ *  The dialog that shows a preview before applying a package.
  * 
  * @author Bivolan Dalina
  *
@@ -90,7 +89,7 @@ public class PreviewDialog extends OKCancelDialog {
   public PreviewDialog(final Frame parentFrame, String title, final ArrayList<String> filePaths, final File filesOnDisk, final File translatedFiles) {
     super(parentFrame, title, false);
 
-    final StandalonePluginWorkspace plugin = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
+    final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
     
     JButton cancel = getCancelButton();
     // Delete the translatedFiles directory if the user presses the Cancel button.
@@ -126,11 +125,9 @@ public class PreviewDialog extends OKCancelDialog {
       public void actionPerformed(ActionEvent e) {
         
         if(treeButton.getText() == "Switch to List View"){
-          System.out.println("TREE selection");
             TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
             ArrayList<File> selectedFiles = new ArrayList<File>();
             for (TreePath treePath : treePaths) {
-//                 System.out.println(treePath.toString());
                  Object[] obj = treePath.getPath();
                  int length = obj.length;
                  String relativePath = "";   
@@ -142,7 +139,9 @@ public class PreviewDialog extends OKCancelDialog {
                  }
                  relativePath = relativePath + "/" + obj[length-1];
                  
-//                 System.out.println(relativePath);
+                 if (logger.isDebugEnabled()) {
+                   logger.debug(new File(translatedFiles.getPath(), relativePath));
+                 }
                  File selectedFile = new File(translatedFiles.getPath(), relativePath);
                  selectedFiles.add(selectedFile);
             }
@@ -152,10 +151,8 @@ public class PreviewDialog extends OKCancelDialog {
               e1.printStackTrace();
               logger.error(e1, e1);
             }
-            
         }
         else{
-          System.out.println("LIST selection");
           for (int i = 0; i < tableModel.getRowCount(); i++) {
             Boolean value = (Boolean) tableModel.getValueAt(i, 0);
             if (!value) {
@@ -166,7 +163,9 @@ public class PreviewDialog extends OKCancelDialog {
               }
               try {
                 FileUtils.forceDelete(unselectedFile);
-                System.out.println("deleted : " + unselectedFile.getAbsolutePath());
+                if (logger.isDebugEnabled()) {
+                  logger.debug("Deleted : " + unselectedFile.getAbsolutePath());
+                }
               } catch (IOException e1) {
                 e1.printStackTrace();
                 logger.error(e1, e1);
@@ -174,7 +173,6 @@ public class PreviewDialog extends OKCancelDialog {
             }
           }
         }
-
           setVisible(false);
           ProgressDialog dialog = new ProgressDialog(parentFrame, "Applying selected files");
           ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
@@ -186,7 +184,7 @@ public class PreviewDialog extends OKCancelDialog {
               return false;
             }
             public void done() {
-              plugin.showInformationMessage("The translated files have been applied.");
+              pluginWorkspace.showInformationMessage("The translated files have been applied.");
               try {
                 FileUtils.deleteDirectory(translatedFiles);
               } catch (IOException e) {
@@ -197,7 +195,7 @@ public class PreviewDialog extends OKCancelDialog {
             public void change(ProgressChangeEvent progress) { }
             // Show an error message and delete the translatedFiles directory when the watched operation has failed.
             public void operationFailed(Exception ex) {
-              plugin.showErrorMessage("Couldn't apply files because of: " + ex.getMessage());
+              pluginWorkspace.showErrorMessage("Couldn't apply files because of: " + ex.getMessage());
 
               try {
                 FileUtils.deleteDirectory(translatedFiles);
@@ -213,10 +211,6 @@ public class PreviewDialog extends OKCancelDialog {
     relativePaths = new JTable(tableModel);   
     relativePaths.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);     
     relativePaths.setTableHeader(null);
-    
-    //relativePaths.getColumnModel().getColumn(0).setHeaderRenderer(new CheckBoxRenderer(new MyItemListener()));
-    //relativePaths.getColumnModel().getColumn(0).setCellEditor(new CheckBoxCellEditor());
-    
     relativePaths.setShowGrid(false);
     relativePaths.getColumnModel().getColumn(0).setMaxWidth(40);
     relativePaths.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
@@ -251,10 +245,10 @@ public class PreviewDialog extends OKCancelDialog {
               e2.printStackTrace();
             }
             //Check if the url it's a supported Oxygen file
-            if(!plugin.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
-              plugin.openDiffFilesApplication(leftURL, rightURL);
+            if(!pluginWorkspace.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
+              pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
             } else {
-              plugin.showErrorMessage("The selected file is not supported by Oxygen XML Editor.");
+              pluginWorkspace.showErrorMessage("The selected file is not supported by Oxygen XML Editor.");
             }
           }
         }
@@ -271,14 +265,7 @@ public class PreviewDialog extends OKCancelDialog {
 
     JLabel label = new JLabel("Double click on an Oxygen supported FILE to see the diferences.");
     final JCheckBox selectAll = new JCheckBox("Select all files");
-               
-    
-    
     final JPanel panel = new JPanel(new GridBagLayout());
-    /**
-     * TODO don't double click on folders
-     * TODO double click only on the text area(the file name)
-     */
    
     treeButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -303,21 +290,24 @@ public class PreviewDialog extends OKCancelDialog {
             
             tree.addMouseListener(new MouseAdapter() {
               public void mouseClicked(MouseEvent me) {
-                
-                  if (me.getClickCount() == 2) {
+                if(tree.getLastSelectedPathComponent() != null){
+                  //Double click only on leafs to see the DIFF.
+                  if (tree.getPathBounds(tree.getSelectionPath()).contains(me.getPoint()) && 
+                      me.getClickCount() == 2 &&
+                      tree.getModel().isLeaf(tree.getLastSelectedPathComponent())) {
                     Object[] selectedPath = tree.getSelectionPath().getPath();
                     int length = selectedPath.length;
                     String relativePath = "";
-                    //String rootPath = translatedFiles.getAbsolutePath();
                     for (int i = 1; i < length-1; i++) {
-                      relativePath = relativePath + selectedPath[i].toString();
+                      relativePath = relativePath + "/" + selectedPath[i].toString();
                     }
                     relativePath = relativePath + "/" + selectedPath[length-1];
 
                     if (logger.isDebugEnabled()) {
                       logger.debug(tree.getSelectionPath());
+                      logger.debug(new File(filesOnDisk, relativePath));
                     }
-
+                    
                     URL leftURL = null;
                     try {
                       leftURL = new File(filesOnDisk, relativePath).toURI().toURL();
@@ -332,13 +322,14 @@ public class PreviewDialog extends OKCancelDialog {
                       e2.printStackTrace();
                     }
                     //Check if the url it's a supported Oxygen file
-                    if(!plugin.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
-                      plugin.openDiffFilesApplication(leftURL, rightURL);
+                    if(!pluginWorkspace.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
+                      pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
                     } else {
-                      plugin.showErrorMessage("The selected file is not supported by Oxygen XML Editor.");
+                      pluginWorkspace.showErrorMessage("The selected file is not supported by Oxygen XML Editor.");
                     }
                   }
                 }
+              }
             });
           }
           treeButton.setText("Switch to List View");
@@ -355,9 +346,6 @@ public class PreviewDialog extends OKCancelDialog {
         conflictFlag = true;
         int row = e.getFirstRow();
         int column = e.getColumn();
-        //if(column == 0 && data.equals(Boolean.FALSE)){
-        //   selectAll.setSelected(false);
-        //}
         if (column == 0) {
           MyTableModel model = (MyTableModel)e.getSource();
           Boolean checked = (Boolean) model.getValueAt(row, column);
@@ -439,7 +427,6 @@ public class PreviewDialog extends OKCancelDialog {
       }
     }
   }
-  
   /**
    * Returns the index of a child of a given node, provided its string value.
    * 
@@ -463,28 +450,6 @@ public class PreviewDialog extends OKCancelDialog {
 
     return index;
   }
-  public static void main(String[] args) {
-    File filesOnDisk = new File("C:\\Users\\intern1\\Documents\\userguide-hotfixes-19.0\\userguide-hotfixes-19.0\\DITA");
-    File file = new File("");
-    ArrayList<String> list = new ArrayList<String>();
-    list.add("rules/descriptions/url.html");
-    list.add("rules/descriptions/urls.html");
-    list.add("rules/descriptions/userinput.html");
-    list.add("rules/descriptions/ux-window.html");
-    list.add("rules/descriptions/var.html");
-    list.add("topics/track-changes-behaviour.dita");
-    list.add("topics/track-changes-format.dita");
-    list.add("dtopics/track-changes-limitations.dita");
-    list.add("topics/transform-xquery-advanced-saxon-options.dita");
-    list.add("topics/transform-xquery-sequence-view.dita");
-    list.add("topics/transformation-scenario.dita");
-    list.add("blogPosts/annotations.png");
-    list.add("blogPosts/author-document-type-extension-sharing-custom-new-file-templates.dita");
-    list.add("blogPosts/author-document-type-extension-sharing.dita");
-    list.add("blogPosts/beforeCombined.png");
-    list.add("blogPosts/blogNextBestDITAOT.dita");
-    new PreviewDialog(new JFrame(), "TEST", list, filesOnDisk, file);
-  }
   /**
    * Deletes the unselected files(from the tree view option) from a specific directory.
    * It doesn't work if you select a tree node(a directory).
@@ -505,7 +470,9 @@ public class PreviewDialog extends OKCancelDialog {
               e1.printStackTrace();
               logger.error(e1, e1);
             }
-            System.out.println("deleted if dir : " + everythingInThisDir[i].getPath());
+            if (logger.isDebugEnabled()) {
+              logger.debug("Deleted if dir : " + everythingInThisDir[i].getPath());
+            }
           }
           else if(!selectedFiles.contains(everythingInThisDir[i])){
             deleteUnselectedFileFromDir(everythingInThisDir[i], selectedFiles);
@@ -518,7 +485,9 @@ public class PreviewDialog extends OKCancelDialog {
               e1.printStackTrace();
               logger.error(e1, e1);
             }
-            System.out.println("deleted if file: " + everythingInThisDir[i].getPath());
+            if (logger.isDebugEnabled()) {
+              logger.debug("Deleted if file: " + everythingInThisDir[i].getPath());
+            }
           }
         }
       } 
@@ -545,7 +514,6 @@ public class PreviewDialog extends OKCancelDialog {
           shouldDelete = false;
           break;
         }
-        
       }
     }
     return shouldDelete;

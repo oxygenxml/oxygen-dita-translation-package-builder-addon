@@ -14,33 +14,33 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
  *
  */
 public class CopyDirectoryWorker extends AbstractWorker {
-    /**
-     *  The location of the destination directory.
-     */
-    private File rootDir;
-    /**
-     *  The location of the source directory.
-     */
-    private File temDir;
-        
-    public CopyDirectoryWorker(File rootDir, File tempDir, ArrayList<ProgressChangeListener> listeners) {
-      super(listeners);
-      
-      this.rootDir = rootDir;
-      this.temDir = tempDir;
-    }
+  /**
+   *  The location of the destination directory.
+   */
+  private File rootDir;
+  /**
+   *  The location of the source directory.
+   */
+  private File temDir;
 
-    /**
-     * Main task. Executed in background thread.
-     */
-    @Override
-    public Void doInBackground() throws IOException, StoppedByUserException {
-      ArchiveBuilder archiveBuilder = new ArchiveBuilder();
-      for (ProgressChangeListener l : listeners) {
-        archiveBuilder.addListener(l);
-      }
-      archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0});
+  public CopyDirectoryWorker(File rootDir, File tempDir, ArrayList<ProgressChangeListener> listeners) {
+    super(listeners);
 
-      return null;
-    }
+    this.rootDir = rootDir;
+    this.temDir = tempDir;
   }
+
+  /**
+   * Main task. Executed in background thread.
+   */
+  @Override
+  public Void doInBackground() throws IOException, StoppedByUserException {
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+    for (ProgressChangeListener l : listeners) {
+      archiveBuilder.addListener(l);
+    }
+    archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0});
+
+    return null;
+  }
+}

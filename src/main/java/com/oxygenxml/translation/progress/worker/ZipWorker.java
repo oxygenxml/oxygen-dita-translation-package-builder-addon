@@ -20,7 +20,6 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
  *
  */
 public class ZipWorker extends AbstractWorker {
-  
   /**
    *  The file we want to zip.
    */
@@ -59,10 +58,8 @@ public class ZipWorker extends AbstractWorker {
       for (ProgressChangeListener l : listeners) {
         packageBuilder.addListener(l);
       }
-
       packageBuilder.generateChangedFilesPackage(rootDir, zipDir);
     }
-
     return null;
   }
 }

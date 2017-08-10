@@ -7,9 +7,9 @@ package com.oxygenxml.translation.progress;
  */
 class CheckboxTableItem {
   /**
-   *  The relative paths on the second column.
+   *  The relative path on the second column.
    */
-  private String text;
+  private String relativePath;
   /**
    *  The checkbox on the first column.
    */
@@ -17,7 +17,7 @@ class CheckboxTableItem {
 
   public CheckboxTableItem(boolean isSelected, String text){
     this.isSelected = isSelected;
-    this.text = text;
+    this.relativePath = text;
   }
 
   public boolean isSelected() {
@@ -29,6 +29,6 @@ class CheckboxTableItem {
   }
 
   public String toString() {
-     return text;
+     return relativePath;
   }
 }
