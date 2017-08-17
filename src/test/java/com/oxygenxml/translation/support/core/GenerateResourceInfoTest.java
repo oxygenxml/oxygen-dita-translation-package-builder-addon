@@ -12,12 +12,13 @@ import java.util.Stack;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
 public class GenerateResourceInfoTest {
 
 	@Test
-	public void testGenerateRelativePaths() throws NoSuchAlgorithmException, IOException {
+	public void testGenerateRelativePaths() throws NoSuchAlgorithmException, IOException, StoppedByUserException {
 		
 		URL resource = getClass().getClassLoader().getResource("testIteration-ResourceInfoTest");
 
@@ -37,7 +38,7 @@ public class GenerateResourceInfoTest {
 	
 	
 	@Test
-	public void testGenerateRelativePaths_2() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+	public void testGenerateRelativePaths_2() throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
 		//File dirPath = new File("src/test/resources/testGenerate-ResourceInfoTest");
 		
 		URL resource = getClass().getClassLoader().getResource("testGenerate-ResourceInfoTest");

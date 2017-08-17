@@ -14,6 +14,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.progress.StoppedByUserException;
+
 public class GenerateMilestoneTest {
   
   @Test
@@ -38,13 +40,13 @@ public class GenerateMilestoneTest {
   }
 
 	@Test
-	public void testChangeMilestone() throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException {
+	public void testChangeMilestone() throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
 		URL resource = getClass().getClassLoader().getResource("generateMilestone-test");
 		System.out.println(resource.getPath());
 		File rootDir = new File(resource.getPath());
 
 		
-		File file = PackageBuilder.generateChangeMilestone(rootDir);
+		File file = new PackageBuilder().generateChangeMilestone(rootDir);
 		
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 

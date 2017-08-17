@@ -1,6 +1,7 @@
 package com.oxygenxml.translation.progress.worker;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
@@ -34,6 +35,10 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
       // The operation finished without exceptions.
       for(ProgressChangeListener listener : listeners){
         listener.done();
+      }
+    } catch (ExecutionException e) {
+      for(ProgressChangeListener listener : listeners){
+        listener.operationFailed((Exception) e.getCause());
       }
     } catch (Exception e) {
       for(ProgressChangeListener listener : listeners){

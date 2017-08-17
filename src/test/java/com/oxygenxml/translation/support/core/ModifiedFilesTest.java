@@ -12,12 +12,13 @@ import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
 public class ModifiedFilesTest {
 
 	@Test
-	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException {
+	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException, StoppedByUserException {
 		
 		//File rootDir = new File("src/test/resources/modifiedFiles-Test");		
 		
@@ -25,7 +26,7 @@ public class ModifiedFilesTest {
 
 		File rootDir = new File(resource.getPath());
 		
-		ArrayList<ResourceInfo> actualResult = PackageBuilder.generateModifiedResources(rootDir);
+		ArrayList<ResourceInfo> actualResult = new PackageBuilder().generateModifiedResources(rootDir);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		ResourceInfo first = new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt");

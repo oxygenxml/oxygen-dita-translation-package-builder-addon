@@ -17,6 +17,11 @@ import java.util.zip.ZipOutputStream;
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.StoppedByUserException;
+import com.oxygenxml.translation.progress.Tags;
+
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * 
@@ -26,6 +31,11 @@ import com.oxygenxml.translation.progress.StoppedByUserException;
  * - copyDirectory - this method copies the content of a source directory into a destination directory.
  */
 public final class ArchiveBuilder {
+  /**
+   *  Resource bundle.
+   */
+  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+  
   
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
   
@@ -99,7 +109,7 @@ public final class ArchiveBuilder {
               throw new StoppedByUserException("You pressed the Cancel button.");
             }
             resourceCounter[0]++;
-            ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + " files packed.");
+            ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
             fireChangeEvent(progress);
             
           } finally{
@@ -174,7 +184,7 @@ public final class ArchiveBuilder {
           }
           
           counter++;
-          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + " files unpacked.");
+          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
           fireChangeEvent(progress);
           
         }
@@ -236,7 +246,7 @@ public final class ArchiveBuilder {
         throw new StoppedByUserException("You pressed the Cancel button.");
       }
       
-      ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + " files copied.");
+      ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
       fireChangeEvent(progress);
       
     }

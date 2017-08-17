@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
+import com.oxygenxml.translation.progress.NoChangedFilesException;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
@@ -42,9 +43,10 @@ public class ZipWorker extends AbstractWorker {
    * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
    * @throws StoppedByUserException  The user pressed the Cancel button.
    * @throws  IOException Problems reading the file.
+   * @throws NoChangedFilesException No file was changed since the last generation of a milestone file.
    */
   @Override
-  public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, JAXBException {
+  public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, JAXBException, NoChangedFilesException {
     if(TranslationPackageBuilderExtension.isPackAll()){
       ArchiveBuilder archiveBuilder = new ArchiveBuilder();
       for (ProgressChangeListener l : listeners) {

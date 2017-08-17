@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -29,11 +30,15 @@ import com.oxygenxml.translation.progress.PreviewDialog;
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.ProgressDialog;
+import com.oxygenxml.translation.progress.Tags;
+import com.oxygenxml.translation.progress.worker.GenerateMilestoneWorker;
+import com.oxygenxml.translation.progress.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.progress.worker.UnzipWorker;
 import com.oxygenxml.translation.progress.worker.ZipWorker;
 import com.oxygenxml.translation.support.core.PackageBuilder;
 
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.ditamap.WSDITAMapEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -42,18 +47,18 @@ import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributor
 /**
  * Plugin extension - workspace access extension.
  */
-public class TranslationPackageBuilderExtension implements WorkspaceAccessPluginExtension {
+public class TranslationPackageBuilderExtension implements WorkspaceAccessPluginExtension, Tags {
   /**
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class); 
   /**
-   * True if the user wants to pack the entire directory.
+   *  True if the user wants to pack the entire directory.
    */
   private static boolean packAll = false;
   public static boolean isPackAll() {
     return packAll;
-  }
+  } 
   /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
@@ -62,12 +67,13 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     //The "ro.sync.exml.options.APIAccessibleOptionTags" contains all accessible keys.
     //		  pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
     // Check In action
-
     //You can access the submenu Translation Package Builder only from the DITA Maps area.
     // The submenu contains these 3 actions.
     final Action generateMilestoneAction = createMilestoneAction(pluginWorkspaceAccess);
     final Action generateChangedFilesZipAction = createChangedFilesZipAction(pluginWorkspaceAccess);
     final Action applyTranslatedFilesAction = createApplyTranslatedFilesAction(pluginWorkspaceAccess);
+
+    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
 
     //Mount the action on the contextual menus for the Text and Author modes.
     pluginWorkspaceAccess.addMenusAndToolbarsContributorCustomizer(new MenusAndToolbarsContributorCustomizer() {
@@ -76,30 +82,29 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       public void customizeDITAMapPopUpMenu(JPopupMenu popUp, WSDITAMapEditorPage ditaMapEditorPage) {
         //Create a submenu "Translation Package Builder" for the 3 actions.
         // Tooltips for all actions.
-        JMenu submenu = new JMenu("Translation Package Builder");
+        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.JMENU_TITLE));//resourceBundle.getMessage(Tags.JMENU_TITLE)/*"Translation Package Builder"*/);
         submenu.setMnemonic(KeyEvent.VK_S);
 
         // Action 1: Generate Milestone
-        JMenuItem menuItemMilestone = new JMenuItem("Generate Milestone");
+        JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM1));
         menuItemMilestone.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_2, ActionEvent.ALT_MASK));
         menuItemMilestone.addActionListener(generateMilestoneAction);
-        menuItemMilestone.setToolTipText("Generates a predefined file called \"translation_builder_milestone.xml\" in the root directory of the selected"
-            + " ditamap which contains an unique hash and the relative path of every file in that directory.");
+        menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM1));
 
         // Action 2: Create Changed Files Package
-        JMenuItem menuItemPakage = new JMenuItem("Create Modified Files Package");
+        JMenuItem menuItemPakage = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM2));
         menuItemPakage.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_3, ActionEvent.ALT_MASK));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);
-        menuItemPakage.setToolTipText("Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.");
+        menuItemPakage.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM2));
 
         // Action 3: Unzip package that came from translation.
-        JMenuItem menuItemApply = new JMenuItem("Apply Package");
+        JMenuItem menuItemApply = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM3));
         menuItemApply.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_4, ActionEvent.ALT_MASK));
         menuItemApply.addActionListener(applyTranslatedFilesAction);
-        menuItemApply.setToolTipText("Applies a chosen archive over the root directory of the current ditamap.");
+        menuItemApply.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM3));
 
         submenu.add(menuItemMilestone);
         submenu.add(menuItemPakage);
@@ -116,10 +121,11 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
    * @return A new action called "Generate Milestone".
    */
+
   private AbstractAction createMilestoneAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Generate Milestone") {
-
+      final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
       public void actionPerformed(ActionEvent actionevent) {
 
         // 1. Extract the parent directory of the current map.
@@ -130,15 +136,35 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         try {
           URL editorLocation = editor.getEditorLocation();
 
-          File rootDir = new File(editorLocation.getPath()).getParentFile();
+          final File rootDir = new File(editorLocation.getPath()).getParentFile();
 
-          PackageBuilder.generateChangeMilestone(rootDir);
+          // PackageBuilder.generateChangeMilestone(rootDir);
+          ProgressDialog progressDialog = new ProgressDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
+          ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+          listeners.add(progressDialog);
 
-          pluginWorkspaceAccess.showInformationMessage("Milestone created at: " + rootDir);
+          GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(listeners, rootDir);
+
+          listeners.add(new ProgressChangeListener() {
+            public boolean isCanceled() {             
+              return false;
+            }            
+            public void done() { 
+              pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + rootDir);
+            }
+            public void change(ProgressChangeEvent progress) { }
+            public void operationFailed(Exception ex) {
+              if(!ex.getMessage().contains("You pressed the Cancel button.")){
+                pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
+              }
+            }
+          });
+          milestoneWorker.execute();
+
         } catch (Exception e) {
           // Present the error to the user.
           logger.error(e, e);
-          pluginWorkspaceAccess.showErrorMessage("Milestone creation failed because of: " + e.getMessage());
+          pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + e.getMessage());
         }
       }
     };
@@ -154,79 +180,90 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Create Modified Files Package") {
 
+      final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
       public void actionPerformed(ActionEvent actionevent) {
+
         final JFrame frame = (JFrame) pluginWorkspaceAccess.getParentFrame();
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
         URL editorLocation = editor.getEditorLocation();
         // 1. Extract the parent directory of the current map. This is the rootDir
         final File rootDir = new File(editorLocation.getPath()).getParentFile();
 
-        final File chosenDir = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
+        /**
+         *  TODO Show error before asking for a package location.
+         */    
+        try {
+          // What to do if the milestone file doesn't exist? 
+          // Inform the user and offer the possibility to pack the entire dir
+          final File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());           
+          if(!milestoneFile.exists()){
 
-        if(chosenDir != null){              
-
-          try {
-            // What to do if the milestone file doesn't exist? 
-            // Inform the user and offer the possibility to pack the entire dir
-            File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());
-
-            File chosenDirectory = null;
-            if(!milestoneFile.exists()){
-
-              int buttonId = pluginWorkspaceAccess.showConfirmDialog("Didn't find \"translation_builder_milestone.xml\"", "The milestone file doesn't exist."
-                  + " Do you want to pack the entire directory : "+ rootDir.getPath() +"?", new String[] {"Yes", "No"}, new int[] {0, 1});
-              if(buttonId == 0){
-                packAll = true;
-                chosenDirectory = pluginWorkspaceAccess.chooseFile("Package location", new String[] {"zip"}, "Zip files", true);
-              }else{
-                return;
-              }
+            int buttonId = pluginWorkspaceAccess.showConfirmDialog(resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_TITLE),
+                resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_MESSAGE) +
+                rootDir.getPath() +"?", 
+                new String[] {resourceBundle.getMessage(Tags.YES_BUTTON), resourceBundle.getMessage(Tags.NO_BUTTON)},
+                new int[] {0, 1});
+            if(buttonId == 0){     
+              packAll = true;
+              File chosenDirectory = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
+                  new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
+              if(chosenDirectory != null){
+                createPackage(frame, rootDir, chosenDirectory, resourceBundle, pluginWorkspaceAccess);
+              }             
+            }else{
+              return;
             }
+          } else {               
+            packAll = false;           
 
+            ArrayList<ProgressChangeListener> listenersList = new ArrayList<ProgressChangeListener>();
+            final ProgressDialog progressDialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
+            listenersList.add(progressDialog);
+            final GenerateModifiedResourcesWorker modifiedResourcesWorker = new GenerateModifiedResourcesWorker(listenersList, rootDir);
 
-            // 1. Start the processing. (the ZIP Worker)
-            // 2. Show the dialog. 
-            // 3. The ZIP worker notifies the dialog.
-
-            // The ProgressDialog is a ProgressChangeListener
-            final ProgressDialog dialog = new ProgressDialog(frame , "Zipping directory");
-
-            ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-            listeners.add(dialog);
-            final ZipWorker zipTask;
-            if(packAll){
-              zipTask = new ZipWorker(rootDir, chosenDirectory, listeners);
-            }
-            else{
-              zipTask = new ZipWorker(rootDir, chosenDir, listeners);
-            }
-
-            listeners.add(new ProgressChangeListener() {                      
-              public boolean isCanceled() {
+            listenersList.add(new ProgressChangeListener() {                                          
+              public boolean isCanceled() {                 
                 return false;
-              }                      
-              public void done() {
-                if(packAll){
-                  JOptionPane.showMessageDialog(frame, "The directory was packed.", "All files packed", JOptionPane.INFORMATION_MESSAGE);
-                }
-                else{
-                  JOptionPane.showMessageDialog(frame, "The modified files were packed.", "Modified files packed", JOptionPane.INFORMATION_MESSAGE);
-                }
-              }                      
+              }                
+              public void done() { 
+                GenerateModifiedResourcesWorker.setFromWorker(false);
+                System.out.println("Founded modified files : " + modifiedResourcesWorker.getList().size());
+                if(!modifiedResourcesWorker.getList().isEmpty()){  
+
+                  File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE), new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
+                  if(chosenDir != null){
+                    createPackage(frame, rootDir, chosenDir, resourceBundle, pluginWorkspaceAccess);
+                  }
+
+                } else {           
+                  pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
+                      resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + new Date(milestoneFile.lastModified()));                  
+
+                }                  
+              }                
               public void change(ProgressChangeEvent progress) { }
               public void operationFailed(Exception ex) {
-                pluginWorkspaceAccess.showErrorMessage("Package creation failed because of: " + ex.getMessage());
-              }
+                System.out.println("Operation failed generating modified resources");
+                System.out.println(ex.getMessage());
+
+                if(ex.getMessage().contains(resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION))){
+                  pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());                  
+                } else if(ex.getMessage().equals("You pressed the Cancel button.")) {
+                  //do nothing
+                } else {
+                  pluginWorkspaceAccess.showInformationMessage("Failed because of : " + ex.getMessage());
+                }               
+              } 
             });
-            zipTask.execute();
-            
-          } catch (Exception e) {
-            //  Preset error to user.
-            logger.error(e, e);
-            pluginWorkspaceAccess.showErrorMessage("Failed because of: " + e.getMessage());
+            modifiedResourcesWorker.execute();      
           }
+        } catch (Exception e) {
+          //  Preset error to user.
+          logger.error(e, e);
+          pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION2_ERROR_MESSAGE) + e.getMessage());
         }
       }
+
     };
   }
 
@@ -240,12 +277,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   private AbstractAction createApplyTranslatedFilesAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
     return new AbstractAction("Apply Package") {
-
+      final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
       /**
        * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
        */
       public void actionPerformed(ActionEvent actionevent) {
-        
+
         final JFrame frame = (JFrame)pluginWorkspaceAccess.getParentFrame();
         /**
          * Flow.
@@ -259,7 +296,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         URL editorLocation = editor.getEditorLocation();
         final File rootDir = new File(editorLocation.getFile()).getParentFile();
 
-        final File chosenDir = pluginWorkspaceAccess.chooseFile("Choose the translated package", new String[] {"zip"},  null);
+        final File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION3_CHOOSE_FILE_TITLE), new String[] {"zip"},  null);
 
         // DIFF FLOW
         // 1. Ask user if he wants a preview.
@@ -269,25 +306,26 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // 5. In dialog the user presses Apply to copy all.
         if(chosenDir != null){
           int buttonId = pluginWorkspaceAccess.showConfirmDialog(
-              "Review changes", 
-              "Do you want you to review all the changes that will be made before applying them? ",
-              new String[] {"Yes", "No"}, new int[] {0, 1});
+              resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_TITLE), 
+              resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_MESSAGE),
+              new String[] {resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON1), resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON2), resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON3)},
+              new int[] {0, 1, 2});
           if(buttonId == 0){
             File tempFile = null;
             try {            
               tempFile = File.createTempFile("tempFile", null);
             } catch (IOException e) {
               logger.error(e, e);
-              pluginWorkspaceAccess.showErrorMessage("Failed to create temp file because of: " + e.getMessage());
+              //pluginWorkspaceAccess.showErrorMessage("Failed to create temp file because of: " + e.getMessage());
             }
             if(tempFile.exists()){
-              final File tempDir = new File(tempFile.getParentFile(), "TranslatedPackage");
+              final File tempDir = new File(tempFile.getParentFile(), resourceBundle.getMessage(Tags.ACTION3_TEMPDIR_NAME));
 
               if (logger.isDebugEnabled()) {
                 logger.debug(tempDir.getAbsolutePath());
               }
 
-              final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
+              final ProgressDialog dialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
               ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
               listeners.add(dialog);
 
@@ -298,18 +336,20 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   return false;
                 }            
                 public void done() { 
-                  new PreviewDialog(frame, "Preview", unzipTask.getList(), rootDir, tempDir);
+                  new PreviewDialog(frame, resourceBundle.getMessage(Tags.ACTION3_PREVIEW_DIALOG_TITLE), unzipTask.getList(), rootDir, tempDir);
                 }
 
                 public void change(ProgressChangeEvent progress) { }
                 public void operationFailed(Exception ex) {
-                  pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + ex.getMessage());
+                  if(!ex.getMessage().contains("You pressed the Cancel button.")){
+                    pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + ex.getMessage());
+                  }
                 }
               });
               unzipTask.execute();
             }
           }
-          else{
+          else if (buttonId == 1){
             //Unpack the chosen archive over the root directory of the DITA map.
             overrideTranslatedFiles(pluginWorkspaceAccess, frame, rootDir, chosenDir); 
           }
@@ -326,6 +366,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    */
   private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
       ArrayList<String> list) throws IOException {
+    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+
     // Present a log with the overridden files.
     if(list != null && !list.isEmpty()){
       JTextArea text = new JTextArea(10, 40);
@@ -356,7 +398,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       gbcLabel.fill = GridBagConstraints.HORIZONTAL;
       gbcLabel.anchor = GridBagConstraints.NORTH;
 
-      panel.add(new JLabel("Package applied over the current map. The overridden files are : "), gbcLabel);
+      panel.add(new JLabel(resourceBundle.getMessage(Tags.SHOW_REPORT_LABEL)), gbcLabel);
 
       GridBagConstraints gbcScroll = new GridBagConstraints();
       gbcScroll.gridx = 0;
@@ -370,10 +412,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       panel.add(scroll , gbcScroll);
 
 
-      JOptionPane.showMessageDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), panel, "Applied files", JOptionPane.INFORMATION_MESSAGE);
+      JOptionPane.showMessageDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), panel, resourceBundle.getMessage(Tags.SHOW_REPORT_TITLE), JOptionPane.INFORMATION_MESSAGE);
     }
     else{
-      throw new IOException("The list containing the unzipped files is empty or null.");
+      throw new IOException(resourceBundle.getMessage(Tags.SHOW_REPORT_EXCEPTION_MESSAGE));
     }
   }
 
@@ -396,11 +438,13 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    */
   public void overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess, final JFrame frame,
       final File rootDir, final File chosenDir) {
+    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+
     if(chosenDir != null) {        
 
       try {                      
 
-        final ProgressDialog dialog = new ProgressDialog(frame , "Unzipping package");
+        final ProgressDialog dialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
 
         ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
         listeners.add(dialog);
@@ -418,7 +462,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               showReport(pluginWorkspaceAccess, unzipTask.getList());
             } catch (IOException e) {
               logger.error(e, e);
-              pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
+              if(!e.getMessage().contains("You pressed the Cancel button.")){
+                pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
+              }
               return;                  
             }
           }
@@ -426,7 +472,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           public void change(ProgressChangeEvent progress) { }
 
           public void operationFailed(Exception ex) {
-            pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + ex.getMessage());
+            if(!ex.getMessage().contains("You pressed the Cancel button.")){
+              pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + ex.getMessage());
+            }
           }
         });
         unzipTask.execute();
@@ -434,8 +482,78 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       } catch (Exception e) {
         // Preset error to user.
         logger.error(e, e);
-        pluginWorkspaceAccess.showErrorMessage("Failed to apply package because of: " + e.getMessage());
+        pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
       }
     }
   }
+  /**
+   *  
+   * Packs the modified files or an entire directory in the specified chosenDir. 
+   *  
+   * @param frame  The parent frame used by the progress dialog.
+   * @param rootDir The location of the parent directory of the current ditamap.
+   * @param chosenDir Where to save the archive.
+   * @param resourceBundle  The message bundle used to get the translation of messages used in the plugin.
+   * @param pluginWorkspace Entry point for accessing the DITA Maps area.
+   */
+  private void createPackage(final JFrame frame, 
+      final File rootDir, 
+      File chosenDir,
+      final PluginResourceBundle resourceBundle,
+      final StandalonePluginWorkspace pluginWorkspace){
+
+    // 1. Start the processing. (the ZIP Worker)
+    // 2. Show the dialog. 
+    // 3. The ZIP worker notifies the dialog.
+    ZipWorker zipTask;
+    ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+
+    // The ProgressDialog is a ProgressChangeListener
+    final ProgressDialog dialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
+    listeners.add(dialog);
+    System.out.println("packAll is : " + packAll);
+    if(packAll){
+      System.out.println("zip entire dir.");
+      zipTask = new ZipWorker(rootDir, chosenDir, listeners);
+    }
+    else { 
+      System.out.println("zip only modified files`");
+      zipTask = new ZipWorker(rootDir, chosenDir, listeners);
+    } 
+
+    listeners.add(new ProgressChangeListener() {                      
+      public boolean isCanceled() {
+        return false;
+      }                      
+      public void done() { 
+        if(packAll){
+          JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_DIR_MESSAGE),
+              resourceBundle.getMessage(Tags.ACTION2_PACK_DIR_TITLE), 
+              JOptionPane.INFORMATION_MESSAGE);
+        }
+        else{
+          int nrOfFiles = PackageBuilder.getCounter();
+          JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_MESSAGE1) + 
+              nrOfFiles +
+              resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_MESSAGE2), 
+              resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_TITLE),
+              JOptionPane.INFORMATION_MESSAGE);
+        }
+      }                      
+      public void change(ProgressChangeEvent progress) { }
+      public void operationFailed(Exception ex) {  
+        //Treat differently Stop by user exceptions and the custom one about nothing to pack.
+        if(ex.getMessage().contains(resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION))){
+          pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());
+        } else if(ex.getMessage().equals("You pressed the Cancel button.")) {
+          //do nothing
+        } else {
+          pluginWorkspace.showInformationMessage("Failed because of : " + ex.getMessage());
+        }
+
+      }
+    });
+    zipTask.execute();
+  }      
+
 }

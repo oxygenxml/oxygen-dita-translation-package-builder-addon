@@ -50,6 +50,10 @@ public class ProgressChangeEvent {
     this.message = message;
   }
   
+  public ProgressChangeEvent(String message){
+    this.message = message;
+  }
+  
   public ProgressChangeEvent(){
     
   }

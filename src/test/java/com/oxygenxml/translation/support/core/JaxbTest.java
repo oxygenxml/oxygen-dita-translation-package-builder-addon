@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
@@ -23,7 +24,7 @@ public class JaxbTest {
 
 
 	@Test
-	public void testMarshaller() throws JAXBException, IOException {
+	public void testMarshaller() throws JAXBException, IOException, StoppedByUserException {
 
 		InfoResources info = new InfoResources();
 		ResourceInfo resource = new  ResourceInfo();

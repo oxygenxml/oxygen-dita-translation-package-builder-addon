@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translation>
+    <languageList>
+        <language description="English" lang="en_US" />
+        <language description="German" lang="de_DE" />
+        <language description="French" lang="fr_FR" />
+        <language description="Japanese" lang="ja_JP" />
+        <language description="Dutch" lang="nl_NL" />
+    </languageList>
+    <key value="jmenu_title">
+        <comment>JMenu action.</comment>
+        <val lang="en_US">Translation Package Builder</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="jmenu_item1">
+        <comment>JMenu milestone action.</comment>
+        <val lang="en_US">Generate Milestone</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="jmenu_tooltip_item1">
+        <comment>JMenu milestone tooltip.</comment>
+        <val lang="en_US">Generates a predefined file called \"translation_builder_milestone.xml\" in the root directory of the selected ditamap which contains an unique hash and the relative path of every file in that directory.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="jmenu_item2">
+        <comment>JMenu pack modified files action.</comment>
+        <val lang="en_US">Create Modified Files Package</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="jmenu_tooltip_item2">
+        <comment>JMenu pack modified files tooltip.</comment>
+        <val lang="en_US">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="jmenu_item3">
+        <comment>JMenu apply package action.</comment>
+        <val lang="en_US">Apply Package</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="jmenu_tooltip_item3">
+        <comment>JMenu apply package tooltip.</comment>
+        <val lang="en_US">Applies a chosen archive over the root directory of the current ditamap.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action1_progress_title">
+        <comment>Progress dialog title for Generating milestone.</comment>
+        <val lang="en_US">Generate milestone file</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action1_infoMessage">
+        <comment>Info message in generate milestone.</comment>
+        <val lang="en_US">Milestone created at: </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action1_errorMessage">
+        <comment>Error message in generate milestone.</comment>
+        <val lang="en_US">Milestone creation failed because of: </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_chooseFile_title">
+        <comment>Choose file title in pack modified files.</comment>
+        <val lang="en_US">Package location</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_chooseFile_descriptor">
+        <comment>Choose file descriptor in pack modified files.</comment>
+        <val lang="en_US">Zip files</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    
+    <key value="action2_milestoneNotExists_dialog_title">
+        <comment>Confirm dialog title in pack modified files.</comment>
+        <val lang="en_US">Didn't find "translation_builder_milestone.xml" </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_milestoneNotExists_dialog_message">
+        <comment>Confirm dialog message in pack modified files.</comment>
+        <val lang="en_US"> The milestone file doesn't exist. Do you want to pack the entire directory : </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="yes_button">
+        <comment>"Yes" buttons.</comment>
+        <val lang="en_US">Yes</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="no_button">
+        <comment>"No" buttons.</comment>
+        <val lang="en_US">No</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_progresDialog_title">
+        <comment>Progress dialog title in pack modified files.</comment>
+        <val lang="en_US">Zipping directory</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_packEntireDir_message">
+        <comment>Message dialog content in pack modified files.</comment>
+        <val lang="en_US">The directory was packed.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_packEntireDir_title">
+        <comment>Message dialog title in pack modified files.</comment>
+        <val lang="en_US">All files packed</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_packOnlyModified_message1">
+        <comment>Message dialog content in pack modified files.</comment>
+        <val lang="en_US">A package containing </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_packOnlyModified_message2">
+        <comment>Message dialog content in pack modified files.</comment>
+        <val lang="en_US"> files was created.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_packOnlyModified_title">
+        <comment>Message dialog title in pack modified files.</comment>
+        <val lang="en_US">Modified files packed</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_infoMessage_exceptions">
+        <comment>Information message in pack modified files.</comment>
+        <val lang="en_US">Could not create package. </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+   
+    <key value="action2_NoChangedFiles_exception">
+        <comment>No changed files exception message.</comment>
+        <val lang="en_US">There are no changed files since the milestone created on: </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_error_message">
+        <comment>Error messages.</comment>
+        <val lang="en_US">Failed because of: </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_chooseFile_title">
+        <comment>Apply Package choose file title.</comment>
+        <val lang="en_US">Choose the translated package</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_confirmDialog_title">
+        <comment>Apply Package confirm dialog title.</comment>
+        <val lang="en_US">Preview changes</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_confirmDialog_message">
+        <comment>Apply Package confirm dialog message.</comment>
+        <val lang="en_US">Do you want you to preview all the changes that will be made before applying them? </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_confirmDialog_button1">
+        <comment>Apply Package confirm dialog "Preview" button.</comment>
+        <val lang="en_US">Preview</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_confirmDialog_button2">
+        <comment>Apply Package confirm dialog "Apply All" button.</comment>
+        <val lang="en_US">Apply All</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_confirmDialog_button3">
+        <comment>Apply Package confirm dialog "Cancel" button.</comment>
+        <val lang="en_US">Cancel</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_tempDir_name">
+        <comment>Apply Package name of the temporary directory.</comment>
+        <val lang="en_US">TranslatedPackage</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_progresDialog_title">
+        <comment>Progress dialog title in apply package.</comment>
+        <val lang="en_US">Unzipping package</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_previewDialog_title">
+        <comment>Preview dialog title in apply package.</comment>
+        <val lang="en_US">Preview</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action3_errorMessage">
+        <comment>Error message content title in apply package.</comment>
+        <val lang="en_US">Failed to apply package because of: </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="showReport_label">
+        <comment>The label from showReport dialog.</comment>
+        <val lang="en_US">Package applied over the current map. The overridden files are : </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="showReport_dialog_title">
+        <comment>The title of the showReport dialog.</comment>
+        <val lang="en_US">Applied files</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="showReport_exception_message">
+        <comment>Exception message of the showReport dialog.</comment>
+        <val lang="en_US"> The list containing the unzipped files is empty or null.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="loadMilestone_exception">
+        <comment>Exception message if the milestone wasn't created.</comment>
+        <val lang="en_US">No milestone was created.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="apply_button">
+        <comment>Apply button.</comment>
+        <val lang="en_US">Apply</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="switchToTreeView_button">
+        <comment>Switch to Tree View button.</comment>
+        <val lang="en_US">Switch to Tree View</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="switchToListView_button">
+        <comment>Switch to List View button.</comment>
+        <val lang="en_US">Switch to List View</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="previewDialog_erroMessage">
+        <comment>Message shown if the user doesn't select something in the dialog.</comment>
+        <val lang="en_US">You haven't selected anything.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="previewDialog_progressDialog_title">
+        <comment>Progress dialog title.</comment>
+        <val lang="en_US">Applying selected files</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="previewDialog_progressDialog_infoMessage">
+        <comment>Progress dialog information message.</comment>
+        <val lang="en_US">The translated files have been applied.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="previewDialog_progressDialog_errorMessage">
+        <comment>Progress dialog error message.</comment>
+        <val lang="en_US">Couldn't apply files because of: </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="previewDialog_supportedOxyFile">
+        <comment>Preview dialog information message.</comment>
+        <val lang="en_US">The selected file is not supported by Oxygen XML Editor.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="previewDialog_ifFileIsNotDir">
+        <comment>Preview dialog information message.</comment>
+        <val lang="en_US"> Please select a directory.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="progressDialog_label">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US">Here you'll see informations about the progress.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="packageBuilder_progressText1">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US">Copying </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="packageBuilder_progressText2">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US"> files in order to build package</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="changeMilestone_progressText">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US">The milestone file is computed</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="zipDirectory_progressText">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US"> files packed.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="unzipDirectory_progressText">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US"> files unpacked.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="copyDirectory_progressText">
+        <comment>Progress dialog label text.</comment>
+        <val lang="en_US"> files copied.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="milestone_filename">
+        <comment>The generated milestone file name.</comment>
+        <val lang="en_US">translation_builder_milestone.xml</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="preview_dialog_checkBox">
+        <comment>The select all checkbox.</comment>
+        <val lang="en_US">Select all files</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="action2_packOnlyModified_progress_title">
+        <comment>Progress dialog title.</comment>
+        <val lang="en_US">Generating modified resources</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="generateModified_progress_message1">
+        <comment>Progress dialog message.</comment>
+        <val lang="en_US">Searching in  </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="generateModified_progress_message2">
+        <comment> files for modified resources.</comment>
+        <val lang="en_US"> files for the modified ones.</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+</translation>

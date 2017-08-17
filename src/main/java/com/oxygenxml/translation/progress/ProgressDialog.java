@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.Timer;
 
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 /**
  * Creates a dialog to show the progress of a time consuming task.
@@ -20,6 +23,10 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *
  */
 public class ProgressDialog extends OKCancelDialog implements ProgressChangeListener {
+  /**
+   *  Resource bundle.
+   */
+  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
   /**
    *  A swing progress bar.
    */
@@ -60,7 +67,7 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     
     JPanel mainPanel = new JPanel(new GridBagLayout());
     progressBar = new JProgressBar();
-    label = new JLabel("Here you'll see informations about the progress.");
+    label = new JLabel(resourceBundle.getMessage(Tags.PROGRESS_DIALOG_LABEL));
     
     progressBar.setValue(0);
     progressBar.setStringPainted(true);
