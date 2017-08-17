@@ -137,23 +137,23 @@ public class PreviewDialog extends OKCancelDialog {
             for (TreePath treePath : treePaths) {
                  Object[] obj = treePath.getPath();
                  int length = obj.length;
-                 String relativePath = "";   
-                 if(length > 2){
-                   relativePath = relativePath + obj[0].toString();
+                 String relativePath = ""; 
+                 if(length >= 2){
+                   relativePath = relativePath + obj[1].toString();
+                   for (int i = 2; i < length-1; i++) {
+                     relativePath = relativePath + "/" + obj[i].toString();
+                   }
                  }
-                 for (int i = 1; i < length-1; i++) {
-                   relativePath = relativePath + "/" + obj[i].toString();
-                 }
-                 relativePath = relativePath + "/" + obj[length-1];
                  
                  if (logger.isDebugEnabled()) {
                    logger.debug(new File(translatedFiles.getPath(), relativePath));
                  }
                  File selectedFile = new File(translatedFiles.getPath(), relativePath);
                  selectedTreeFiles.add(selectedFile);
-                 //System.out.println("TREE selected file : " + selectedFile.getAbsolutePath());
+//                 System.out.println("TREE selected file : " + selectedFile.getAbsolutePath());
             }
-            if(!selectedTreeFiles.isEmpty()){
+//            System.out.println(selectedTreeFiles.toString());
+            if(!selectedTreeFiles.isEmpty() && !selectedTreeFiles.get(0).equals(new File(translatedFiles.getPath()))){
               try {
                 deleteUnselectedFileFromDir(translatedFiles, selectedTreeFiles);
               } catch (IOException e1) { 
@@ -293,7 +293,7 @@ public class PreviewDialog extends OKCancelDialog {
    
     treeButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if(treeButton.getText().equals(resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON))){
+        if(treeButton.getText().equals(resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON))){          
           scrollPane.setViewportView(relativePaths);
           treeButton.setText(resourceBundle.getMessage(Tags.SWICH_TO_TREE_VIEW_BUTTON));
           selectAll.setVisible(true);
@@ -302,7 +302,9 @@ public class PreviewDialog extends OKCancelDialog {
             root = new DefaultMutableTreeNode(filesOnDisk.getName());
             treeModel = new DefaultTreeModel(root);
             tree = new CheckBoxTree(treeModel); 
-            
+            /**
+             * TODO If you select the root dir of the tree the files aren't applied.
+             */
             for (String data : filePaths) {
               buildTreeFromString(treeModel, data);
             }
@@ -310,11 +312,11 @@ public class PreviewDialog extends OKCancelDialog {
             tree.setEditable(false);
             tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
             tree.setShowsRootHandles(true);
-            tree.setClickInCheckBoxOnly(true);
             tree.setRootVisible(true);
             tree.setRowHeight(20);
-            tree.setSelectionRow(0);
-            
+            tree.setSelectionRow(0); 
+            tree.getCheckBoxTreeSelectionModel().addSelectionPath(new TreePath(root.getPath()));
+
             tree.addMouseListener(new MouseAdapter() {
               public void mouseClicked(MouseEvent me) {
                 if(tree.getLastSelectedPathComponent() != null){
@@ -499,6 +501,7 @@ public class PreviewDialog extends OKCancelDialog {
             if (logger.isDebugEnabled()) {
               logger.debug("Deleted if dir : " + everythingInThisDir[i].getPath());
             }
+//            System.out.println("Deleted if dir : " + everythingInThisDir[i].getPath());
           }
           else if(!selectedFiles.contains(everythingInThisDir[i])){
             deleteUnselectedFileFromDir(everythingInThisDir[i], selectedFiles);
@@ -514,6 +517,7 @@ public class PreviewDialog extends OKCancelDialog {
             if (logger.isDebugEnabled()) {
               logger.debug("Deleted if file: " + everythingInThisDir[i].getPath());
             }
+//            System.out.println("Deleted if file: " + everythingInThisDir[i].getPath());
           }
         }
       } 

@@ -188,10 +188,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         URL editorLocation = editor.getEditorLocation();
         // 1. Extract the parent directory of the current map. This is the rootDir
         final File rootDir = new File(editorLocation.getPath()).getParentFile();
-
-        /**
-         *  TODO Show error before asking for a package location.
-         */    
+        
         try {
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
