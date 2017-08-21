@@ -198,12 +198,13 @@ public class PreviewDialog extends OKCancelDialog {
           pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
         } else {
           setVisible(false);
-          ProgressDialog dialog = new ProgressDialog(parentFrame, resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_TITLE));
-          ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-          listeners.add(dialog);
-          final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(filesOnDisk, translatedFiles, listeners);
+          final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(filesOnDisk, translatedFiles);
+          ProgressDialog.install(
+              copyDirTask, 
+              parentFrame, 
+              resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_TITLE));
 
-          listeners.add(new ProgressChangeListener() {
+          copyDirTask.addProgressListener(new ProgressChangeListener() {
             public boolean isCanceled() {
               return false;
             }

@@ -21,11 +21,17 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
    * The list with all the modified resources.
    */
   private ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
+  /**
+   * TODO A more semantic name. getModifiedResources()
+   * @return
+   */
   public ArrayList<ResourceInfo> getList() {
     return list;
   }
   /**
    * True if the method : generateModifiedResources(rootDir); is called by this worker.
+   * 
+   * TODO Find a way without statics.
    */
   private static boolean isFromWorker = false;
   public static boolean isFromWorker() {
@@ -35,9 +41,7 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
     GenerateModifiedResourcesWorker.isFromWorker = isFromWorker;
   }
 
-  public GenerateModifiedResourcesWorker(ArrayList<ProgressChangeListener> listeners, File rootDir) {
-    super(listeners);
-    
+  public GenerateModifiedResourcesWorker(File rootDir) {
     this.rootDir = rootDir;
   }
   /**

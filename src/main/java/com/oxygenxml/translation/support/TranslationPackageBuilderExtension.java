@@ -138,14 +138,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
           final File rootDir = new File(editorLocation.getPath()).getParentFile();
 
-          // PackageBuilder.generateChangeMilestone(rootDir);
-          ProgressDialog progressDialog = new ProgressDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
-          ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-          listeners.add(progressDialog);
-
-          GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(listeners, rootDir);
-
-          listeners.add(new ProgressChangeListener() {
+          // Generate the milestone on thread.
+          GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootDir);
+          
+          // Install the progress tracker.
+          ProgressDialog.install(
+              milestoneWorker, 
+              (JFrame) pluginWorkspaceAccess.getParentFrame(), 
+              resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
+          
+          // This listener notifies the user about how the operation ended.
+          milestoneWorker.addProgressListener(new ProgressChangeListener() {
             public boolean isCanceled() {             
               return false;
             }            
@@ -154,13 +157,15 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
             public void change(ProgressChangeEvent progress) { }
             public void operationFailed(Exception ex) {
+              // TODO Can't we look if the exception is a StoppedByUserException  instead of looking inside the message?
+              // The message can change over time so its a fragile way to check the cancel state.
               if(!ex.getMessage().contains("You pressed the Cancel button.")){
                 pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
               }
             }
           });
+          
           milestoneWorker.execute();
-
         } catch (Exception e) {
           // Present the error to the user.
           logger.error(e, e);
@@ -213,12 +218,16 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           } else {               
             packAll = false;           
 
-            ArrayList<ProgressChangeListener> listenersList = new ArrayList<ProgressChangeListener>();
-            final ProgressDialog progressDialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
-            listenersList.add(progressDialog);
-            final GenerateModifiedResourcesWorker modifiedResourcesWorker = new GenerateModifiedResourcesWorker(listenersList, rootDir);
+            final GenerateModifiedResourcesWorker modifiedResourcesWorker = 
+                new GenerateModifiedResourcesWorker(rootDir);
+            // Install the progress tracker.
+            ProgressDialog.install(
+                modifiedResourcesWorker, 
+                frame , 
+                resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
 
-            listenersList.add(new ProgressChangeListener() {                                          
+            // This listener notifies the user about how the operation ended.
+            modifiedResourcesWorker.addProgressListener(new ProgressChangeListener() {                                          
               public boolean isCanceled() {                 
                 return false;
               }                
@@ -322,13 +331,13 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 logger.debug(tempDir.getAbsolutePath());
               }
 
-              final ProgressDialog dialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
-              ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-              listeners.add(dialog);
+              final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir);
+              ProgressDialog.install(
+                  unzipTask, 
+                  frame , 
+                  resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
 
-              final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir, listeners);
-
-              listeners.add(new ProgressChangeListener() {
+              unzipTask.addProgressListener(new ProgressChangeListener() {
                 public boolean isCanceled() {             
                   return false;
                 }            
@@ -440,16 +449,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     if(chosenDir != null) {        
 
       try {                      
+        final UnzipWorker unzipTask = new UnzipWorker(chosenDir, rootDir);
+        ProgressDialog.install(unzipTask, frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
 
-        final ProgressDialog dialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
-
-        ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-        listeners.add(dialog);
-
-        final UnzipWorker unzipTask = new UnzipWorker(chosenDir, rootDir, listeners);
-
-        listeners.add(new ProgressChangeListener() {
-
+        unzipTask.addProgressListener(new ProgressChangeListener() {
           public boolean isCanceled() {
             return false;
           }
@@ -505,19 +508,48 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     ZipWorker zipTask;
     ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
 
-    // The ProgressDialog is a ProgressChangeListener
-    final ProgressDialog dialog = new ProgressDialog(frame , resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
-    listeners.add(dialog);
     System.out.println("packAll is : " + packAll);
+    // TODO There is no need for the static field packAll. We can pass it all the way here and 
+    // further on to the ZipWorker.
     if(packAll){
       System.out.println("zip entire dir.");
       zipTask = new ZipWorker(rootDir, chosenDir, listeners);
-    }
-    else { 
+      
+      ProgressDialog.install(
+          zipTask, 
+          frame , 
+          resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
+    } else { 
+      // TODO Use logger.debug instead of System.out
+      /**
+       * 
+# Root logger option
+log4j.rootLogger=INFO, stdout
+
+log4j.category.com.oxygenxml.translation.support=debug
+
+# Direct log messages to stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+
+       */
+      
+      if (logger.isDebugEnabled()) {
+        logger.debug("zip only modified files");
+      }
+      
       System.out.println("zip only modified files`");
       zipTask = new ZipWorker(rootDir, chosenDir, listeners);
+      
+      ProgressDialog.install(
+          zipTask, 
+          frame , 
+          resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
     } 
 
+    // This listener notifies the user about how the operation ended.
     listeners.add(new ProgressChangeListener() {                      
       public boolean isCanceled() {
         return false;
@@ -527,8 +559,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_DIR_MESSAGE),
               resourceBundle.getMessage(Tags.ACTION2_PACK_DIR_TITLE), 
               JOptionPane.INFORMATION_MESSAGE);
-        }
-        else{
+        } else{
           int nrOfFiles = PackageBuilder.getCounter();
           JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_MESSAGE1) + 
               nrOfFiles +

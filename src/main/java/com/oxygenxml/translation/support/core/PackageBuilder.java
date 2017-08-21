@@ -273,18 +273,9 @@ public class PackageBuilder {
   }
   
   /**
-   * Entry point. Detect what files were modified and put them in a ZIP.
+   * TODO It is a bad practice to use statics to keep the result of an operation.
    * 
-   * 
-   * @param rootDir The location of the directory we want to see what files were changed.
-   * @param packageLocation The location of the generated ZIP file.
-   * @param listener A ProgressChangedListener for sending the updates.
-   * 	
-   * @throws IOException  Problems reading the file/directory.
-   * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
-   * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
-   * @throws StoppedByUserException The user pressed the Cancel button.
-
+   * generateChangedFilesPackage() can return an object PackResult with this information.
    */
   private static int nrModFiles = 0;
   
@@ -292,6 +283,20 @@ public class PackageBuilder {
     return nrModFiles;
   }
 
+  /**
+   * Entry point. Detect what files were modified and put them in a ZIP.
+   * 
+   * 
+   * @param rootDir The location of the directory we want to see what files were changed.
+   * @param packageLocation The location of the generated ZIP file.
+   * @param listener A ProgressChangedListener for sending the updates.
+   *  
+   * @throws IOException  Problems reading the file/directory.
+   * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
+   * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
+   * @throws StoppedByUserException The user pressed the Cancel button.
+   *
+   */
   public void generateChangedFilesPackage(
       File rootDir, 
       File packageLocation
@@ -305,6 +310,26 @@ public class PackageBuilder {
 
     //The list with all modified files.
     final ArrayList<ResourceInfo> modifiedResources = generateModifiedResources(rootDir);
+    
+    // TODO packageLocation => PackageLocationProvider.getPackageLocation() that will present the chooser.
+    /**
+     * if (!modifiedResources.isEmpty()) {
+     *   File packageLocation = packageLocationProvider.getPackageLocation();
+     *   if (packageLocation == null) {
+     *     throw StoppedByUserException();
+     *   } else {
+     * .........THE JOB.....
+     * ..................
+     *   }
+     * } else {
+     *   // Show be presented.
+     *   throw new NoChangedFilesException();
+     * 
+     * }
+     * 
+     * 
+     */
+    
     nrModFiles = 0;
     final int numberOfModifiedfiles = modifiedResources.size();
     if (!modifiedResources.isEmpty()) {

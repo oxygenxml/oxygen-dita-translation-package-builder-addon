@@ -32,8 +32,7 @@ public class UnzipWorker extends AbstractWorker {
     return list;
   }
 
-  public UnzipWorker(File zipDir, File rootDir, ArrayList<ProgressChangeListener> listeners) {
-    super(listeners);
+  public UnzipWorker(File zipDir, File rootDir) {
     this.rootDir = rootDir;
     this.zipDir = zipDir;
   }
