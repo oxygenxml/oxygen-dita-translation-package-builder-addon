@@ -282,7 +282,6 @@ public class PreviewDialog extends OKCancelDialog {
       }
    });
     
-    
     final JScrollPane scrollPane = new JScrollPane();
     scrollPane.setViewportView(relativePaths);
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -302,9 +301,7 @@ public class PreviewDialog extends OKCancelDialog {
             root = new DefaultMutableTreeNode(filesOnDisk.getName());
             treeModel = new DefaultTreeModel(root);
             tree = new CheckBoxTree(treeModel); 
-            /**
-             * TODO If you select the root dir of the tree the files aren't applied.
-             */
+           
             for (String data : filePaths) {
               buildTreeFromString(treeModel, data);
             }

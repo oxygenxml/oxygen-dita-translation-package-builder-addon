@@ -40,6 +40,10 @@ public class ResourceInfo {
 		this.md5 = md5;
 		this.relativePath = relativePath;
 	}
+	
+	public ResourceInfo(String relativePath){
+    this.relativePath = relativePath;
+  }
 
 	
 	public String getMd5() {

@@ -30,6 +30,7 @@ import com.oxygenxml.translation.progress.PreviewDialog;
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.ProgressDialog;
+import com.oxygenxml.translation.progress.ReportDialog;
 import com.oxygenxml.translation.progress.Tags;
 import com.oxygenxml.translation.progress.worker.GenerateMilestoneWorker;
 import com.oxygenxml.translation.progress.worker.GenerateModifiedResourcesWorker;
@@ -227,7 +228,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 System.out.println("Founded modified files : " + modifiedResourcesWorker.getList().size());
                 if(!modifiedResourcesWorker.getList().isEmpty()){  
 
-                  File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE), new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
+//                  File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE), new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
+                  ReportDialog report = new ReportDialog(frame, "Package Location", rootDir, modifiedResourcesWorker.getList());
+                  File chosenDir = null;
+                  if(report != null){
+                    chosenDir = report.getSelectedFile();
+                  }
                   if(chosenDir != null){
                     createPackage(frame, rootDir, chosenDir, resourceBundle, pluginWorkspaceAccess);
                   }

@@ -52,14 +52,6 @@ public class PackageBuilder {
    *  A list of custom listeners.
    */
   private static List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-  /**
-   *  True if no file was modified since the last time the user generated the milestone file.
-   */
-  private static boolean noChangedfiles = false;
-
-  public static boolean isNoChangedfiles() {
-    return noChangedfiles;
-  }
 
   public PackageBuilder(){
     
@@ -174,7 +166,7 @@ public class PackageBuilder {
    * 
    * @param info  An object of type InfoResources,this object will be serialized.
    * @param rootDir	The directory were the "special file" will be created after serialization.
-   * 
+   * @return The "translation_bulder_milestone.xml" file.
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws FileNotFoundException	The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.
@@ -351,7 +343,6 @@ public class PackageBuilder {
         FileUtils.deleteDirectory(tempDir);
       }
     } else {
-      noChangedfiles = true;
       // Present the date when the milestore was created.
       File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
       
@@ -369,9 +360,9 @@ public class PackageBuilder {
    * inside the directory (as a "special file"). 
    * 
    * 
-   * @param rootDir The directory were the "special file"(milestone.xml) is located.
+   * @param rootDir The directory were the "special file"(translation_builder_milestone.xml) is located.
    * 
-   * @return	The "special file"(milestone.xml).
+   * @return	The "special file"(translation_builder_milestone.xml).
    * 
    * @throws NoSuchAlgorithmException	The MD5 algorithm is not available.
    * @throws FileNotFoundException	The file/directory doesn't exist.
