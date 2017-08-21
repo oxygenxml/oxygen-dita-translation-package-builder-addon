@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.Timer;
 
+import com.oxygenxml.translation.progress.worker.AbstractWorker;
+
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -51,13 +53,25 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
   private boolean isTaskDone() {
     return isTaskDone;
   }
+  
+  /**
+   * Binds a progress dialog to the given worker.
+   * 
+   * @param worker Thread worker.
+  * @param parentFrame  The parent frame.
+  * @param title The dialog title.
+   */
+  public static void install(AbstractWorker worker, Frame parentFrame, String title) {
+    ProgressDialog progressDialog = new ProgressDialog(parentFrame, title);
+    worker.addProgressListener(progressDialog);
+  }
 
   /**
   * @param parentFrame  The parent frame.
   * @param title The dialog title.
   * @param modal  True if you want a modal dialog.
   */
-  public ProgressDialog(Frame parentFrame, String title) {
+  private ProgressDialog(Frame parentFrame, String title) {
     //----------------------- modal
     super(parentFrame, title, true);
     

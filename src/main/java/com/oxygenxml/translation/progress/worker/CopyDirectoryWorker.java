@@ -23,9 +23,7 @@ public class CopyDirectoryWorker extends AbstractWorker {
    */
   private File temDir;
 
-  public CopyDirectoryWorker(File rootDir, File tempDir, ArrayList<ProgressChangeListener> listeners) {
-    super(listeners);
-
+  public CopyDirectoryWorker(File rootDir, File tempDir) {
     this.rootDir = rootDir;
     this.temDir = tempDir;
   }

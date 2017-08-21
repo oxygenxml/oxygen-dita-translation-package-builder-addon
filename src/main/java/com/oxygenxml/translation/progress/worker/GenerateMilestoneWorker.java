@@ -1,7 +1,6 @@
 package com.oxygenxml.translation.progress.worker;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.support.core.PackageBuilder;
@@ -17,9 +16,7 @@ public class GenerateMilestoneWorker extends AbstractWorker{
    */
   private File rootDir;
   
-  public GenerateMilestoneWorker(ArrayList<ProgressChangeListener> listeners, File rootDir) {
-    super(listeners);
-    
+  public GenerateMilestoneWorker(File rootDir) {
     this.rootDir = rootDir;
   }
   /**

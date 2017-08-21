@@ -1,6 +1,8 @@
 package com.oxygenxml.translation.progress;
 
 /**
+ * TODO make an adapter class.
+ * 
  * A custom listener.
  * 
  * @author Bivolan Dalina
