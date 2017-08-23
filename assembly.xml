@@ -33,5 +33,9 @@
       <source>i18n/translation.xml</source>
       <outputDirectory>/i18n</outputDirectory>
    </file>
+   <file>
+      <source>xsl/report_transformation.xsl</source>
+      <outputDirectory>/xsl</outputDirectory>
+   </file>
   </files>
 </assembly>

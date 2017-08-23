@@ -26,7 +26,7 @@ public class ModifiedFilesTest {
 
 		File rootDir = new File(resource.getPath());
 		
-		ArrayList<ResourceInfo> actualResult = new PackageBuilder().generateModifiedResources(rootDir);
+		ArrayList<ResourceInfo> actualResult = new PackageBuilder().generateModifiedResources(rootDir, false);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		ResourceInfo first = new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt");

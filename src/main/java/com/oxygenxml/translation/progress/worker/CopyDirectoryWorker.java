@@ -2,7 +2,6 @@ package com.oxygenxml.translation.progress.worker;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.StoppedByUserException;

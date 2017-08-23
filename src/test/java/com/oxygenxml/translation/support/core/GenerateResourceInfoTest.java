@@ -46,6 +46,7 @@ public class GenerateResourceInfoTest {
 		File dirPath = new File(resource.getPath());
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
+		
 		PackageBuilder.computeResourceInfo(dirPath, new Stack<String>(), list);
 		
 		String expectedResult = "md5.txt      f5e45edee5ee0e2dffe9fbe6a736ab02\n" + 

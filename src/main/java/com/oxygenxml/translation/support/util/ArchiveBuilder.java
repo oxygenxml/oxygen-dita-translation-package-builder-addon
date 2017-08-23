@@ -14,6 +14,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.StoppedByUserException;
@@ -32,21 +34,25 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  */
 public final class ArchiveBuilder {
   /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(ArchiveBuilder.class); 
+  /**
    *  Resource bundle.
    */
   private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-  
-  
+
+
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-  
+
   public ArchiveBuilder(){
-    
+
   }
-  
+
   public void addListener(ProgressChangeListener listener) {
     this.listeners.add(listener);
   }
-  
+
   /**
    * Packs a directory.
    * 
@@ -56,16 +62,20 @@ public final class ArchiveBuilder {
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
   public void zipDirectory(File dir, File zipFile) throws IOException, StoppedByUserException {
-    zipFile.getParentFile().mkdirs();
-    
-    FileOutputStream fout = null;
-    ZipOutputStream zout = null;
-    try {
-      fout = new FileOutputStream(zipFile);
-      zout = new ZipOutputStream(fout);
-      zipSubDirectory("", dir, zout, new int[] {0});
-    } finally{
-      zout.close();
+    try{
+      zipFile.getParentFile().mkdirs();
+
+      FileOutputStream fout = null;
+      ZipOutputStream zout = null;
+      try {
+        fout = new FileOutputStream(zipFile);
+        zout = new ZipOutputStream(fout);
+        zipSubDirectory("", dir, zout, new int[] {0});
+      } finally{
+        zout.close();
+      }
+    } catch (Exception ex){
+      logger.debug(ex, ex);
     }
   }
 
@@ -82,42 +92,46 @@ public final class ArchiveBuilder {
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
   private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int[] resourceCounter) throws IOException, StoppedByUserException {
-    byte[] buffer = new byte[4096];
-    File[] files = dir.listFiles();
-    if (files != null) {
-      for (File file : files) {
-        if (file.isDirectory()) {
-          String path = basePath + file.getName() + "/";
-          zout.putNextEntry(new ZipEntry(path));
-          
-          if(isCanceled()){
-            throw new StoppedByUserException("You pressed the Cancel button.");
-          }
-          
-          zipSubDirectory(path, file, zout, resourceCounter);
-          zout.closeEntry();
-        } else {
-          FileInputStream fin = null;
-          try{
-            fin = new FileInputStream(file);
-            zout.putNextEntry(new ZipEntry(basePath + file.getName()));
-            int length;
-            while ((length = fin.read(buffer)) > 0) {
-              zout.write(buffer, 0, length);
-            }
+    try{
+      byte[] buffer = new byte[4096];
+      File[] files = dir.listFiles();
+      if (files != null) {
+        for (File file : files) {
+          if (file.isDirectory()) {
+            String path = basePath + file.getName() + "/";
+            zout.putNextEntry(new ZipEntry(path));
+
             if(isCanceled()){
               throw new StoppedByUserException("You pressed the Cancel button.");
             }
-            resourceCounter[0]++;
-            ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
-            fireChangeEvent(progress);
-            
-          } finally{
+
+            zipSubDirectory(path, file, zout, resourceCounter);
             zout.closeEntry();
-            fin.close();
+          } else {
+            FileInputStream fin = null;
+            try{
+              fin = new FileInputStream(file);
+              zout.putNextEntry(new ZipEntry(basePath + file.getName()));
+              int length;
+              while ((length = fin.read(buffer)) > 0) {
+                zout.write(buffer, 0, length);
+              }
+              if(isCanceled()){
+                throw new StoppedByUserException("You pressed the Cancel button.");
+              }
+              resourceCounter[0]++;
+              ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
+              fireChangeEvent(progress);
+
+            } finally{
+              zout.closeEntry();
+              fin.close();
+            }
           }
         }
       }
+    } catch (Exception ex){
+      logger.debug(ex, ex);
     }
   }
 
@@ -137,7 +151,7 @@ public final class ArchiveBuilder {
 
     ArrayList<String> nameList = new ArrayList<String>();
     int counter = 0;
-    
+
     try {
       // Open the zip file
       ZipFile zipFile = new ZipFile(packageLocation);
@@ -176,17 +190,17 @@ public final class ArchiveBuilder {
             is.close();
             fos.close();
           }
-          
+
           nameList.add(name);
-          
+
           if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
-          
+
           counter++;
           ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
           fireChangeEvent(progress);
-          
+
         }
       }finally{
         zipFile.close();
@@ -207,7 +221,7 @@ public final class ArchiveBuilder {
    * @throws StoppedByUserException  The user pressed the Cancel button.
    */
   public void copyDirectory(File sourceLocation , File targetLocation, int[] counter) throws IOException, StoppedByUserException {
-    
+
     if (sourceLocation.isDirectory()) {
       if (!targetLocation.exists()) {
         targetLocation.mkdir();
@@ -245,13 +259,13 @@ public final class ArchiveBuilder {
       if(isCanceled()){
         throw new StoppedByUserException("You pressed the Cancel button.");
       }
-      
+
       ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
       fireChangeEvent(progress);
-      
+
     }
   }
-  
+
 
   private void fireChangeEvent(ProgressChangeEvent progress) {
     for (ProgressChangeListener progressChangeListener : listeners) {
@@ -268,13 +282,13 @@ public final class ArchiveBuilder {
     }
     return result;
   }
-  
+
   private void fireOperationFailed(Exception ex) {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.operationFailed(ex);
     }
   }
-  
+
 }
 
 

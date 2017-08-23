@@ -1,32 +1,30 @@
 package com.oxygenxml.translation.progress;
-
 /**
- * A custom listener.
+ * An adapter class for the custom ProgressChangeListener.
  * 
  * @author Bivolan Dalina
  *
  */
-public interface ProgressChangeListener {
+public class ProgressChangeAdapter implements ProgressChangeListener {
   /**
-   * 
    * @param progress An object of type ProgressChangeEvent.
    */
-  void change(ProgressChangeEvent progress);
+  public void change(ProgressChangeEvent progress) {  }
   /**
-   * 
    * @return True if the user clicked on the Cancel button.
    */
-  boolean isCanceled();
+  public boolean isCanceled() {
+    return false;
+  }
   /**
    *  Executed after the task is completed. It's used to perform different operations like closing the ProgressDialog.
    */
-  void done();
-  
+  public void done() {  }
   /**
    * The watched operation has failed.
    * 
    * @param ex The exception that stopped the operation.
    */
-  void operationFailed(Exception ex);
+  public void operationFailed(Exception ex) {  }
 
 }

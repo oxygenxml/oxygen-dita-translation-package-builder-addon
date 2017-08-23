@@ -20,11 +20,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.progress.NoChangedFilesException;
+import com.oxygenxml.translation.progress.PackResult;
+import com.oxygenxml.translation.progress.ProgressChangeAdapter;
 import com.oxygenxml.translation.progress.ProgressChangeEvent;
 import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.progress.Tags;
-import com.oxygenxml.translation.progress.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
@@ -54,13 +55,13 @@ public class PackageBuilder {
   private static List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
 
   public PackageBuilder(){
-    
+
   }
-  
+
   public void addListener(ProgressChangeListener listener) {
     PackageBuilder.listeners.add(listener);
   }
- 
+
   public static String getMilestoneFileName() {
     return MILESTONE_FILE_NAME;
   }
@@ -133,7 +134,7 @@ public class PackageBuilder {
           if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
-          
+
           dirs.push(name.getName());
 
           computeResourceInfo(name, dirs, list);
@@ -160,7 +161,7 @@ public class PackageBuilder {
       throw new IOException(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_IF_FILE_IS_NOT_DIR));
     }
   }
-  
+
   /**
    * Saves the information about file changes on disk. 
    * 
@@ -183,7 +184,7 @@ public class PackageBuilder {
     marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
 
     marshallerObj.marshal(info, milestoneFile); 			 
-    
+
     return milestoneFile;
   }
 
@@ -202,7 +203,7 @@ public class PackageBuilder {
     if (!milestoneFile.exists()) {
       throw new IOException(resourceBundle.getMessage(Tags.LOAD_MILESTONE_EXCEPTION));
     }
-    
+
     JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
 
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
@@ -216,7 +217,8 @@ public class PackageBuilder {
    * Computes what resources were changed since the last created milestone.
    * 
    * @param rootDir The location of the directory we want to see what files were changed.
-   * 
+   * @param isFromWorker True if the method is called by the GenerateModifiedResourcesWorker.
+   *  
    * @return	A list of objects ResourceInfo which contains a MD5 and a relative path for
    * every file that was changed/every modification you made inside the rootDir. An empty list if nothing changed.
    * 
@@ -226,29 +228,31 @@ public class PackageBuilder {
    * @throws IOException	Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public ArrayList<ResourceInfo> generateModifiedResources(File rootDir) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
+  public ArrayList<ResourceInfo> generateModifiedResources(File rootDir, boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
     /**
      * 1. Loads the milestone XML from rootDIr using JAXB
      * 2. Calls generateCurrentMD5() to get the current MD5s
      * 3. Compares the current file MD5 with the old ones and collects the changed resources.
      **/
-    System.out.println(GenerateModifiedResourcesWorker.isFromWorker() + " cames from worker?");
+    if(logger.isDebugEnabled()){
+      logger.debug(resourceBundle.getMessage(Tags.GENERATE_MODIFIED_RESOURCES_LOGGER_MESSAGE) + isFromWorker);
+    }
     // Store state.
     ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir);
-    
+
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
     computeResourceInfo(rootDir, new Stack<String>(), currentStates);
 
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
     int counter = 0;
-   
+
     // Compare serializedResources with newly generated hashes.
     for (ResourceInfo newInfo : currentStates) {
       boolean modified = !milestoneStates.contains(newInfo);
       if (modified) {
         modifiedResources.add(newInfo);
       }
-      if(GenerateModifiedResourcesWorker.isFromWorker()){
+      if(isFromWorker){
         counter++;
         if(isCanceled()){
           throw new StoppedByUserException("You pressed the Cancel button.");
@@ -263,35 +267,25 @@ public class PackageBuilder {
     }
     return modifiedResources;
   }
-  
-  /**
-   * TODO It is a bad practice to use statics to keep the result of an operation.
-   * 
-   * generateChangedFilesPackage() can return an object PackResult with this information.
-   */
-  private static int nrModFiles = 0;
-  
-  public static int getCounter() {
-    return nrModFiles;
-  }
-
   /**
    * Entry point. Detect what files were modified and put them in a ZIP.
    * 
-   * 
    * @param rootDir The location of the directory we want to see what files were changed.
    * @param packageLocation The location of the generated ZIP file.
-   * @param listener A ProgressChangedListener for sending the updates.
-   *  
-   * @throws IOException  Problems reading the file/directory.
-   * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
+   * @param modifiedResources The list with all the modified files.
+   * 
+   * @return How many files were modified.
+   * 
    * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
+   * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
+   * @throws IOException  Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the Cancel button.
-   *
+   * @throws NoChangedFilesException  No file was changed since the last generation of a milestone file.
    */
-  public void generateChangedFilesPackage(
-      File rootDir, 
-      File packageLocation
+  public PackResult generateChangedFilesPackage(
+      File rootDir,
+      File packageLocation,
+      ArrayList<ResourceInfo> modifiedResources
       ) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException, NoChangedFilesException  {
 
     /**
@@ -299,85 +293,65 @@ public class PackageBuilder {
      * 5. ZIP the "destinationDir" at "packageLocation".
      * 6. Delete the "destinationDir".
      */
+    
+    PackResult result = new PackResult();
 
-    //The list with all modified files.
-    final ArrayList<ResourceInfo> modifiedResources = generateModifiedResources(rootDir);
-    
-    // TODO packageLocation => PackageLocationProvider.getPackageLocation() that will present the chooser.
-    /**
-     * if (!modifiedResources.isEmpty()) {
-     *   File packageLocation = packageLocationProvider.getPackageLocation();
-     *   if (packageLocation == null) {
-     *     throw StoppedByUserException();
-     *   } else {
-     * .........THE JOB.....
-     * ..................
-     *   }
-     * } else {
-     *   // Show be presented.
-     *   throw new NoChangedFilesException();
-     * 
-     * }
-     * 
-     * 
-     */
-    
-    nrModFiles = 0;
-    final int numberOfModifiedfiles = modifiedResources.size();
+    int nrModFiles = 0;
+    final int totalModifiedfiles = modifiedResources.size();
     if (!modifiedResources.isEmpty()) {
-      File tempDir = new File(rootDir, "toArchive");
+        File tempDir = new File(rootDir, "toArchive");
 
-      //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
-      //files in the right directory
-      //Then we compress the tempDir and delete it.
-      try{
-        for(ResourceInfo aux : modifiedResources){
-          File dest = new File(tempDir, aux.getRelativePath());
-          dest.getParentFile().mkdirs();
+        //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
+        //files in the right directory
+        //Then we compress the tempDir and delete it.
+        try{
+          for(ResourceInfo aux : modifiedResources){
+            File dest = new File(tempDir, aux.getRelativePath());
+            dest.getParentFile().mkdirs();
 
-          FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
-          
-          if(isCanceled()){
-            throw new StoppedByUserException("You pressed the Cancel button.");
+            FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
+
+            if(isCanceled()){
+              throw new StoppedByUserException("You pressed the Cancel button.");
+            }
+
+            nrModFiles++;
+            ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*totalModifiedfiles);
+            fireChangeEvent(progress);
           }
-          
-          nrModFiles++;
-          ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*numberOfModifiedfiles);
-          fireChangeEvent(progress);
+
+          result.setModifiedFilesNumber(nrModFiles);
+
+          ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+          archiveBuilder.addListener(new ProgressChangeAdapter() {
+            public boolean isCanceled() {
+              return PackageBuilder.isCanceled();
+            }
+
+            public void done() {
+              fireDoneEvent();
+            }
+
+            public void change(ProgressChangeEvent progress) {
+              ProgressChangeEvent event = new ProgressChangeEvent(progress.getCounter() + totalModifiedfiles, progress.getMessage(), 2*totalModifiedfiles);
+              fireChangeEvent(event);
+            }
+          });
+
+          archiveBuilder.zipDirectory(tempDir, packageLocation);
+        } finally {
+          FileUtils.deleteDirectory(tempDir);
         }
-        ArchiveBuilder archiveBuilder = new ArchiveBuilder();
-        archiveBuilder.addListener(new ProgressChangeListener() {
-          public boolean isCanceled() {
-            return PackageBuilder.isCanceled();
-          }
-          
-          public void done() {
-            fireDoneEvent();
-          }
-          
-          public void change(ProgressChangeEvent progress) {
-            ProgressChangeEvent event = new ProgressChangeEvent(progress.getCounter() + numberOfModifiedfiles, progress.getMessage(), 2*numberOfModifiedfiles);
-            fireChangeEvent(event);
-          }
-
-          public void operationFailed(Exception ex) {}
-        });
-      
-        archiveBuilder.zipDirectory(tempDir, packageLocation);
-      } finally {
-        FileUtils.deleteDirectory(tempDir);
-      }
     } else {
       // Present the date when the milestore was created.
       File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
-      
+
       // Trow a customn exception.
       NoChangedFilesException t = new NoChangedFilesException(resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + new Date(milestoneFile.lastModified()));
-      
-      //System.out.println("To throw " + t.getMessage());
-      
       throw t;
     }
+
+    return result;
   }
 
   /**
@@ -398,24 +372,24 @@ public class PackageBuilder {
   public File generateChangeMilestone(File rootDir) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
     computeResourceInfo(rootDir, new Stack<String>(), list);
-    
+
     File file = storeMilestoneFile(new InfoResources(list), rootDir);
     if(isCanceled()){
       throw new StoppedByUserException("You pressed the Cancel button.");
     }
     ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
     fireChangeEvent(progress);
-    
+
     return file;
   }
-  
+
 
   private void fireChangeEvent(ProgressChangeEvent progress) {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.change(progress);
     }
   }
-  
+
   private void fireDoneEvent() {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.done();

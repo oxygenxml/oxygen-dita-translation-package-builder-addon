@@ -73,10 +73,25 @@ public interface Tags {
   public final String PACKAGEBUILDER_PROGRESS_TEXT2 = "packageBuilder_progressText2";
   public final String CHANGE_MILESTONE_PROGRESS_TEXT = "changeMilestone_progressText";
   public final String MILESTONE_NAME = "milestone_filename";
+  public final String GENERATE_MODIFIED_RESOURCES_LOGGER_MESSAGE = "generateModifiedResources_logger_message";
   
   public final String ZIPDIR_PROGRESS_TEXT = "zipDirectory_progressText";
   public final String UNZIPDIR_PROGRESS_TEXT = "unzipDirectory_progressText";
   public final String COPYDIR_PROGRESS_TEXT = "copyDirectory_progressText";
   public final String GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE1 = "generateModified_progress_message1";
   public final String GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE2 = "generateModified_progress_message2";
+  
+  public final String REPORT_DIALOG_LABEL = "reportDialog_label";
+  public final String REPORT_DIALOG_CHECKBOX_TOOLTIP = "reportDialog_checkbox_tooltip";
+  public final String REPORT_DIALOG_LABEL_TEXT2 = "reportDialog_label_text2";
+  public final String REPORT_DIALOG_LOGGER_MESSAGE = "reportDialog_logger_message1";
+  public final String REPORT_DIALOG_FILE_DESCRIPTOR = "reportDialog_fileDescriptor";
+  public final String REPORT_DIALOG_CHECKBOX_TEXT = "reportDialog_checkbox_text";
+  public final String REPORT_DIALOG_REPORT_NAME = "reportDialog_reportName";
+  
+  public final String CREATE_PACKAGE_LOGGER_MESSAGE1 = "createPackage_logger_message1";
+  public final String CREATE_PACKAGE_LOGGER_MESSAGE2 = "createPackage_logger_message2";
+  public final String CREATE_PACKAGE_LOGGER_MESSAGE3 = "createPackage_logger_message3";
+  public final String CREATE_PACKAGE_LOGGER_MESSAGE4 = "createPackage_logger_message4";
+  public final String CREATE_PACKAGE_LOGGER_MESSAGE5 = "createPackage_logger_message5";
 }

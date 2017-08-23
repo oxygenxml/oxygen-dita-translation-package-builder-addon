@@ -36,7 +36,7 @@ public class JaxbTest {
 		list.add(resource);
 
 		info.setList(list);
-
+		
 		PackageBuilder.storeMilestoneFile(info, rootDir);
 
 	    String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -55,7 +55,6 @@ public class JaxbTest {
 
 	@Test
 	public void testUnmarshaller() throws JAXBException, IOException {
-
 		ArrayList<ResourceInfo> list = PackageBuilder.loadMilestoneFile(rootDir);
 		String dump = DumpUtil.dump(list);
 		Assert.assertEquals("dir1/test.txt  12345\n", dump);;

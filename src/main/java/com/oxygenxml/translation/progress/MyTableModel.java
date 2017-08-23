@@ -24,7 +24,6 @@ public class MyTableModel extends AbstractTableModel{
     return loadPaths;
   }
 
-
   public void setLoadPaths(ArrayList<CheckboxTableItem> loadPaths) {
     this.loadPaths = loadPaths;
   }

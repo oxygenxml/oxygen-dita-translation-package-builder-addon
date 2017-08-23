@@ -405,14 +405,14 @@ public class PreviewDialog extends OKCancelDialog {
       }
       }
     });
-    
     panel.add(selectAll, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
     panel.add(scrollPane, new GridBagConstraints(0, 1, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 1, 1, 1), 1, 1));
     panel.add(treeButton, new GridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
-    panel.add(apply, new GridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
+    panel.add(apply, new GridBagConstraints(1, 2, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
     
     getContentPane().add(panel, BorderLayout.CENTER);
-
+    
+    setMinimumSize(new Dimension(300, 200));
     setLocationRelativeTo(parentFrame);
     pack();
     setResizable(true);

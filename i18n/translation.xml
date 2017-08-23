@@ -482,11 +482,115 @@
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="generateModified_progress_message2">
-        <comment> files for modified resources.</comment>
+        <comment>Progress dialog message.</comment>
         <val lang="en_US"> files for the modified ones.</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
+    <key value="reportDialog_label">
+        <comment> The label from the report dialog.</comment>
+        <val lang="en_US">A report will be created at : </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="reportDialog_checkbox_tooltip">
+        <comment> The checkbox tooltip from the report dialog.</comment>
+        <val lang="en_US">If selected a report containing the relative paths of the modified resources will be generated. </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="reportDialog_label_text2">
+        <comment> The label from the report dialog.</comment>
+        <val lang="en_US">The last report was created on : </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="reportDialog_logger_message1">
+        <comment> Logger mesage.</comment>
+        <val lang="en_US">The choosed package location from the report dialog is : </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="reportDialog_fileDescriptor">
+        <comment> The file descriptor from the report dialog.</comment>
+        <val lang="en_US">Zip Files(*.zip)</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="reportDialog_checkbox_text">
+        <comment> The checkbox text from the report dialog.</comment>
+        <val lang="en_US">Create report </val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="reportDialog_reportName">
+        <comment> The report name from the report dialog.</comment>
+        <val lang="en_US">modified_resources_report.xhtml</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+    <key value="createPackage_logger_message1">
+		<comment> Create package method, logger message.</comment>
+		<val lang="en_US">Pack entire directory? : </val>
+		<val lang="de_DE">de_DE_translation</val>
+		<val lang="fr_FR">fr_FR_translation</val>
+		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="nl_NL">nl_NL_translation</val>
+	</key>
+	<key value="createPackage_logger_message2">
+		<comment> Create package method, logger message.</comment>
+		<val lang="en_US">Zipping entire directory.</val>
+		<val lang="de_DE">de_DE_translation</val>
+		<val lang="fr_FR">fr_FR_translation</val>
+		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="nl_NL">nl_NL_translation</val>
+	</key>
+	<key value="createPackage_logger_message3">
+		<comment> Create package method, logger message.</comment>
+		<val lang="en_US">Zip only modified files</val>
+		<val lang="de_DE">de_DE_translation</val>
+		<val lang="fr_FR">fr_FR_translation</val>
+		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="nl_NL">nl_NL_translation</val>
+	</key>
+	<key value="createPackage_logger_message4">
+		<comment> Create package method, logger message.</comment>
+		<val lang="en_US">Should create report?</val>
+		<val lang="de_DE">de_DE_translation</val>
+		<val lang="fr_FR">fr_FR_translation</val>
+		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="nl_NL">nl_NL_translation</val>
+	</key>
+	<key value="createPackage_logger_message5">
+		<comment> Create package method, logger message.</comment>
+		<val lang="en_US">Founded modified files : </val>
+		<val lang="de_DE">de_DE_translation</val>
+		<val lang="fr_FR">fr_FR_translation</val>
+		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="nl_NL">nl_NL_translation</val>
+	</key>
+	<key value="generateModifiedResources_logger_message">
+		<comment> Generate modified resources method, logger message.</comment>
+		<val lang="en_US">Cames from modifiedResourcesWorker?--> </val>
+		<val lang="de_DE">de_DE_translation</val>
+		<val lang="fr_FR">fr_FR_translation</val>
+		<val lang="ja_JP">ja_JP_translation</val>
+		<val lang="nl_NL">nl_NL_translation</val>
+	</key>
 </translation>

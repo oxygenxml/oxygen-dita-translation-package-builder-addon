@@ -24,6 +24,7 @@ public class GenerateMilestoneTest {
     System.out.println(resource.getPath());
     File file = new File(resource.getPath());
     
+    
     String cksum = PackageBuilder.generateMD5(file);
     System.out.println(cksum);
     Assert.assertEquals("c439e0812a8e0a5434bffa6f063d4bec", cksum);

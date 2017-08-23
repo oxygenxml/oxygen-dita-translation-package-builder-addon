@@ -11,6 +11,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.progress.PackResult;
+import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 public class ZipTest {
@@ -32,8 +34,12 @@ public class ZipTest {
 		/* 
 		 * Generate the milestone for rootDir.
 		 */
-
-		new PackageBuilder().generateChangedFilesPackage(rootDir, packageLocation);
+		ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+		modifiedResources.add(new ResourceInfo("testGenerate/newAdded.txt"));
+		modifiedResources.add(new ResourceInfo("testIteration/dir1/md5.txt"));
+		PackResult nr = new PackResult();
+		PackageBuilder packageBuilder = new PackageBuilder();
+		nr = packageBuilder.generateChangedFilesPackage(rootDir, packageLocation, modifiedResources);
 
 		
 		ArrayList<String> actualResults = new ArchiveBuilder().unzipDirectory(packageLocation , tempDir);
@@ -44,6 +50,7 @@ public class ZipTest {
 		
 		Assert.assertEquals(expectedResults, actualResults);
 		System.out.println(actualResults);
+		System.out.println(nr + " files were modified.");
 		
 	}
 	
