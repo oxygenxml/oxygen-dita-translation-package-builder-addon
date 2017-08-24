@@ -48,7 +48,7 @@ public class UnzipWorker extends AbstractWorker {
       archiveBuilder.addListener(l);
     }
 
-    list = archiveBuilder.unzipDirectory(zipDir, rootDir);
+    list = archiveBuilder.unzipDirectory(zipDir, rootDir, false);
 
     return null;
   }

@@ -20,8 +20,6 @@ public class ModifiedFilesTest {
 	@Test
 	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException, StoppedByUserException {
 		
-		//File rootDir = new File("src/test/resources/modifiedFiles-Test");		
-		
 		URL resource = getClass().getClassLoader().getResource("modifiedFiles-Test");
 
 		File rootDir = new File(resource.getPath());

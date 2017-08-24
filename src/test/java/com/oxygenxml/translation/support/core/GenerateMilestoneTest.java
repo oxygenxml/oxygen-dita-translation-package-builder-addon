@@ -42,12 +42,13 @@ public class GenerateMilestoneTest {
 
 	@Test
 	public void testChangeMilestone() throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
-		URL resource = getClass().getClassLoader().getResource("generateMilestone-test");
+		URL resource = getClass().getClassLoader().getResource("generateMilestone-Test");
 		System.out.println(resource.getPath());
 		File rootDir = new File(resource.getPath());
 
+		PackageBuilder packageBuilder = new PackageBuilder();
 		
-		File file = new PackageBuilder().generateChangeMilestone(rootDir);
+		File file = packageBuilder.generateChangeMilestone(rootDir, true);
 		
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 

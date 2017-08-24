@@ -44,7 +44,7 @@ public class ReportDialog extends OKCancelDialog{
   /**
    * Predefined name of the file that stores the relative path for each modified file.
    */
-  private final static String REPORT_FILE_NAME = resourceBundle.getMessage(Tags.REPORT_DIALOG_REPORT_NAME);
+  private final static String REPORT_FILE_NAME = "modified_resources_report.xhtml";
   public static String getReportFileName() {
     return REPORT_FILE_NAME;
   }

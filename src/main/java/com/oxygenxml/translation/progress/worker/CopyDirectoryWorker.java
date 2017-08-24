@@ -36,7 +36,7 @@ public class CopyDirectoryWorker extends AbstractWorker {
     for (ProgressChangeListener l : listeners) {
       archiveBuilder.addListener(l);
     }
-    archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0});
+    archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0}, false);
 
     return null;
   }

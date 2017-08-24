@@ -38,24 +38,19 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class PackageBuilder {
   /**
-   *  Resource bundle.
-   */
-  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-  /**
    *  Logger for logging.
    */
   private static Logger logger = Logger.getLogger(PackageBuilder.class); 
   /**
    * Predefined name of the file that stores a hash for each file.
    */
-  private final static String MILESTONE_FILE_NAME = resourceBundle.getMessage(Tags.MILESTONE_NAME);
+  private final static String MILESTONE_FILE_NAME = "translation_builder_milestone.xml";
   /**
    *  A list of custom listeners.
    */
   private static List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
 
   public PackageBuilder(){
-
   }
 
   public void addListener(ProgressChangeListener listener) {
@@ -158,7 +153,7 @@ public class PackageBuilder {
         }
       }
     } else{
-      throw new IOException(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_IF_FILE_IS_NOT_DIR));
+      throw new IOException("Please select a directory.");
     }
   }
 
@@ -201,7 +196,7 @@ public class PackageBuilder {
     File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
 
     if (!milestoneFile.exists()) {
-      throw new IOException(resourceBundle.getMessage(Tags.LOAD_MILESTONE_EXCEPTION));
+      throw new IOException("No milestone was created.");
     }
 
     JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
@@ -235,7 +230,7 @@ public class PackageBuilder {
      * 3. Compares the current file MD5 with the old ones and collects the changed resources.
      **/
     if(logger.isDebugEnabled()){
-      logger.debug(resourceBundle.getMessage(Tags.GENERATE_MODIFIED_RESOURCES_LOGGER_MESSAGE) + isFromWorker);
+      logger.debug("Cames from modifiedResourcesWorker?-->" + isFromWorker);
     }
     // Store state.
     ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir);
@@ -253,6 +248,7 @@ public class PackageBuilder {
         modifiedResources.add(newInfo);
       }
       if(isFromWorker){
+        PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
         counter++;
         if(isCanceled()){
           throw new StoppedByUserException("You pressed the Cancel button.");
@@ -273,6 +269,7 @@ public class PackageBuilder {
    * @param rootDir The location of the directory we want to see what files were changed.
    * @param packageLocation The location of the generated ZIP file.
    * @param modifiedResources The list with all the modified files.
+   * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @return How many files were modified.
    * 
@@ -285,7 +282,8 @@ public class PackageBuilder {
   public PackResult generateChangedFilesPackage(
       File rootDir,
       File packageLocation,
-      ArrayList<ResourceInfo> modifiedResources
+      ArrayList<ResourceInfo> modifiedResources,
+      boolean isFromTest
       ) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException, NoChangedFilesException  {
 
     /**
@@ -314,10 +312,12 @@ public class PackageBuilder {
             if(isCanceled()){
               throw new StoppedByUserException("You pressed the Cancel button.");
             }
-
-            nrModFiles++;
-            ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*totalModifiedfiles);
-            fireChangeEvent(progress);
+            if(!isFromTest){
+              PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+              nrModFiles++;
+              ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*totalModifiedfiles);
+              fireChangeEvent(progress);
+            }
           }
 
           result.setModifiedFilesNumber(nrModFiles);
@@ -338,7 +338,7 @@ public class PackageBuilder {
             }
           });
 
-          archiveBuilder.zipDirectory(tempDir, packageLocation);
+          archiveBuilder.zipDirectory(tempDir, packageLocation, isFromTest);
         } finally {
           FileUtils.deleteDirectory(tempDir);
         }
@@ -347,7 +347,7 @@ public class PackageBuilder {
       File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
 
       // Trow a customn exception.
-      NoChangedFilesException t = new NoChangedFilesException(resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + new Date(milestoneFile.lastModified()));
+      NoChangedFilesException t = new NoChangedFilesException("There are no changed files since the milestone created on: " + new Date(milestoneFile.lastModified()));
       throw t;
     }
 
@@ -360,6 +360,7 @@ public class PackageBuilder {
    * 
    * 
    * @param rootDir The directory were the "special file"(translation_builder_milestone.xml) is located.
+   * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @return	The "special file"(translation_builder_milestone.xml).
    * 
@@ -369,7 +370,7 @@ public class PackageBuilder {
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws StoppedByUserException The user pressed the "Cancel" button.
    */
-  public File generateChangeMilestone(File rootDir) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
+  public File generateChangeMilestone(File rootDir, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
     computeResourceInfo(rootDir, new Stack<String>(), list);
 
@@ -377,8 +378,11 @@ public class PackageBuilder {
     if(isCanceled()){
       throw new StoppedByUserException("You pressed the Cancel button.");
     }
-    ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
-    fireChangeEvent(progress);
+    if(!isFromTest){
+      PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+      ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
+      fireChangeEvent(progress);
+    }
 
     return file;
   }

@@ -313,14 +313,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="loadMilestone_exception">
-        <comment>Exception message if the milestone wasn't created.</comment>
-        <val lang="en_US">No milestone was created.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
     <key value="apply_button">
         <comment>Apply button.</comment>
         <val lang="en_US">Apply</val>
@@ -385,14 +377,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="previewDialog_ifFileIsNotDir">
-        <comment>Preview dialog information message.</comment>
-        <val lang="en_US"> Please select a directory.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
     <key value="progressDialog_label">
         <comment>Progress dialog label text.</comment>
         <val lang="en_US">Here you'll see informations about the progress.</val>
@@ -444,14 +428,6 @@
     <key value="copyDirectory_progressText">
         <comment>Progress dialog label text.</comment>
         <val lang="en_US"> files copied.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="milestone_filename">
-        <comment>The generated milestone file name.</comment>
-        <val lang="en_US">translation_builder_milestone.xml</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -537,14 +513,6 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="reportDialog_reportName">
-        <comment> The report name from the report dialog.</comment>
-        <val lang="en_US">modified_resources_report.xhtml</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
     <key value="createPackage_logger_message1">
 		<comment> Create package method, logger message.</comment>
 		<val lang="en_US">Pack entire directory? : </val>
@@ -580,14 +548,6 @@
 	<key value="createPackage_logger_message5">
 		<comment> Create package method, logger message.</comment>
 		<val lang="en_US">Founded modified files : </val>
-		<val lang="de_DE">de_DE_translation</val>
-		<val lang="fr_FR">fr_FR_translation</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">nl_NL_translation</val>
-	</key>
-	<key value="generateModifiedResources_logger_message">
-		<comment> Generate modified resources method, logger message.</comment>
-		<val lang="en_US">Cames from modifiedResourcesWorker?--> </val>
 		<val lang="de_DE">de_DE_translation</val>
 		<val lang="fr_FR">fr_FR_translation</val>
 		<val lang="ja_JP">ja_JP_translation</val>

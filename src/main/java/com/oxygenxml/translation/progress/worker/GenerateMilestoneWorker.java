@@ -28,7 +28,7 @@ public class GenerateMilestoneWorker extends AbstractWorker{
     for (ProgressChangeListener l : listeners) {
       packageBuilder.addListener(l);
     }
-    packageBuilder.generateChangeMilestone(rootDir);
+    packageBuilder.generateChangeMilestone(rootDir, false);
     
     return null;
   }

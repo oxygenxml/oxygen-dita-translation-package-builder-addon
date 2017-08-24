@@ -78,7 +78,7 @@ public class ZipWorker extends AbstractWorker {
         archiveBuilder.addListener(l);
       }
 
-      archiveBuilder.zipDirectory(rootDir, zipDir);
+      archiveBuilder.zipDirectory(rootDir, zipDir, false);
     }
     else{
       PackageBuilder packageBuilder = new PackageBuilder();
@@ -86,7 +86,7 @@ public class ZipWorker extends AbstractWorker {
         packageBuilder.addListener(l);
       }
       
-      modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(rootDir,zipDir, modifiedResources);
+      modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(rootDir,zipDir, modifiedResources, false);
     }
     return null;
   }

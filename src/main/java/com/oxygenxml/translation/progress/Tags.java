@@ -53,8 +53,6 @@ public interface Tags {
   public final String SHOW_REPORT_TITLE = "showReport_dialog_title";
   public final String SHOW_REPORT_EXCEPTION_MESSAGE = "showReport_exception_message";
   
-  public final String LOAD_MILESTONE_EXCEPTION = "loadMilestone_exception";
-  
   public final String APPLY_BUTTON = "apply_button";
   public final String SWICH_TO_TREE_VIEW_BUTTON = "switchToTreeView_button";
   public final String SWICH_TO_LIST_VIEW_BUTTON = "switchToListView_button";
@@ -64,7 +62,6 @@ public interface Tags {
   public final String PREVIEW_DIALOG_PROGRESS_INFOMESSAGE = "previewDialog_progressDialog_infoMessage";
   public final String PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE = "previewDialog_progressDialog_errorMessage";
   public final String PREVIEW_DIALOG_SUPPORTED_OXYFILE = "previewDialog_supportedOxyFile";
-  public final String PREVIEW_DIALOG_IF_FILE_IS_NOT_DIR = "previewDialog_ifFileIsNotDir";
   public final String PREVIEW_DIALOG_CHECKBOX = "preview_dialog_checkBox";
   
   public final String PROGRESS_DIALOG_LABEL = "progressDialog_label";
@@ -72,8 +69,6 @@ public interface Tags {
   public final String PACKAGEBUILDER_PROGRESS_TEXT1 = "packageBuilder_progressText1";
   public final String PACKAGEBUILDER_PROGRESS_TEXT2 = "packageBuilder_progressText2";
   public final String CHANGE_MILESTONE_PROGRESS_TEXT = "changeMilestone_progressText";
-  public final String MILESTONE_NAME = "milestone_filename";
-  public final String GENERATE_MODIFIED_RESOURCES_LOGGER_MESSAGE = "generateModifiedResources_logger_message";
   
   public final String ZIPDIR_PROGRESS_TEXT = "zipDirectory_progressText";
   public final String UNZIPDIR_PROGRESS_TEXT = "unzipDirectory_progressText";
@@ -87,7 +82,6 @@ public interface Tags {
   public final String REPORT_DIALOG_LOGGER_MESSAGE = "reportDialog_logger_message1";
   public final String REPORT_DIALOG_FILE_DESCRIPTOR = "reportDialog_fileDescriptor";
   public final String REPORT_DIALOG_CHECKBOX_TEXT = "reportDialog_checkbox_text";
-  public final String REPORT_DIALOG_REPORT_NAME = "reportDialog_reportName";
   
   public final String CREATE_PACKAGE_LOGGER_MESSAGE1 = "createPackage_logger_message1";
   public final String CREATE_PACKAGE_LOGGER_MESSAGE2 = "createPackage_logger_message2";

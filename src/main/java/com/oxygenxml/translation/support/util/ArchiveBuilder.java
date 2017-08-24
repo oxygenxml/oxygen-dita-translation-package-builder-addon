@@ -40,7 +40,7 @@ public final class ArchiveBuilder {
   /**
    *  Resource bundle.
    */
-  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+//  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
 
 
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
@@ -58,10 +58,12 @@ public final class ArchiveBuilder {
    * 
    * @param dir  The location of the file/directory we want to zip.
    * @param zipFile  The location of the package.
+   * @param isFromTest True if this method is called by a JUnit test class.
+   * 
    * @throws IOException  Problems reading the file.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public void zipDirectory(File dir, File zipFile) throws IOException, StoppedByUserException {
+  public void zipDirectory(File dir, File zipFile, boolean isFromTest) throws IOException, StoppedByUserException {
     try{
       zipFile.getParentFile().mkdirs();
 
@@ -70,7 +72,7 @@ public final class ArchiveBuilder {
       try {
         fout = new FileOutputStream(zipFile);
         zout = new ZipOutputStream(fout);
-        zipSubDirectory("", dir, zout, new int[] {0});
+        zipSubDirectory("", dir, zout, new int[] {0}, isFromTest);
       } finally{
         zout.close();
       }
@@ -86,12 +88,12 @@ public final class ArchiveBuilder {
    * @param dir  The location of the file/directory we want to zip.
    * @param zout  Where we create the archive.
    * @param resourceCounter Counter the number of resources added in the archive.
-   * 
+   * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @throws IOException  Problems reading the files.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int[] resourceCounter) throws IOException, StoppedByUserException {
+  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int[] resourceCounter, boolean isFromTest) throws IOException, StoppedByUserException {
     try{
       byte[] buffer = new byte[4096];
       File[] files = dir.listFiles();
@@ -105,7 +107,7 @@ public final class ArchiveBuilder {
               throw new StoppedByUserException("You pressed the Cancel button.");
             }
 
-            zipSubDirectory(path, file, zout, resourceCounter);
+            zipSubDirectory(path, file, zout, resourceCounter, isFromTest);
             zout.closeEntry();
           } else {
             FileInputStream fin = null;
@@ -119,9 +121,12 @@ public final class ArchiveBuilder {
               if(isCanceled()){
                 throw new StoppedByUserException("You pressed the Cancel button.");
               }
-              resourceCounter[0]++;
-              ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
-              fireChangeEvent(progress);
+              if(!isFromTest){
+                PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+                resourceCounter[0]++;
+                ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
+                fireChangeEvent(progress);
+              }
 
             } finally{
               zout.closeEntry();
@@ -142,10 +147,13 @@ public final class ArchiveBuilder {
    *    
    * @param packageLocation  The location of the package.
    * @param destDir Where to extract the package content.
-   * @return A list with the relative path of every extracted file.
+   * @param isFromTest True if this method is called by a JUnit test class.
+   * 
+   * @return A list with the relative path of every extracted file
+   * 
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public ArrayList<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException{
+  public ArrayList<String> unzipDirectory(File packageLocation, File destDir, boolean isFromTest) throws StoppedByUserException{
 
     //File baseDir = destDir.getParentFile();
 
@@ -196,10 +204,12 @@ public final class ArchiveBuilder {
           if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
-
-          counter++;
-          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
-          fireChangeEvent(progress);
+          if(!isFromTest){
+            PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+            counter++;
+            ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
+            fireChangeEvent(progress);
+          }
 
         }
       }finally{
@@ -217,10 +227,12 @@ public final class ArchiveBuilder {
    * @param sourceLocation The location of the files that are about to be copied.
    * @param targetLocation  Where to copy the files.
    * @param counter  Computes the number of copied files.
+   * @param isFromTest True if this method is called by a JUnit test class.
+   * 
    * @throws IOException Problems reading the files.
    * @throws StoppedByUserException  The user pressed the Cancel button.
    */
-  public void copyDirectory(File sourceLocation , File targetLocation, int[] counter) throws IOException, StoppedByUserException {
+  public void copyDirectory(File sourceLocation , File targetLocation, int[] counter, boolean isFromTest) throws IOException, StoppedByUserException {
 
     if (sourceLocation.isDirectory()) {
       if (!targetLocation.exists()) {
@@ -230,7 +242,7 @@ public final class ArchiveBuilder {
       String[] children = sourceLocation.list();
       for (int i=0; i<children.length; i++) {
         copyDirectory(new File(sourceLocation, children[i]),
-            new File(targetLocation, children[i]), counter);
+            new File(targetLocation, children[i]), counter, isFromTest);
         if(isCanceled()){
           throw new StoppedByUserException("You pressed the Cancel button.");
         }
@@ -259,9 +271,11 @@ public final class ArchiveBuilder {
       if(isCanceled()){
         throw new StoppedByUserException("You pressed the Cancel button.");
       }
-
-      ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
-      fireChangeEvent(progress);
+      if(!isFromTest){
+        PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+        ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
+        fireChangeEvent(progress);
+      }
 
     }
   }

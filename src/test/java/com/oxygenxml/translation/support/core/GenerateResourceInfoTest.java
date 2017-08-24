@@ -39,7 +39,6 @@ public class GenerateResourceInfoTest {
 	
 	@Test
 	public void testGenerateRelativePaths_2() throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
-		//File dirPath = new File("src/test/resources/testGenerate-ResourceInfoTest");
 		
 		URL resource = getClass().getClassLoader().getResource("testGenerate-ResourceInfoTest");
 

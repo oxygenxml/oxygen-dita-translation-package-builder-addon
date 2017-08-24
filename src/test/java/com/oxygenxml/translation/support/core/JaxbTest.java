@@ -48,7 +48,7 @@ public class JaxbTest {
 		+"</resources>\n";
 
 	    
-	  String actualResult = IOUtils.toString(new FileInputStream(new File(rootDir, "milestone.xml")), "utf-8");
+	  String actualResult = IOUtils.toString(new FileInputStream(new File(rootDir, "translation_builder_milestone.xml")), "utf-8");
 	  
 		Assert.assertEquals(expectedResult, actualResult);
 	}

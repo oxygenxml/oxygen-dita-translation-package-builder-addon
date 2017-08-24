@@ -520,7 +520,7 @@ public class PreviewDialog extends OKCancelDialog {
         }
       } 
     else{
-      throw new IOException(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_IF_FILE_IS_NOT_DIR));
+      throw new IOException("Please select a directory.");
     }
   }
   /**
