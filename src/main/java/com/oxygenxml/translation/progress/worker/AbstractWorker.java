@@ -20,10 +20,6 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
   protected ArrayList<ProgressChangeListener> listeners;
   
   
-  public AbstractWorker(ArrayList<ProgressChangeListener> listeners) {
-    this.listeners = listeners;
-  }
-  
   public AbstractWorker() {
     this.listeners = new ArrayList<ProgressChangeListener>();
   }

@@ -46,16 +46,14 @@ public class ZipWorker extends AbstractWorker {
    */
   private ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
   
-  public ZipWorker(File rootDir, File chosenDir,  ArrayList<ProgressChangeListener> listeners, boolean packAll, ArrayList<ResourceInfo> modifiedResources) {
-    super(listeners);
+  public ZipWorker(File rootDir, File chosenDir, boolean packAll, ArrayList<ResourceInfo> modifiedResources) {
     this.rootDir = rootDir;
     this.packAll = packAll;
     this.zipDir = chosenDir;
     this.modifiedResources = modifiedResources;
   }
   
-  public ZipWorker(File rootDir, File chosenDir, ArrayList<ProgressChangeListener> listeners, boolean packAll) {
-    super(listeners);
+  public ZipWorker(File rootDir, File chosenDir, boolean packAll) {
     this.rootDir = rootDir;
     this.zipDir = chosenDir;
     this.packAll = packAll;
@@ -86,7 +84,11 @@ public class ZipWorker extends AbstractWorker {
         packageBuilder.addListener(l);
       }
       
-      modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(rootDir,zipDir, modifiedResources, false);
+      modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
+          rootDir,
+          zipDir, 
+          modifiedResources, 
+          false);
     }
     return null;
   }

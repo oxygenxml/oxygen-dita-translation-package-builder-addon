@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.translation.progress.NoChangedFilesException;
 import com.oxygenxml.translation.progress.PreviewDialog;
 import com.oxygenxml.translation.progress.ProgressChangeAdapter;
-import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.progress.ProgressDialog;
 import com.oxygenxml.translation.progress.ReportDialog;
 import com.oxygenxml.translation.progress.StoppedByUserException;
@@ -63,7 +62,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
     //You can set or read global options.
     //The "ro.sync.exml.options.APIAccessibleOptionTags" contains all accessible keys.
-    //		  pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
+    //      pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
     // Check In action
     //You can access the submenu Translation Package Builder only from the DITA Maps area.
     // The submenu contains these 3 actions.
@@ -321,7 +320,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               final File tempDir = new File(tempFile.getParentFile(), resourceBundle.getMessage(Tags.ACTION3_TEMPDIR_NAME));
 
               if (logger.isDebugEnabled()) {
-                logger.debug("Created temp dir if the user wants a preview : " + tempDir.getAbsolutePath());
+                logger.debug(tempDir.getAbsolutePath());
               }
 
               final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir);
@@ -332,7 +331,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
               unzipTask.addProgressListener(new ProgressChangeAdapter() {
                 public void done() { 
-                  new PreviewDialog(frame, resourceBundle.getMessage(Tags.ACTION3_PREVIEW_DIALOG_TITLE), unzipTask.getList(), rootDir, tempDir);
+                  new PreviewDialog(frame, unzipTask.getList(), rootDir, tempDir);
                 }
                 public void operationFailed(Exception ex) {
                   if(!(ex instanceof StoppedByUserException)){
@@ -491,7 +490,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     // 2. Show the dialog. 
     // 3. The ZIP worker notifies the dialog.
     final ZipWorker zipTask;
-    ArrayList<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
     if(logger.isDebugEnabled()){
       logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE1) + packAll);
     }
@@ -500,25 +498,21 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       if(logger.isDebugEnabled()){
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE2));
       }
-      zipTask = new ZipWorker(rootDir, chosenDir, listeners, packAll);
-
-      ProgressDialog.install(
-          zipTask, 
-          frame , 
-          resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
+      zipTask = new ZipWorker(rootDir, chosenDir, packAll);
     } else { 
       if (logger.isDebugEnabled()) {
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE3));
       }
-      zipTask = new ZipWorker(rootDir, chosenDir, listeners, packAll, modifiedResources);
-      ProgressDialog.install(
-          zipTask, 
-          frame , 
-          resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
-    } 
+      zipTask = new ZipWorker(rootDir, chosenDir, packAll, modifiedResources);
+    }
+    
+    ProgressDialog.install(
+        zipTask, 
+        frame , 
+        resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
 
     // This listener notifies the user about how the operation ended.
-    listeners.add(new ProgressChangeAdapter() {                      
+    zipTask.addProgressListener(new ProgressChangeAdapter() {                      
       public void done() { 
         if(packAll){
           JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_DIR_MESSAGE),
