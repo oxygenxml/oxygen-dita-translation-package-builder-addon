@@ -321,7 +321,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               final File tempDir = new File(tempFile.getParentFile(), resourceBundle.getMessage(Tags.ACTION3_TEMPDIR_NAME));
 
               if (logger.isDebugEnabled()) {
-                logger.debug(tempDir.getAbsolutePath());
+                logger.debug("Created temp dir if the user wants a preview : " + tempDir.getAbsolutePath());
               }
 
               final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir);

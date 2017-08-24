@@ -146,7 +146,7 @@ public class PreviewDialog extends OKCancelDialog {
                  }
                  
                  if (logger.isDebugEnabled()) {
-                   logger.debug(new File(translatedFiles.getPath(), relativePath));
+                   logger.debug("Selected file in tree view : " + new File(translatedFiles.getPath(), relativePath));
                  }
                  File selectedFile = new File(translatedFiles.getPath(), relativePath);
                  selectedTreeFiles.add(selectedFile);
@@ -177,12 +177,12 @@ public class PreviewDialog extends OKCancelDialog {
             for (File unselectedFile : unSelectedListFiles) {
 
               if (logger.isDebugEnabled()) {
-                logger.debug(unselectedFile.getAbsolutePath());
+                logger.debug("Unselected file from list view : " + unselectedFile.getAbsolutePath());
               }
               try {
                 FileUtils.forceDelete(unselectedFile);
                 if (logger.isDebugEnabled()) {
-                  logger.debug("Deleted : " + unselectedFile.getAbsolutePath());
+                  logger.debug("Deleted file from list view : " + unselectedFile.getAbsolutePath());
                 }
                 //System.out.println("Deleted : " + unselectedFile.getAbsolutePath());
               } catch (IOException e1) {
@@ -195,7 +195,7 @@ public class PreviewDialog extends OKCancelDialog {
 
         if((selectedTreeFiles.isEmpty() && treeButton.getText() == resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON)) || 
             (selectedListFiles.isEmpty() && treeButton.getText() == resourceBundle.getMessage(Tags.SWICH_TO_TREE_VIEW_BUTTON))){
-          pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
+          pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
         } else {
           setVisible(false);
           final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(filesOnDisk, translatedFiles);
@@ -254,7 +254,7 @@ public class PreviewDialog extends OKCancelDialog {
             String selectedPath = relativePaths.getModel().getValueAt(selectedRow, selectedColumn).toString();
 
             if (logger.isDebugEnabled()) {
-              logger.debug(selectedPath);
+              logger.debug("Selected file on double click,for DIFF : " + selectedPath);
             }
 
             URL leftURL = null;
@@ -331,8 +331,8 @@ public class PreviewDialog extends OKCancelDialog {
                     relativePath = relativePath + "/" + selectedPath[length-1];
 
                     if (logger.isDebugEnabled()) {
-                      logger.debug(tree.getSelectionPath());
-                      logger.debug(new File(filesOnDisk, relativePath));
+                      logger.debug("Selected file from tree view,objects : " + tree.getSelectionPath());
+                      logger.debug("Double clicked file from tree view,for DIFF : " + new File(filesOnDisk, relativePath));
                     }
                     
                     URL leftURL = null;

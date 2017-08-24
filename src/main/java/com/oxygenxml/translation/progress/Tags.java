@@ -57,7 +57,7 @@ public interface Tags {
   public final String SWICH_TO_TREE_VIEW_BUTTON = "switchToTreeView_button";
   public final String SWICH_TO_LIST_VIEW_BUTTON = "switchToListView_button";
   
-  public final String PREVIEW_DIALOG_ERROR_MESSAGE = "previewDialog_erroMessage";
+  public final String PREVIEW_DIALOG_ERROR_MESSAGE = "previewDialog_errorMessage";
   public final String PREVIEW_DIALOG_PROGRESS_TITLE = "previewDialog_progressDialog_title";
   public final String PREVIEW_DIALOG_PROGRESS_INFOMESSAGE = "previewDialog_progressDialog_infoMessage";
   public final String PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE = "previewDialog_progressDialog_errorMessage";
