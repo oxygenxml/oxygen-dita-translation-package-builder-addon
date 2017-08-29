@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress.worker;
+package com.oxygenxml.translation.ui.worker;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,13 +7,13 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
-import com.oxygenxml.translation.progress.NoChangedFilesException;
-import com.oxygenxml.translation.progress.PackResult;
-import com.oxygenxml.translation.progress.ProgressChangeListener;
-import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.PackageBuilder;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.ui.NoChangedFilesException;
+import com.oxygenxml.translation.ui.PackResult;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
  * Creates an AbstractWorker for packing a directory.
@@ -91,5 +91,10 @@ public class ZipWorker extends AbstractWorker {
           false);
     }
     return null;
+  }
+  
+  @Override
+  public void done() {
+    super.done();
   }
 }

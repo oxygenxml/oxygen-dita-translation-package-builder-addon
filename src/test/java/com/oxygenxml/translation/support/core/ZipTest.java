@@ -11,9 +11,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.progress.PackResult;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.ui.PackResult;
 
 public class ZipTest {
 	/**

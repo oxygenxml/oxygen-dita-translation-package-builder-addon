@@ -1,9 +1,9 @@
-package com.oxygenxml.translation.progress.worker;
+package com.oxygenxml.translation.ui.worker;
 
 import java.io.File;
 
-import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.support.core.PackageBuilder;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
 /**
  * Creates an AbstractWorker for generating the milestone file.
  * 
@@ -27,10 +27,15 @@ public class GenerateMilestoneWorker extends AbstractWorker{
     PackageBuilder packageBuilder = new PackageBuilder();
     for (ProgressChangeListener l : listeners) {
       packageBuilder.addListener(l);
-    }
+    } 
     packageBuilder.generateChangeMilestone(rootDir, false);
     
     return null;
+  }
+  
+  @Override
+  public void done() {
+    super.done();
   }
 
 }

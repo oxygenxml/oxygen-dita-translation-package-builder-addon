@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -40,7 +40,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.progress.worker.CopyDirectoryWorker;
+import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
 
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -81,10 +81,26 @@ public class PreviewDialog extends OKCancelDialog {
    *  The tree that displays the translated files in a set of hierarchical data.
    */
   private CheckBoxTree tree;
+  /**
+   *  The button that allows you to switch between the list view and the tree view.
+   */
   private JButton switchViewButton;
+  /**
+   *  The location of the archive we want to apply over the current ditamap.
+   */
   private File translatedFiles;
+  /**
+   *  The custom table model.
+   */
   private MyTableModel tableModel;
+  /**
+   *  The current ditamap parent file.
+   */
   private File filesOnDisk;
+  /**
+   *  True if the list view preview is displayed. 
+   */
+  private boolean isListViewShowing = true;
   
   /**
    * A dialog that shows a preview of the files that are about to be applied. It compares the files from 
@@ -131,13 +147,13 @@ public class PreviewDialog extends OKCancelDialog {
     
     resourcesTable.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent event) {
-        
+        // Show a DIFF if the user double clicks on a file.
         if (event.getClickCount() == 2) {
           int selectedColumn = resourcesTable.getSelectedColumn();
           int selectedRow = resourcesTable.getSelectedRow();
-
+          
           Rectangle goodCell = resourcesTable.getCellRect(selectedRow, 1, true);
-
+          // show DIFF only if the user double clicks on the second column cells
           if (goodCell.contains(event.getPoint())) {
             String selectedPath = resourcesTable.getModel().getValueAt(selectedRow, selectedColumn).toString();
 
@@ -160,11 +176,12 @@ public class PreviewDialog extends OKCancelDialog {
 
     final JCheckBox selectAll = new JCheckBox(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_CHECKBOX));
     final JPanel panel = new JPanel(new GridBagLayout());
-   
+    // Switch the users view on switchViewButton click
     switchViewButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        // TODO Use a boolean to keep track of the state.
-        if (switchViewButton.getText().equals(resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON))) {          
+        isListViewShowing = !isListViewShowing;
+        
+        if (isListViewShowing) { 
           scrollPane.setViewportView(resourcesTable);
           switchViewButton.setText(resourceBundle.getMessage(Tags.SWICH_TO_TREE_VIEW_BUTTON));
           selectAll.setVisible(true);
@@ -179,7 +196,7 @@ public class PreviewDialog extends OKCancelDialog {
         }
       }
     });
-    
+   
     resourcesTable.getModel().addTableModelListener(new TableModelListener() {
       public void tableChanged(TableModelEvent e) {
         conflictFlag = true;
@@ -200,16 +217,18 @@ public class PreviewDialog extends OKCancelDialog {
     
     // By default all entries are selected.
     selectAll.setSelected(true);  
-    
+   
     selectAll.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(conflictFlag == false){
+          // Select all table entries if the "Select all" checkbox is selected
           if (e.getStateChange() == ItemEvent.SELECTED) {
             for(int i = 0; i < tableModel.getRowCount(); i++){
               tableModel.setValueAt(Boolean.TRUE, i, 0);
             }
             resourcesTable.repaint();
           } else {
+            // otherwise deselect them.
             for(int i = 0; i < tableModel.getRowCount(); i++){
               tableModel.setValueAt(Boolean.FALSE, i, 0);
             }
@@ -293,7 +312,6 @@ public class PreviewDialog extends OKCancelDialog {
   
   /**
    * Deletes the unselected files(from the tree view option) from a specific directory.
-   * It doesn't work if you select a tree node(a directory).
    * 
    * @param dirPath  The directory that contains the selected files.
    * @param selectedFiles  A list with all the selected files from the tree view option.
@@ -302,10 +320,14 @@ public class PreviewDialog extends OKCancelDialog {
   private void deleteUnselectedFileFromDir(File dirPath, ArrayList<File> selectedFiles) throws IOException{
     File[] everythingInThisDir = dirPath.listFiles();
     if (everythingInThisDir != null){
+      // for every file in the current directory
       for (int i = 0; i < everythingInThisDir.length; i++) {
+        //if current file is a directory
         if (everythingInThisDir[i].isDirectory()){ 
+          //and if the directory should be deleted
           if(shouldDelete(selectedFiles, everythingInThisDir[i])){
             try {
+              // delete the directory
               FileUtils.forceDelete(everythingInThisDir[i]);
             } catch (IOException e1) {
               e1.printStackTrace();
@@ -314,14 +336,16 @@ public class PreviewDialog extends OKCancelDialog {
             if (logger.isDebugEnabled()) {
               logger.debug("Deleted if dir : " + everythingInThisDir[i].getPath());
             }
-//            System.out.println("Deleted if dir : " + everythingInThisDir[i].getPath());
           }
+          // if the directory should NOT be deleted and it's not among the selected files
           else if(!selectedFiles.contains(everythingInThisDir[i])){
+            // call the method recursively with the current directory
             deleteUnselectedFileFromDir(everythingInThisDir[i], selectedFiles);
           }
-        }
+        } // if current file is a file and it should be deleted
           else if (everythingInThisDir[i].isFile() && shouldDelete(selectedFiles, everythingInThisDir[i])){          
             try {
+              // delete the current file
               FileUtils.forceDelete(everythingInThisDir[i]);
             } catch (IOException e1) {
               e1.printStackTrace();
@@ -330,7 +354,6 @@ public class PreviewDialog extends OKCancelDialog {
             if (logger.isDebugEnabled()) {
               logger.debug("Deleted if file: " + everythingInThisDir[i].getPath());
             }
-//            System.out.println("Deleted if file: " + everythingInThisDir[i].getPath());
           }
         }
       } 
@@ -369,19 +392,25 @@ public class PreviewDialog extends OKCancelDialog {
     
     super.doOK();
   }
-  
+  /**
+   * Override the selected files from both,list and tree, views in the parent directory of the current ditamap.
+   */
   private void applyChanges() {
     
     final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
-    
+    // List of selected files from the tree view
     ArrayList<File> selectedTreeFiles = new ArrayList<File>();
+    // List of selected files from the list view
     ArrayList<File> selectedListFiles = new ArrayList<File>();
+    // List of unselected files from list view
     ArrayList<File> unSelectedListFiles = new ArrayList<File>();
     
     if(switchViewButton.getText() == resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON)){
+      //Get all the selected paths
         TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
        
         for (TreePath treePath : treePaths) {
+            //Build the relative path 
              Object[] obj = treePath.getPath();
              int length = obj.length;
              String relativePath = ""; 
@@ -397,9 +426,7 @@ public class PreviewDialog extends OKCancelDialog {
              }
              File selectedFile = new File(translatedFiles.getPath(), relativePath);
              selectedTreeFiles.add(selectedFile);
-//             System.out.println("TREE selected file : " + selectedFile.getAbsolutePath());
         }
-//        System.out.println(selectedTreeFiles.toString());
         if(!selectedTreeFiles.isEmpty() && !selectedTreeFiles.get(0).equals(new File(translatedFiles.getPath()))){
           try {
             deleteUnselectedFileFromDir(translatedFiles, selectedTreeFiles);
@@ -431,7 +458,6 @@ public class PreviewDialog extends OKCancelDialog {
             if (logger.isDebugEnabled()) {
               logger.debug("Deleted : " + unselectedFile.getAbsolutePath());
             }
-            //System.out.println("Deleted : " + unselectedFile.getAbsolutePath());
           } catch (IOException e1) {
             e1.printStackTrace();
             logger.error(e1, e1);
@@ -445,16 +471,15 @@ public class PreviewDialog extends OKCancelDialog {
       pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
     } else {
       setVisible(false);
+      //Copy the files on thread.
       final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(filesOnDisk, translatedFiles);
+      //Install the tracker.
       ProgressDialog.install(
           copyDirTask, 
           (JFrame) pluginWorkspace.getParentFrame(), 
           resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_TITLE));
-
-      copyDirTask.addProgressListener(new ProgressChangeListener() {
-        public boolean isCanceled() {
-          return false;
-        }
+      // This listener notifies the user about how the operation ended.
+      copyDirTask.addProgressListener(new ProgressChangeAdapter() {
         public void done() {
           pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
           try {
@@ -463,11 +488,12 @@ public class PreviewDialog extends OKCancelDialog {
             logger.error(e, e);
           }
         }
-
-        public void change(ProgressChangeEvent progress) { }
         // Show an error message and delete the translatedFiles directory when the watched operation has failed.
         public void operationFailed(Exception ex) {
-          pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
+          logger.error(ex, ex);
+          if(!(ex instanceof StoppedByUserException)){
+            pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
+          }
 
           try {
             FileUtils.deleteDirectory(translatedFiles);
@@ -490,7 +516,15 @@ public class PreviewDialog extends OKCancelDialog {
       e1.printStackTrace();
     }
   }
-  
+  /**
+   * 
+   *  Open the diff files tool with initial left and right URLs to compare. 
+   *  The comparison will begin automatically and the content types for the URLs will be auto-detected.
+   * 
+   * @param pluginWorkspace  Entry point for accessing the DITA Maps area.
+   * @param localFile The location of the current file on disk.
+   * @param translatedFile The location of the unpacked file. The file from the chosen archive.
+   */
   private void showDiff(final StandalonePluginWorkspace pluginWorkspace, File localFile, File translatedFile) {
     try {
       URL leftURL = localFile.toURI().toURL();
@@ -507,7 +541,14 @@ public class PreviewDialog extends OKCancelDialog {
       logger.error(e2, e2);
     }
   }
-  
+  /**
+   * Creates the tree view.
+   * 
+   * @param filePaths The list with the relative paths of the unpacked files.
+   * @param filesOnDiskDir The location of the current files on disk.
+   * @param translatedFilesDir  The location of the unpacked files. The files from the chosen archive.
+   * @param pluginWorkspace  Entry point for accessing the DITA Maps area.
+   */
   private void createTreeView(
       final ArrayList<String> filePaths, 
       final File filesOnDiskDir,
@@ -537,6 +578,7 @@ public class PreviewDialog extends OKCancelDialog {
           if (tree.getPathBounds(tree.getSelectionPath()).contains(me.getPoint()) && 
               me.getClickCount() == 2 &&
               tree.getModel().isLeaf(tree.getLastSelectedPathComponent())) {
+            //Build the selected path
             Object[] selectedPath = tree.getSelectionPath().getPath();
             int length = selectedPath.length;
             String relativePath = "";

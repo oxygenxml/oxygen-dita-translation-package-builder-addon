@@ -1,11 +1,13 @@
-package com.oxygenxml.translation.progress.worker;
+package com.oxygenxml.translation.ui.worker;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.oxygenxml.translation.progress.ProgressChangeListener;
+import org.apache.log4j.Logger;
+
+import com.oxygenxml.translation.ui.ProgressChangeListener;
 
 /**
  * Creates an Abstract SwingWorker.
@@ -18,7 +20,10 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
    *  A listener for notifying the changes.
    */
   protected ArrayList<ProgressChangeListener> listeners;
-  
+  /**
+   * Logger for logging.
+   */
+  private static Logger logger = Logger.getLogger(AbstractWorker.class); 
   
   public AbstractWorker() {
     this.listeners = new ArrayList<ProgressChangeListener>();
@@ -41,10 +46,12 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
         listener.done();
       }
     } catch (ExecutionException e) {
+      logger.error("Catch execution exception in abstract worker : " + e.getMessage());
       for(ProgressChangeListener listener : listeners){
         listener.operationFailed((Exception) e.getCause());
       }
     } catch (Exception e) {
+      logger.error("Catch exception in abstract worker : " + e.getMessage());
       for(ProgressChangeListener listener : listeners){
         listener.operationFailed(e);
       }

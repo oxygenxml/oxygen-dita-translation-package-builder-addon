@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 /**
  * An object for holding the number of modified files.
  * 

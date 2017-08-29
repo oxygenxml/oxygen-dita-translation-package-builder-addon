@@ -1,12 +1,12 @@
-package com.oxygenxml.translation.progress.worker;
+package com.oxygenxml.translation.ui.worker;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.oxygenxml.translation.progress.ProgressChangeListener;
-import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
  * Creates an AbstractWorker for unpacking a zip file.
@@ -51,5 +51,10 @@ public class UnzipWorker extends AbstractWorker {
     list = archiveBuilder.unzipDirectory(zipDir, rootDir, false);
 
     return null;
+  }
+  
+  @Override
+  public void done() {
+    super.done();
   }
 }

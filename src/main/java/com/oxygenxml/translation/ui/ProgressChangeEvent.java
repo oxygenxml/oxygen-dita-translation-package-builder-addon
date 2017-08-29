@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 
 /**
  * Creates an object used to notify the listener about the progress of the task.

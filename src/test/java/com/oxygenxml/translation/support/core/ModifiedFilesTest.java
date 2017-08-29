@@ -12,8 +12,8 @@ import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.progress.StoppedByUserException;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.ui.StoppedByUserException;
 
 public class ModifiedFilesTest {
 

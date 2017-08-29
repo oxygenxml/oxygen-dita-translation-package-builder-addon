@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 
 /**
  * A custom listener.
@@ -8,11 +8,13 @@ package com.oxygenxml.translation.progress;
  */
 public interface ProgressChangeListener {
   /**
+   * Makes all the changes in the dialog as long as it receives events.
    * 
    * @param progress An object of type ProgressChangeEvent.
    */
   void change(ProgressChangeEvent progress);
   /**
+   * The user canceled the dialog.
    * 
    * @return True if the user clicked on the Cancel button.
    */

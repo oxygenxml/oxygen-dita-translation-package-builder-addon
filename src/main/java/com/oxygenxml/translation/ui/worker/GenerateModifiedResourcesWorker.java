@@ -1,11 +1,11 @@
-package com.oxygenxml.translation.progress.worker;
+package com.oxygenxml.translation.ui.worker;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import com.oxygenxml.translation.progress.ProgressChangeListener;
 import com.oxygenxml.translation.support.core.PackageBuilder;
 import com.oxygenxml.translation.support.core.models.*;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
 /**
  * Creates an AbstractWorker for generating the modified resources in a ditamap.
  * 
@@ -47,4 +47,8 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
     return null;
   }
 
+  @Override
+  public void done() {
+    super.done();
+  }
 }

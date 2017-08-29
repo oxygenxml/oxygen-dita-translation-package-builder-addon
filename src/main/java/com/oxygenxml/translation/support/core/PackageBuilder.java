@@ -19,16 +19,16 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.progress.NoChangedFilesException;
-import com.oxygenxml.translation.progress.PackResult;
-import com.oxygenxml.translation.progress.ProgressChangeAdapter;
-import com.oxygenxml.translation.progress.ProgressChangeEvent;
-import com.oxygenxml.translation.progress.ProgressChangeListener;
-import com.oxygenxml.translation.progress.StoppedByUserException;
-import com.oxygenxml.translation.progress.Tags;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.ui.NoChangedFilesException;
+import com.oxygenxml.translation.ui.PackResult;
+import com.oxygenxml.translation.ui.ProgressChangeAdapter;
+import com.oxygenxml.translation.ui.ProgressChangeEvent;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
+import com.oxygenxml.translation.ui.Tags;
 
 import de.schlichtherle.io.FileInputStream;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
@@ -110,9 +110,8 @@ public class PackageBuilder {
    * 
    * @param dirPath The location of the directory to iterate.
    * @param dirs A stack used to compute a path relative to an ancestor.
-   * 
-   * @return A list of ResourceTnfo objects which contains an unique MD5 and a relative path for
-   * every file inside dirPath.
+   * @param list A list of ResourceTnfo objects which contains an unique MD5 and a relative path for
+   *        every file inside dirPath.
    * 
    * @throws NoSuchAlgorithmException The MD5 algorithm is not available.
    * @throws FileNotFoundException  The file doesn't exist.
@@ -162,7 +161,9 @@ public class PackageBuilder {
    * 
    * @param info  An object of type InfoResources,this object will be serialized.
    * @param rootDir	The directory were the "special file" will be created after serialization.
+   * 
    * @return The "translation_bulder_milestone.xml" file.
+   * 
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws FileNotFoundException	The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.
@@ -234,10 +235,10 @@ public class PackageBuilder {
     }
     // Store state.
     ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir);
-
+    //Current states.
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
     computeResourceInfo(rootDir, new Stack<String>(), currentStates);
-
+    // A list to hold the modified resources.
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
     int counter = 0;
 
@@ -296,6 +297,7 @@ public class PackageBuilder {
 
     int nrModFiles = 0;
     final int totalModifiedfiles = modifiedResources.size();
+    // If there are modified resources
     if (!modifiedResources.isEmpty()) {
         File tempDir = new File(rootDir, "toArchive");
 
@@ -387,19 +389,29 @@ public class PackageBuilder {
     return file;
   }
 
-
+  /**
+   * Notifies all listeners to update the progress of the task.
+   * 
+   * @param progress A ProgressChangeEvent object.
+   */
   private void fireChangeEvent(ProgressChangeEvent progress) {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.change(progress);
     }
   }
-
+  /**
+   * Notifies all listeners that the task has finished.
+   */
   private void fireDoneEvent() {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.done();
     }
   }
-
+  /**
+   * Notifies all listeners that the task was canceled.
+   * 
+   * @return True if the worker was canceled, false otherwise.
+   */
   private static boolean isCanceled() {
     boolean result = false;
     for (ProgressChangeListener progressChangeListener : listeners) {

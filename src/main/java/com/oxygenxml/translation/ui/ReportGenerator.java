@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +22,12 @@ import org.apache.commons.io.FileUtils;
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
-
+/**
+ * Creates a .xhtml report file, a list with all the modified resources.
+ * 
+ * @author Bivolan Dalina
+ *
+ */
 public class ReportGenerator {
   /**
    *  Logger for logging.
@@ -95,7 +100,7 @@ public class ReportGenerator {
          new StreamResult(new FileOutputStream(report.getAbsolutePath())));
       }
     catch (Exception ex) {
-      ex.printStackTrace( );
+      logger.error(ex, ex);
       }
     //Delete the .xml report file after converting it to a .xhtml file
     try {

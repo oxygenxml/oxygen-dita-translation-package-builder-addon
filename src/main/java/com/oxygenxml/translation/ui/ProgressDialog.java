@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.Timer;
 
-import com.oxygenxml.translation.progress.worker.AbstractWorker;
+import com.oxygenxml.translation.ui.worker.AbstractWorker;
 
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -116,21 +116,10 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     
     getContentPane().add(mainPanel, BorderLayout.CENTER);
     
-    getCancelButton().addActionListener(new ActionListener() {
-      
-      public void actionPerformed(ActionEvent e) {
-        
-        isCancelButtonPressed = true;
-      }
-    });
-    
     pack();
-    setResizable(false);
-    
-   
+    setResizable(true);
+
     scheduleStart();
-   
-    
   }
   /**
    *  A 2 seconds timer. After the 2 seconds the dialog is visible to the user.
@@ -174,7 +163,8 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
   public boolean isCanceled() {
     boolean result = false;
     if(isCancelButtonPressed){
-      result = true;      
+      result = true; 
+      isCancelButtonPressed = false;
     }
     return result;
   }
@@ -192,6 +182,13 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
   public void operationFailed(Exception ex) {
     // Just close the dialog.
     done();
+  }
+  
+  @Override
+  protected void doCancel() {
+    isCancelButtonPressed = true;
+    
+    super.doCancel();
   }
 
 }

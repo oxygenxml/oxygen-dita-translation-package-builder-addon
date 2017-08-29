@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 /**
  * An interface used for accessing the key values from the "i18n/translation.xml" file.
  * 

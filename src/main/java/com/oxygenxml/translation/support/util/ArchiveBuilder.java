@@ -16,10 +16,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.progress.ProgressChangeEvent;
-import com.oxygenxml.translation.progress.ProgressChangeListener;
-import com.oxygenxml.translation.progress.StoppedByUserException;
-import com.oxygenxml.translation.progress.Tags;
+import com.oxygenxml.translation.ui.ProgressChangeEvent;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
+import com.oxygenxml.translation.ui.Tags;
 
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -27,7 +27,7 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * 
- * This class contains 2 methods : 
+ * This class contains 3 methods : 
  * - zipDirectory - this method makes an archive of a directory at the specified location
  * - unzipDirectory - this method extracts the content of an archive at a specified location
  * - copyDirectory - this method copies the content of a source directory into a destination directory.
@@ -38,17 +38,18 @@ public final class ArchiveBuilder {
    */
   private static Logger logger = Logger.getLogger(ArchiveBuilder.class); 
   /**
-   *  Resource bundle.
+   * A list of ProgressChangeListener listeners.
    */
-//  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-
-
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
 
   public ArchiveBuilder(){
 
   }
-
+  /**
+   * Adds a listener to the list of listeners.
+   * 
+   * @param listener A ProgressChangeListener listener.
+   */
   public void addListener(ProgressChangeListener listener) {
     this.listeners.add(listener);
   }
@@ -143,19 +144,17 @@ public final class ArchiveBuilder {
 
 
   /**
-   *  Unzips an archive into a given directory.
+   * Unzips an archive into a given directory.
    *    
    * @param packageLocation  The location of the package.
    * @param destDir Where to extract the package content.
    * @param isFromTest True if this method is called by a JUnit test class.
    * 
-   * @return A list with the relative path of every extracted file
+   * @return A list with the relative path of every extracted file.
    * 
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
   public ArrayList<String> unzipDirectory(File packageLocation, File destDir, boolean isFromTest) throws StoppedByUserException{
-
-    //File baseDir = destDir.getParentFile();
 
     ArrayList<String> nameList = new ArrayList<String>();
     int counter = 0;
@@ -280,13 +279,21 @@ public final class ArchiveBuilder {
     }
   }
 
-
+  /**
+   * Notifies all listeners to update the progress of the task.
+   * 
+   * @param progress A ProgressChangeEvent object.
+   */
   private void fireChangeEvent(ProgressChangeEvent progress) {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.change(progress);
     }
   }
-
+  /**
+   * Notifies all listeners that the task was canceled.
+   * 
+   * @return True if the worker was canceled, false otherwise.
+   */
   private boolean isCanceled() {
     boolean result = false;
     for (ProgressChangeListener progressChangeListener : listeners) {
@@ -296,7 +303,11 @@ public final class ArchiveBuilder {
     }
     return result;
   }
-
+  /**
+   * Notifies all listeners that the task has failed.
+   * 
+   * @param ex An Exception.
+   */
   private void fireOperationFailed(Exception ex) {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.operationFailed(ex);

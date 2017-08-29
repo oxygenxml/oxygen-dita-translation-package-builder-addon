@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 
 import java.util.ArrayList;
 
@@ -131,7 +131,7 @@ public class MyTableModel extends AbstractTableModel{
   /**
    *  Checks if all the checkboxes in the table are selected.
    *  
-   * @return True if all the checkboxes on the first column are selected.
+   * @return True if all the checkboxes on the first column are selected, false otherwise.
    */
   public boolean isEverythingSelected(){
     for(int i = 0; i < loadPaths.size(); i++){
@@ -145,7 +145,7 @@ public class MyTableModel extends AbstractTableModel{
   /**
    *   Checks if all the checkboxes in the table are deselected.
    * 
-   * @return  True if all the checkboxes on the first column are deselected.
+   * @return  True if all the checkboxes on the first column are deselected, false otherwise.
    */
   public boolean isEverythingDeselected(){
     for(int i = 0; i < loadPaths.size(); i++){

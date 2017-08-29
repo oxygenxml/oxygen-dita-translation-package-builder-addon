@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.progress;
+package com.oxygenxml.translation.ui;
 /**
  * No file was changed since the last generation of a milestone file.
  * 
@@ -7,9 +7,7 @@ package com.oxygenxml.translation.progress;
  */
 public class NoChangedFilesException extends Exception{
   
-  public NoChangedFilesException() {
-
-  }
+  public NoChangedFilesException() {  }
 
   public NoChangedFilesException (String message) {
       super (message);
@@ -22,5 +20,4 @@ public class NoChangedFilesException extends Exception{
   public NoChangedFilesException (String message, Throwable cause) {
       super (message, cause);
   }
-
 }
