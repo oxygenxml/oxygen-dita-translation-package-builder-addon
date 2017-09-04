@@ -222,7 +222,16 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 }
                 // If the number of modified files is grater than 0 show the report dialog and create package.
                 if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
-                  ReportDialog report = new ReportDialog(frame, rootDir, modifiedResourcesWorker.getModifiedResources());
+                  logger.debug("The modified files list is not empty!");
+                  ReportDialog.setParentFrame(frame);
+                  ReportDialog.setRootDir(rootDir);
+                  ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
+                  
+                  ReportDialog report = ReportDialog.getInstance();
+
+//                  report.setVisible(true);
+//                  ReportDialog report = new ReportDialog(frame, rootDir, modifiedResourcesWorker.getModifiedResources());
+                  logger.debug("The Save button is : " + report.isSaveButtonPressed());
                   //Create report and package only if the user pressed the "Save" button.
                   if(report.isSaveButtonPressed()){
                     File chosenDir = report.getChoosedLocation();
@@ -237,6 +246,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                           report.isShouldCreateReport());
                     }
                   }
+                  report.setSaveButtonPressed(false);
 
                 } else {  
                   // Inform the user that no resources were modified.

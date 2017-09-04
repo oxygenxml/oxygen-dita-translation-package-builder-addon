@@ -15,10 +15,13 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.AbstractAction;
+import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -30,6 +33,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
@@ -41,12 +45,14 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
-import com.oxygenxml.translation.support.core.models.InfoResources;
+import com.oxygenxml.translation.support.core.models.ComboHistory;
+import com.oxygenxml.translation.support.core.models.ComboItem;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarToggleButton;
 
@@ -95,7 +101,10 @@ public class ReportDialog extends OKCancelDialog {
   /**
    * The parent directory of the current ditamap.
    */
-  private File rootDir;
+  private static File rootDir;
+  public static void setRootDir(File rootDir) {
+    ReportDialog.rootDir = rootDir;
+  }
   /**
    * The location of the generated report.
    */
@@ -103,7 +112,10 @@ public class ReportDialog extends OKCancelDialog {
   /**
    * The list with all the modified resources.
    */
-  private final ArrayList<ResourceInfo> modifiedResources;
+  private static ArrayList<ResourceInfo> modifiedResources;
+  public static void setModifiedResources(ArrayList<ResourceInfo> modifiedResources) {
+    ReportDialog.modifiedResources = modifiedResources;
+  }
   /**
    * True if the user pressed the "Save" button, false otherwise.
    */
@@ -111,22 +123,17 @@ public class ReportDialog extends OKCancelDialog {
   public boolean isSaveButtonPressed() {
     return isSaveButtonPressed;
   }
+  public void setSaveButtonPressed(boolean isSaveButtonPressed) {
+    this.isSaveButtonPressed = isSaveButtonPressed;
+  }
   /**
    *  Where the package location is displayed.
    */
   private JComboBox<String> comboBox = new JComboBox<String>();
   /**
-   * The predefined name of the file that will store the choosed zip locations.
-   */
-  private final static String OPTION_FILE_NAME = "combo_options.xml";
-  /**
-   * The predefined file containing the choosed package locations from the previous session.
-   */
-  private File optionsFile = new File( TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), OPTION_FILE_NAME);
-  /**
    * A list that contains all the choosed package lacations.
    */
-  private ArrayList<ResourceInfo> comboItems = new ArrayList<ResourceInfo>();
+  private ArrayList<ComboItem> comboItems = new ArrayList<ComboItem>();
   /**
    * The selected path, the one that appears in the comboBox.
    */
@@ -140,9 +147,13 @@ public class ReportDialog extends OKCancelDialog {
    */
   private File choosedZipFromChooser;
   /**
-   * True if the package location was choosed from the file chooser, false otherwise.
+   * 
    */
-  private boolean isFromChooser = false;
+  private static Frame parentFrame;
+  public static void setParentFrame(Frame parentFrame) {
+    ReportDialog.parentFrame = parentFrame;
+  }
+  private static ReportDialog instance;
   /**
    * Creates a dialog where the user can choose the location of the modified resources archive
    *  and generate or not a report.
@@ -151,27 +162,26 @@ public class ReportDialog extends OKCancelDialog {
    * @param rootDir The parent directory of the current ditamap.
    * @param modifiedResources The list with all the modified resources.
    */
-  public ReportDialog(Frame parentFrame, final File rootDir, ArrayList<ResourceInfo> modifiedResources) {
+  private ReportDialog(/*Frame parentFrame, final File rootDir, ArrayList<ResourceInfo> modifiedResources*/) {
     //--------------------------------------------------------------------------- modal
     super(parentFrame, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE), true);
-    this.rootDir = rootDir;
-    this.modifiedResources = modifiedResources;
+//    this.rootDir = rootDir;
+//    this.modifiedResources = modifiedResources;
     // The default location of the report file.
     reportFile = new File(rootDir, REPORT_FILE_NAME);
     // The default location of the package.
     defaultPackageLocation = new File(rootDir, ZIP_FILE_NAME);
     // Add into the comboBox the choosed paths stored in the optionsFile.
     try {
-      ArrayList<ResourceInfo> savedPaths = loadSelectedPaths();
-      for (ResourceInfo resourceInfo : savedPaths) {
-        comboBox.addItem(resourceInfo.getRelativePath());
+      ArrayList<ComboItem> savedPaths = loadSelectedPaths();
+      for (ComboItem resource : savedPaths) {
+        comboBox.addItem(resource.getPath());
       }
     } catch (JAXBException e1) {
       logger.error(e1, e1);
     } catch (IOException e1) {
       logger.error(e1, e1);
     }
-
 
     getOkButton().setText("Save");
 
@@ -187,7 +197,6 @@ public class ReportDialog extends OKCancelDialog {
     comboBox.setEditable(true);
     comboBox.setSelectedItem(currentPath);
     textfield.select(currentPath.length() - defaultPackageLocation.getName().length(), currentPath.length());
-    comboItems.add(new ResourceInfo(currentPath));
 
     final UndoManager undo = new UndoManager();
     Document textFieldDocument = textfield.getDocument();
@@ -236,7 +245,6 @@ public class ReportDialog extends OKCancelDialog {
     folderButton.addMouseListener(new MouseAdapter() {  
       public void mousePressed(MouseEvent e) {
         //Get the location from the file chooser.
-        isFromChooser = true;
         choosedZipFromChooser = pluginWorkspace.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
             new String[] {"zip"},
             resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), 
@@ -248,7 +256,6 @@ public class ReportDialog extends OKCancelDialog {
           comboBox.setSelectedItem(currentPath);
           comboBox.addItem(currentPath);
           textfield.select(currentPath.length() - choosedZipFromChooser.getName().length(), currentPath.length());
-          comboItems.add(new ResourceInfo(currentPath));
         }
       }
       @Override
@@ -309,32 +316,34 @@ public class ReportDialog extends OKCancelDialog {
 
     getContentPane().add(mainPanel, BorderLayout.CENTER);
 
-    setPreferredSize(new Dimension(700, 200));
+    setPreferredSize(new Dimension(500, 200));
     setMinimumSize(getPreferredSize());
     setLocationRelativeTo(parentFrame);
     pack();
     setResizable(true);
-    setVisible(true);  
   }
 
   @Override
   protected void doOK() {
-    currentPath = (String) comboBox.getSelectedItem();
-    // Update choosedZip 
-    if (currentPath.equals(defaultPackageLocation.getPath())){
-      choosedZip = defaultPackageLocation;
-    } else if(isFromChooser && currentPath.equals(choosedZipFromChooser.getPath())){
-      choosedZip = choosedZipFromChooser;
-    } else {
-      choosedZip = new File(currentPath);
-      // Add .zip at the package name if the user forgot.
-      if(!choosedZip.getName().endsWith(".zip")){
-        logger.debug("The choosed file doesn't end with .zip");
-        choosedZip = new File(choosedZip.getPath() + ".zip");
+    currentPath = ((JTextComponent) comboBox.getEditor().getEditorComponent()).getText();
+    choosedZip = new File(currentPath);
+    //Add .zip at the package name if the user forgot.
+    if(!choosedZip.getName().endsWith(".zip")){
+      logger.debug("The choosed file doesn't end with .zip");
+      choosedZip = new File(choosedZip.getPath() + ".zip");
+    }
+    
+    boolean isInModel = false;
+    ComboBoxModel<String> model = comboBox.getModel();
+    int size = model.getSize();
+    for (int i = 0; i < size; i++) {
+      if(model.getElementAt(i).equals(currentPath)){
+        isInModel = true;
       }
-      comboBox.addItem(choosedZip.getPath());
-      comboItems.add(new ResourceInfo(choosedZip.getPath()));
-    } 
+    }
+    if(!isInModel){
+      comboBox.addItem(currentPath);
+    }
 
     isSaveButtonPressed = true;
     // Generate report if the user selected the checkbox
@@ -346,8 +355,14 @@ public class ReportDialog extends OKCancelDialog {
     if(logger.isDebugEnabled()){
       logger.debug(resourceBundle.getMessage(Tags.REPORT_DIALOG_LOGGER_MESSAGE) + choosedZip.getAbsolutePath());
     }
-
-    InfoResources choosedLocations = new InfoResources(comboItems);
+    
+    ComboBoxModel<String> comboModel = comboBox.getModel();
+    int modelLength = comboModel.getSize();
+    for(int i = 0; i < modelLength; i++){
+      String element = comboModel.getElementAt(i);
+      comboItems.add(new ComboItem(element));
+    }
+    ComboHistory choosedLocations = new ComboHistory(comboItems);
     // Store the choosed locations in the "combo_options.xml" file.
     try {
       storeSelectedPaths(choosedLocations);
@@ -358,28 +373,28 @@ public class ReportDialog extends OKCancelDialog {
     } catch (StoppedByUserException e) {
       logger.error(e, e);
     }
-    logger.debug("The location of the combo_options.xml is : " + optionsFile.getAbsolutePath());
-    
     super.doOK();
   }
   /**
    *  Saves the chosen paths for the creation of the archive on disk. 
    * 
-   * @param info   An object of type InfoResources,this object will be serialized.
+   * @param info   An object of type ComboHistory, this object will be serialized.
    * 
    * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
    * @throws FileNotFoundException  The file doesn't exist.
    * @throws StoppedByUserException  The user pressed the cancel button.
    */
-  private void storeSelectedPaths(InfoResources info) throws JAXBException, FileNotFoundException, StoppedByUserException{
-
-    JAXBContext contextObj = JAXBContext.newInstance(InfoResources.class);  
+  private void storeSelectedPaths(ComboHistory info) throws JAXBException, FileNotFoundException, StoppedByUserException{
+    JAXBContext contextObj = JAXBContext.newInstance(ComboHistory.class);  
 
     Marshaller marshallerObj = contextObj.createMarshaller();  
     marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
 
-    marshallerObj.marshal(info, optionsFile);  
-
+    StringWriter sw = new StringWriter();
+    marshallerObj.marshal(info, sw);
+    
+    WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
+    optionsStorage.setOption("REPORT_DIALOG_STATE", sw.toString());
   }
   /**
    * Loads the last chosen paths for the package location from disk.
@@ -389,18 +404,27 @@ public class ReportDialog extends OKCancelDialog {
    * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
    * @throws IOException  Problems reading the file/directory.
    */
-  private ArrayList<ResourceInfo> loadSelectedPaths() throws JAXBException, IOException {
-    if (!optionsFile.exists()) {
+  private ArrayList<ComboItem> loadSelectedPaths() throws JAXBException, IOException {
+    JAXBContext jaxbContext = JAXBContext.newInstance(ComboHistory.class); 
+
+    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    
+    WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
+    String option = optionsStorage.getOption("REPORT_DIALOG_STATE", null);
+    
+    if (option == null) {
       throw new IOException("No optionsFile was created.");
     }
+    ComboHistory resources = (ComboHistory) jaxbUnmarshaller.unmarshal(new StringReader(option));    
 
-    JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
-
-    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
-
-    InfoResources resources = (InfoResources) jaxbUnmarshaller.unmarshal(optionsFile);    
-
-    return resources.getList();
+    return resources.getEntries();
   }
-
+  
+  public static ReportDialog getInstance(){
+    if(instance == null){
+      instance = new ReportDialog();
+    }
+    instance.setVisible(true);
+    return instance;
+  }
 }
