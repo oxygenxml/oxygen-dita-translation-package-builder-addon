@@ -43,7 +43,9 @@ public class ReportGenerator {
    * 
    * @param info  An object of type InfoResources,this object will be serialized.
    * @param rootDir The directory were the report will be created after serialization.
+   * 
    * @return The "modified_resources_report.xml" file.
+   * 
    * @throws JAXBException   Problems with JAXB, serialization/deserialization of a file.
    * @throws FileNotFoundException  The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.

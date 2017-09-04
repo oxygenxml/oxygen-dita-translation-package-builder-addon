@@ -169,7 +169,7 @@ public class ProgressDialog extends OKCancelDialog implements ProgressChangeList
     return result;
   }
   /**
-   *  Closes the dialog and sets isDone to true.
+   *  Closes the dialog and sets isTaskDone to true.
    *  This method is called after the time consuming task it's over.
    */
   public void done() {

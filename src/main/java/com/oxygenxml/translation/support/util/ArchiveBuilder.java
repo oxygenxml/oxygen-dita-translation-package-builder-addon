@@ -88,7 +88,7 @@ public final class ArchiveBuilder {
    * @param basePath  It helps us create the relative path of every file from dir.
    * @param dir  The location of the file/directory we want to zip.
    * @param zout  Where we create the archive.
-   * @param resourceCounter Counter the number of resources added in the archive.
+   * @param resourceCounter Counts the number of resources added in the archive.
    * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @throws IOException  Problems reading the files.
@@ -154,7 +154,7 @@ public final class ArchiveBuilder {
    * 
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public ArrayList<String> unzipDirectory(File packageLocation, File destDir, boolean isFromTest) throws StoppedByUserException{
+  public ArrayList<String> unzipDirectory(File packageLocation, File destDir, boolean isFromTest) throws StoppedByUserException {
 
     ArrayList<String> nameList = new ArrayList<String>();
     int counter = 0;

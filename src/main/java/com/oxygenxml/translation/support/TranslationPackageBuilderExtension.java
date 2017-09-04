@@ -79,7 +79,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       public void customizeDITAMapPopUpMenu(JPopupMenu popUp, WSDITAMapEditorPage ditaMapEditorPage) {
         //Create a submenu "Translation Package Builder" for the 3 actions.
         // Tooltips for all actions.
-        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.JMENU_TITLE));//resourceBundle.getMessage(Tags.JMENU_TITLE)/*"Translation Package Builder"*/);
+        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.JMENU_TITLE));
         submenu.setMnemonic(KeyEvent.VK_S);
 
         // Action 1: Generate Milestone
@@ -155,7 +155,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               }
             }
           });
-
           milestoneWorker.execute();
         } catch (Exception e) {
           // Present the error to the user.
@@ -190,7 +189,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
           if(!milestoneFile.exists()){
-
             int buttonId = pluginWorkspaceAccess.showConfirmDialog(resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_TITLE),
                 resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_MESSAGE) +
                 rootDir.getPath() +"?", 
@@ -225,7 +223,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 // If the number of modified files is grater than 0 show the report dialog and create package.
                 if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
                   ReportDialog report = new ReportDialog(frame, rootDir, modifiedResourcesWorker.getModifiedResources());
-                  //Create report only if the user pressed the "Save" button.
+                  //Create report and package only if the user pressed the "Save" button.
                   if(report.isSaveButtonPressed()){
                     File chosenDir = report.getChoosedLocation();
                     if(chosenDir != null){
@@ -335,7 +333,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               // This listener notifies the user about how the operation ended.
               unzipTask.addProgressListener(new ProgressChangeAdapter() {
                 public void done() { 
-                  new PreviewDialog(frame, unzipTask.getList(), rootDir, tempDir);
+                  new PreviewDialog(frame, unzipTask.getUnpackedFiles(), rootDir, tempDir);
                 }
                 public void operationFailed(Exception ex) {
                   if(!(ex instanceof StoppedByUserException)){
@@ -447,7 +445,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         unzipTask.addProgressListener(new ProgressChangeAdapter() {
           public void done() {
             try {
-              showReport(pluginWorkspaceAccess, unzipTask.getList());
+              showReport(pluginWorkspaceAccess, unzipTask.getUnpackedFiles());
             } catch (Exception e) {
               logger.error(e, e);
               if(!(e instanceof StoppedByUserException)){

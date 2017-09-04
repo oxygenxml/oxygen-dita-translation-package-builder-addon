@@ -26,10 +26,10 @@ public class UnzipWorker extends AbstractWorker {
   /**
    *  A list containig the relative paths of all files that were extracted from the archive.
    */
-  private ArrayList<String> list;
+  private ArrayList<String> unpackedFiles;
 
-  public ArrayList<String> getList() {
-    return list;
+  public ArrayList<String> getUnpackedFiles() {
+    return unpackedFiles;
   }
 
   public UnzipWorker(File zipDir, File rootDir) {
@@ -48,7 +48,7 @@ public class UnzipWorker extends AbstractWorker {
       archiveBuilder.addListener(l);
     }
 
-    list = archiveBuilder.unzipDirectory(zipDir, rootDir, false);
+    unpackedFiles = archiveBuilder.unzipDirectory(zipDir, rootDir, false);
 
     return null;
   }
