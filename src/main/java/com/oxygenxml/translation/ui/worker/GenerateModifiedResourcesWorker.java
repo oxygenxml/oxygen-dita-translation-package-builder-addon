@@ -46,9 +46,4 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
     
     return null;
   }
-
-  @Override
-  public void done() {
-    super.done();
-  }
 }

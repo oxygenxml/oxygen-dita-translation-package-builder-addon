@@ -52,9 +52,4 @@ public class UnzipWorker extends AbstractWorker {
 
     return null;
   }
-  
-  @Override
-  public void done() {
-    super.done();
-  }
 }

@@ -32,10 +32,4 @@ public class GenerateMilestoneWorker extends AbstractWorker{
     
     return null;
   }
-  
-  @Override
-  public void done() {
-    super.done();
-  }
-
 }

@@ -288,9 +288,9 @@ public class PackageBuilder {
       ) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException, NoChangedFilesException  {
 
     /**
-     * 4. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
-     * 5. ZIP the "destinationDir" at "packageLocation".
-     * 6. Delete the "destinationDir".
+     * 1. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
+     * 2. ZIP the "destinationDir" at "packageLocation".
+     * 3. Delete the "destinationDir".
      */
     
     PackResult result = new PackResult();
@@ -299,7 +299,7 @@ public class PackageBuilder {
     final int totalModifiedfiles = modifiedResources.size();
     // If there are modified resources
     if (!modifiedResources.isEmpty()) {
-        File tempDir = new File(rootDir, "toArchive");
+        final File tempDir = new File(rootDir, "toArchive");
 
         //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
         //files in the right directory
