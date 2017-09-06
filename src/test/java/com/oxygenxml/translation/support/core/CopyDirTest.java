@@ -19,10 +19,9 @@ public class CopyDirTest {
   @Test
   public void copyDir_to_emptyDir_Test() throws IOException, StoppedByUserException, NoSuchAlgorithmException {
     URL resource1 = getClass().getClassLoader().getResource("copyDir-Test");
-    URL resource2 = getClass().getClassLoader().getResource("targetEmptyCopyDir-Test");
 
     File sourceLocation = new File(resource1.getPath());
-    File targetLocation = new File(resource2.getPath());
+    File targetLocation = new File(sourceLocation.getParentFile(), "targetEmptyCopyDir-Test");
     
     new ArchiveBuilder().copyDirectory(sourceLocation, targetLocation, new int[] {0}, true);
     
