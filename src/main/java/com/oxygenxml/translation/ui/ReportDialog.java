@@ -190,6 +190,7 @@ public class ReportDialog extends OKCancelDialog {
     final JTextField textfield = (JTextField) comboBox.getEditor().getEditorComponent();
     currentPath = defaultPackageLocation.getPath();
     comboBox.setEditable(true);
+    comboBox.setMaximumRowCount(4);
     comboBox.setSelectedItem(currentPath);
     textfield.select(currentPath.length() - defaultPackageLocation.getName().length(), currentPath.length());
 
@@ -336,7 +337,28 @@ public class ReportDialog extends OKCancelDialog {
     // If it's not, add it.
     if(!isInModel){
       comboBox.addItem(currentPath);
-      
+      try {
+       comboItems = loadSelectedPaths();
+      } catch (JAXBException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      comboItems.add(new ComboItem(currentPath));
+      // Add the current model list to the object that will be serialized.
+      ComboHistory choosedLocations = new ComboHistory(comboItems);
+      // Store the choosed locations.
+      try {
+        storeSelectedPaths(choosedLocations);
+      } catch (FileNotFoundException e) {
+        logger.error(e, e);
+      } catch (JAXBException e) {
+        logger.error(e, e);
+      } catch (StoppedByUserException e) {
+        logger.error(e, e);
+      }
       logger.debug("It's not in the model, we added : " + currentPath);
     }
     
@@ -349,24 +371,6 @@ public class ReportDialog extends OKCancelDialog {
 
     if(logger.isDebugEnabled()){
       logger.debug(resourceBundle.getMessage(Tags.REPORT_DIALOG_LOGGER_MESSAGE) + choosedZip.getAbsolutePath());
-    }
-    // Add the current model list to the object that will be serialized.
-    ComboBoxModel<String> comboModel = comboBox.getModel();
-    int modelLength = comboModel.getSize();
-    for(int i = 0; i < modelLength; i++){
-      String element = comboModel.getElementAt(i);
-      comboItems.add(new ComboItem(element));
-    }
-    ComboHistory choosedLocations = new ComboHistory(comboItems);
-    // Store the choosed locations.
-    try {
-      storeSelectedPaths(choosedLocations);
-    } catch (FileNotFoundException e) {
-      logger.error(e, e);
-    } catch (JAXBException e) {
-      logger.error(e, e);
-    } catch (StoppedByUserException e) {
-      logger.error(e, e);
     }
     super.doOK();
   }
