@@ -340,11 +340,9 @@ public class ReportDialog extends OKCancelDialog {
       try {
        comboItems = loadSelectedPaths();
       } catch (JAXBException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.error(e, e);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.error(e, e);
       }
       comboItems.add(new ComboItem(currentPath));
       // Add the current model list to the object that will be serialized.
