@@ -45,12 +45,12 @@ public class CopyDirTest {
     
     new ArchiveBuilder().copyDirectory(sourceLocation, targetLocation, new int[] {0}, true);
     
-    String expectedResult = "file1.txt                   24d8667b1ad00c154ef156f27a5624d6\n" +
-"test.txt                    f41b4a7edfd1017687c829e8b435773e\n" +
-"testFile.txt                63c002c136d5fc1d496d3bab066a0ce9\n" +
-"toCopy/dir1/dir2/file3.txt  f41b4a7edfd1017687c829e8b435773e\n" +
-"toCopy/dir1/file2.txt       dfe0e603ca0ef2066762a29778add77b\n" +
-"toCopy/file1.txt            4b91e9daccdfb5e7af025e12020756fc\n" +
+    String expectedResult = "file1.txt                   66e17a2f53f0a5c2b4599ef525b9b150\n" +
+"test.txt                    00b06ff6801dc0a3ffa565f77d92052a\n" +
+"testFile.txt                f573c260c18ec17d95ac48baff76db9a\n" +
+"toCopy/dir1/dir2/file3.txt  efd89f6fb31003d61d62835be048ce86\n" +
+"toCopy/dir1/file2.txt       df182645e551073d3505dced3455b694\n" +
+"toCopy/file1.txt            bc8dc04e5c01a166ba05cc5c2e09b261\n" +
 "";
  
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
