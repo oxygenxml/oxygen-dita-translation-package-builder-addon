@@ -39,7 +39,7 @@ public class GenerateMilestoneTest {
 
 		PackageBuilder packageBuilder = new PackageBuilder();
 		
-		File file = packageBuilder.generateChangeMilestone(rootDir, true);
+		packageBuilder.generateChangeMilestone(rootDir, true);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testGenerate/md5.txt"));
@@ -49,7 +49,7 @@ public class GenerateMilestoneTest {
 		expectedResult.add(new ResourceInfo("55047487acf9f525244b12cff4bfc49c", "testIteration/dir2/md5.txt"));
 		expectedResult.add(new ResourceInfo("5c24a78aec732e9626a4a7114efd98b1", "testIteration/dir2/md5_no2.txt"));
 		
-		ArrayList<ResourceInfo> actualResult = PackageBuilder.loadMilestoneFile(file);
+		ArrayList<ResourceInfo> actualResult = PackageBuilder.loadMilestoneFile(rootDir);
 		
 		Assert.assertEquals(DumpUtil.dump(expectedResult), DumpUtil.dump(actualResult));
 	}
