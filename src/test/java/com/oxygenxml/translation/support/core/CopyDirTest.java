@@ -2,7 +2,6 @@ package com.oxygenxml.translation.support.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -12,15 +11,15 @@ import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 public class CopyDirTest {
+  private PathOption pathOption = new PathOption();
 
   @Test
   public void copyDir_to_emptyDir_Test() throws IOException, StoppedByUserException, NoSuchAlgorithmException {
-    URL resource1 = getClass().getClassLoader().getResource("copyDir-Test");
-
-    File sourceLocation = new File(resource1.getPath());
+    File sourceLocation = pathOption.getPath("copyDir-Test");
     File targetLocation = new File(sourceLocation.getParentFile(), "targetEmptyCopyDir-Test");
     
     new ArchiveBuilder().copyDirectory(sourceLocation, targetLocation, new int[] {0}, true);
@@ -36,11 +35,8 @@ public class CopyDirTest {
   
   @Test
   public void copyDir_to_notEmptyDir_Test() throws IOException, StoppedByUserException, NoSuchAlgorithmException {
-    URL resource1 = getClass().getClassLoader().getResource("copyDir-Test");
-    URL resource2 = getClass().getClassLoader().getResource("targetCopyDir-Test");
-
-    File sourceLocation = new File(resource1.getPath());
-    File targetLocation = new File(resource2.getPath());
+    File sourceLocation = pathOption.getPath("copyDir-Test");
+    File targetLocation = pathOption.getPath("targetCopyDir-Test");
     
     new ArchiveBuilder().copyDirectory(sourceLocation, targetLocation, new int[] {0}, true);
     
