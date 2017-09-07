@@ -18,18 +18,6 @@ public class DumpUtil {
       }
     });
 	  
-	  for(int j = 0; j < list.size(); j++){
-	    for(int k = j+1; k < list.size(); k++){
-	      String relativePath = list.get(j).getRelativePath();
-        String comparedRelativePath = list.get(k).getRelativePath();
-        if(relativePath.compareTo(comparedRelativePath) > 0){
-	        String aux = relativePath;
-	        relativePath = comparedRelativePath;
-	        comparedRelativePath = aux;
-	      }
-	    }
-	  }
-	  
 		StringBuilder b =new StringBuilder();
 		int maxLength = 0;
 		for(int j = 0;j < list.size();j++){
