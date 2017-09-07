@@ -3,7 +3,6 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
@@ -14,14 +13,12 @@ import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 public class JaxbTest {
-
-	private URL resource = getClass().getClassLoader().getResource("JAXB-test");
-
-	private File rootDir = new File(resource.getPath());
-
+  private PathOption pathOption = new PathOption();
+	private File rootDir = pathOption.getPath("JAXB-test");
 
 	@Test
 	public void testMarshaller() throws JAXBException, IOException, StoppedByUserException {

@@ -3,7 +3,6 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
@@ -13,16 +12,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 public class ModifiedFilesTest {
-
+  private PathOption pathOption = new PathOption();
+  
 	@Test
 	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException, StoppedByUserException {
-		
-		URL resource = getClass().getClassLoader().getResource("modifiedFiles-Test");
-
-		File rootDir = new File(resource.getPath());
+		File rootDir = pathOption.getPath("modifiedFiles-Test");
 		
 		ArrayList<ResourceInfo> actualResult = new PackageBuilder().generateModifiedResources(rootDir, false);
 		

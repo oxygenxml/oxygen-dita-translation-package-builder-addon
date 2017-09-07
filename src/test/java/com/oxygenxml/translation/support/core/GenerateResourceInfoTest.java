@@ -3,7 +3,6 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -12,16 +11,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 public class GenerateResourceInfoTest {
-
+  private PathOption pathOption = new PathOption();
+  
 	@Test
 	public void testGenerateRelativePaths() throws NoSuchAlgorithmException, IOException, StoppedByUserException {
-		
-		URL resource = getClass().getClassLoader().getResource("testIteration-ResourceInfoTest");
-
-		File dirPath = new File(resource.getPath());
+		File dirPath = pathOption.getPath("testIteration-ResourceInfoTest");
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 		PackageBuilder.computeResourceInfo(dirPath, new Stack<String>(), list);
@@ -38,10 +36,7 @@ public class GenerateResourceInfoTest {
 	
 	@Test
 	public void testGenerateRelativePaths_2() throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
-		
-		URL resource = getClass().getClassLoader().getResource("testGenerate-ResourceInfoTest");
-
-		File dirPath = new File(resource.getPath());
+		File dirPath = pathOption.getPath("testGenerate-ResourceInfoTest");
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 		

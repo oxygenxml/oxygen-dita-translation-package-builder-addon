@@ -3,7 +3,6 @@ package com.oxygenxml.translation.support.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
@@ -13,6 +12,7 @@ import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.PackResult;
 
 public class ZipTest {
@@ -21,10 +21,9 @@ public class ZipTest {
 	 * Then unzip it and compare the relative paths of the modified files
 	 * @throws Exception 
 	 */
-	
-	URL resource = getClass().getClassLoader().getResource("packageZip-Test");
+	private PathOption pathOption = new PathOption();
 
-	File rootDir = new File(resource.getPath());
+	File rootDir = pathOption.getPath("packageZip-Test");
 	File tempDir = new File(rootDir.getParentFile(), "tempZip");
 	
 	@Test

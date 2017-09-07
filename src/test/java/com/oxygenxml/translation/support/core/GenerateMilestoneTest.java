@@ -1,11 +1,9 @@
 package com.oxygenxml.translation.support.core;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
 import javax.xml.bind.JAXBException;
@@ -14,27 +12,22 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 public class GenerateMilestoneTest {
+  private PathOption pathOption = new PathOption();
   
   @Test
   public void testMd5_File() throws Exception {
-    URL resource = getClass().getClassLoader().getResource("md5Test.txt");
-    System.out.println(resource.getPath());
-    File file = new File(resource.getPath());
-    
+    File file = pathOption.getPath("md5Test.txt");
     
     String cksum = PackageBuilder.generateMD5(file);
     System.out.println(cksum);
     Assert.assertEquals("c439e0812a8e0a5434bffa6f063d4bec", cksum);
     
-    
-    resource = getClass().getClassLoader().getResource("generateMD5-test.txt");
+    file = pathOption.getPath("generateMD5-test.txt");
 
-    file = new File(resource.getPath());
-
-    //FileCheckSum cksumDigester=new FileCheckSum();
     cksum = PackageBuilder.generateMD5(file);
     System.out.println(cksum);
     Assert.assertEquals("95bcd2d5a06b5f63b84551ddd8ec1483", cksum);
@@ -42,9 +35,7 @@ public class GenerateMilestoneTest {
 
 	@Test
 	public void testChangeMilestone() throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
-		URL resource = getClass().getClassLoader().getResource("generateMilestone-Test");
-		System.out.println(resource.getPath());
-		File rootDir = new File(resource.getPath());
+		File rootDir = pathOption.getPath("generateMilestone-Test");
 
 		PackageBuilder packageBuilder = new PackageBuilder();
 		
