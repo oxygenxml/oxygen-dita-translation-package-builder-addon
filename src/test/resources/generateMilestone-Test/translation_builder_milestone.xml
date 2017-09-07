@@ -24,16 +24,4 @@
         <md5>5c24a78aec732e9626a4a7114efd98b1</md5>
         <relativePath>testIteration/dir2/md5_no2.txt</relativePath>
     </info-resource>
-    <info-resource>
-        <md5>33095daf2f434bf50c134e236a1b0a57</md5>
-        <relativePath>tests/GenerateDescriptorTest.class</relativePath>
-    </info-resource>
-    <info-resource>
-        <md5>f322b478d747815c097dafc9f5541218</md5>
-        <relativePath>tests/JaxbTest.class</relativePath>
-    </info-resource>
-    <info-resource>
-        <md5>5a97486ecdad6b48740a42e04129e4d8</md5>
-        <relativePath>tests/Md5Test.class</relativePath>
-    </info-resource>
 </resources>
