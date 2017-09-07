@@ -1,13 +1,35 @@
 package com.oxygenxml.translation.support.core;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
 public class DumpUtil {
-	
-	public static String dump(ArrayList<ResourceInfo> list) {
-
+	/**
+	 * @param list A list with ResourceInfo objects.
+	 * 
+	 * @return An aligned string.
+	 */
+  public static String dump(ArrayList<ResourceInfo> list) {
+    list.sort(new Comparator<Object>() {
+      public int compare(Object ListOne, Object ListTwo) {
+        return ((ResourceInfo)ListOne).getRelativePath().compareTo(((ResourceInfo)ListTwo).getRelativePath());
+      }
+    });
+	  
+	  for(int j = 0; j < list.size(); j++){
+	    for(int k = j+1; k < list.size(); k++){
+	      String relativePath = list.get(j).getRelativePath();
+        String comparedRelativePath = list.get(k).getRelativePath();
+        if(relativePath.compareTo(comparedRelativePath) > 0){
+	        String aux = relativePath;
+	        relativePath = comparedRelativePath;
+	        comparedRelativePath = aux;
+	      }
+	    }
+	  }
+	  
 		StringBuilder b =new StringBuilder();
 		int maxLength = 0;
 		for(int j = 0;j < list.size();j++){
@@ -28,5 +50,4 @@ public class DumpUtil {
 		
 		return b.toString();
 	}
-
 }

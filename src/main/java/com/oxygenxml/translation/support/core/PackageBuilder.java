@@ -90,14 +90,30 @@ public class PackageBuilder {
       }
     }
 
-    byte[] mdbytes = md.digest();
-    StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < mdbytes.length; i++) {
-      sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+//    byte[] mdbytes = md.digest();
+//    StringBuffer sb = new StringBuffer();
+//    for (int i = 0; i < mdbytes.length; i++) {
+//      sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+//    }
+//    return sb.toString();
+    
+    return toHexString(md.digest());
+
+  }
+  
+  public static String toHexString(byte[] bytes) {
+    StringBuilder hexString = new StringBuilder();
+
+    for (int i = 0; i < bytes.length; i++) {
+        String hex = Integer.toHexString(0xFF & bytes[i]);
+        if (hex.length() == 1) {
+            hexString.append('0');
+        }
+        hexString.append(hex);
     }
 
-    return sb.toString();
-  }
+    return hexString.toString();
+}
 
   /**
    * Iterates over the descendents of the given files and computes a hash and a relative path.
