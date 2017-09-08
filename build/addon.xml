@@ -6,7 +6,7 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
         id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
-        <xt:location href="translation-package-builder-1.0.0-plugin.jar"/>
+        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.0/translation-package-builder-1.0.0-plugin.jar"/>
         <xt:version>1.0.0</xt:version>
         <xt:oxy_version>18.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
