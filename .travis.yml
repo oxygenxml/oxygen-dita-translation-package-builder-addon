@@ -23,4 +23,4 @@ deploy:
     - target/addon.xml
   skip_cleanup: true
   on:
-tags: true
+    tags: true
