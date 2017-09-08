@@ -274,7 +274,27 @@ public class ReportDialog extends OKCancelDialog {
 
     JPanel mainPanel = new JPanel(new GridBagLayout());
     JPanel bottomPanel = new JPanel(new GridBagLayout());
-
+    
+    JTextArea modifiedFilesInfo = new JTextArea();
+    modifiedFilesInfo.setText("A number of " + modifiedResources.size() + " files was modified since the last time the milestone was computed.");
+    modifiedFilesInfo.setLineWrap(true);
+    modifiedFilesInfo.setWrapStyleWord(true);
+    
+//    JTextArea moreInfo = new JTextArea();
+//    modifiedFilesInfo.setText(" More details...");
+//    modifiedFilesInfo.setLineWrap(true);
+//    modifiedFilesInfo.setWrapStyleWord(true);
+//    moreInfo.addMouseListener(new MouseListener() {
+//      public void mouseReleased(MouseEvent e) {  }
+//      public void mousePressed(MouseEvent e) {
+//        //TODO show the list of modified files.
+//        logger.debug("Show list of modified files.");
+//      }
+//      public void mouseExited(MouseEvent e) {  }
+//      public void mouseEntered(MouseEvent e) {  }
+//      public void mouseClicked(MouseEvent e) {  }
+//    });
+    
     mainPanel.add(label, new GridBagConstraints(0, 0, 1, 1, 0, 0, 
         GridBagConstraints.WEST, 
         GridBagConstraints.NONE, 
@@ -304,6 +324,14 @@ public class ReportDialog extends OKCancelDialog {
         GridBagConstraints.WEST, 
         GridBagConstraints.HORIZONTAL, 
         new Insets(1, 1, 1, 1), 1, 1));
+    bottomPanel.add(modifiedFilesInfo, new GridBagConstraints(0, 1, 2, 1, 1, 0, 
+        GridBagConstraints.WEST, 
+        GridBagConstraints.HORIZONTAL, 
+        new Insets(1, 1, 1, 1), 1, 1));
+//    bottomPanel.add(moreInfo, new GridBagConstraints(1, 1, 1, 1, 1, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.HORIZONTAL, 
+//        new Insets(1, 1, 1, 1), 1, 1));
 
     getContentPane().add(mainPanel, BorderLayout.CENTER);
 

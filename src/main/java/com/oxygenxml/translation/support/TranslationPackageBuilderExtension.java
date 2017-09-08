@@ -7,7 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -127,40 +129,66 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
         // 1. Extract the parent directory of the current map.
         // 2. Generate the milestone file in the dir
-
+        
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
-
         try {
           URL editorLocation = editor.getEditorLocation();
 
-          final File rootDir = new File(editorLocation.getPath()).getParentFile();
-
-          // Generate the milestone on thread.
-          GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootDir);
-
-          // Install the progress tracker.
-          ProgressDialog.install(
-              milestoneWorker, 
-              (JFrame) pluginWorkspaceAccess.getParentFrame(), 
-              resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
-
-          // This listener notifies the user about how the operation ended.
-          milestoneWorker.addProgressListener(new ProgressChangeAdapter() {
-            public void done() { 
-              pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + rootDir);
+          File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
+          final File rootDir = fileOnDisk.getParentFile();
+          logger.debug("The root dir path is : " + rootDir.getPath());
+          
+          final File milestoneFile = new File(rootDir, PackageBuilder.getMilestoneFileName());
+          //Ask the user if he wants to override the milestone in case it was already created.
+          if(milestoneFile.exists()){
+            int buttonId = pluginWorkspaceAccess.showConfirmDialog("Override milestone",
+                "The milestone file is already there. Do you want to override it?", 
+                new String[] {"Yes", "No"}, 
+                new int[] {0, 1});
+            if(buttonId == 0){
+              generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile);
             }
-            public void operationFailed(Exception ex) {
-              if(!(ex instanceof StoppedByUserException)){
-                pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
-              }
-            }
-          });
-          milestoneWorker.execute();
+          } else {
+            generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile);
+          }
         } catch (Exception e) {
           // Present the error to the user.
           logger.error(e, e);
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + e.getMessage());
         }
+      }
+      /**
+       * Generates the milestone file in the specified rootDir.
+       * 
+       * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
+       * @param rootDir The parent directory of the current ditamap.
+       * @param milestoneFile The predefined location of the milestone file.
+       */
+      private void generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
+          final File rootDir,
+          final File milestoneFile) {
+        // Generate the milestone on thread.
+        GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootDir);
+
+        // Install the progress tracker.
+        ProgressDialog.install(
+            milestoneWorker, 
+            (JFrame) pluginWorkspaceAccess.getParentFrame(), 
+            resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
+
+        // This listener notifies the user about how the operation ended.
+        milestoneWorker.addProgressListener(new ProgressChangeAdapter() {
+          public void done() { 
+            
+            pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
+          }
+          public void operationFailed(Exception ex) {
+            if(!(ex instanceof StoppedByUserException)){
+              pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
+            }
+          }
+        });
+        milestoneWorker.execute();
       }
     };
   }
@@ -182,7 +210,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
         URL editorLocation = editor.getEditorLocation();
         // 1. Extract the parent directory of the current map. This is the rootDir
-        final File rootDir = new File(editorLocation.getPath()).getParentFile();
+        File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
+        final File rootDir = fileOnDisk.getParentFile();
+        logger.debug("The root dir id : " + rootDir.getAbsolutePath());
 
         try {
           final File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());      
@@ -299,8 +329,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
         URL editorLocation = editor.getEditorLocation();
         // The parent directory of the current ditamap.
-        final File rootDir = new File(editorLocation.getFile()).getParentFile();
-
+//        final File rootDir = new File(editorLocation.getFile()).getParentFile();
+        File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
+        final File rootDir = fileOnDisk.getParentFile();
+        logger.debug("The root dir id : " + rootDir.getAbsolutePath());
         final File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION3_CHOOSE_FILE_TITLE), new String[] {"zip"},  null);
 
         // DIFF FLOW
@@ -561,5 +593,15 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       }
     });
     zipTask.execute();
-  }   
+  }
+
+  public File locateFile(URL url) {
+    String result = null;
+    try {
+      result = URLDecoder.decode(url.toString(), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      logger.error(e, e);
+    }
+    return new File(result).getParentFile();
+  }
 }

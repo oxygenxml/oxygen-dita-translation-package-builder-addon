@@ -9,7 +9,7 @@ public class DumpUtil {
 	/**
 	 * @param list A list with ResourceInfo objects.
 	 * 
-	 * @return An aligned string.
+	 * @return A sorted and aligned string.
 	 */
   public static String dump(ArrayList<ResourceInfo> list) {
     list.sort(new Comparator<Object>() {

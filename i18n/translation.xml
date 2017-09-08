@@ -25,7 +25,7 @@
     </key>
     <key value="jmenu_tooltip_item1">
         <comment>JMenu milestone tooltip.</comment>
-        <val lang="en_US">Generates a predefined file called \"translation_builder_milestone.xml\" in the root directory of the selected ditamap which contains an unique hash and the relative path of every file in that directory.</val>
+        <val lang="en_US">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
