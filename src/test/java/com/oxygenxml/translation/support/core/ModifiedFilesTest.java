@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.CustomResourceIteration;
 import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
@@ -22,7 +23,7 @@ public class ModifiedFilesTest {
 	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException, StoppedByUserException {
 		File rootDir = pathOption.getPath("modifiedFiles-Test");
 		
-		ArrayList<ResourceInfo> actualResult = new PackageBuilder().generateModifiedResources(rootDir, false);
+		ArrayList<ResourceInfo> actualResult = new PackageBuilder().generateModifiedResources(new CustomResourceIteration(), null, rootDir, false);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		ResourceInfo first = new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt");

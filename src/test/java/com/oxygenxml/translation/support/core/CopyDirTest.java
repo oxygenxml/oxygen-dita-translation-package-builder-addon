@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.CustomResourceIteration;
 import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
@@ -25,10 +26,10 @@ public class CopyDirTest {
     new ArchiveBuilder().copyDirectory(sourceLocation, targetLocation, new int[] {0}, true);
     
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
-    PackageBuilder.computeResourceInfo(sourceLocation, new Stack<String>(), expectedResult);
+    PackageBuilder.computeResourceInfo(new CustomResourceIteration(), null, new File(sourceLocation, "file.dita"), new Stack<String>(), expectedResult, true);
     
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
-    PackageBuilder.computeResourceInfo(targetLocation, new Stack<String>(), actualResult);
+    PackageBuilder.computeResourceInfo(new CustomResourceIteration(), null, new File(targetLocation, "file.dita"), new Stack<String>(), actualResult, true);
     
     Assert.assertEquals(DumpUtil.dump(expectedResult), DumpUtil.dump(actualResult));
   }
@@ -49,7 +50,7 @@ public class CopyDirTest {
 "";
  
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
-    PackageBuilder.computeResourceInfo(targetLocation, new Stack<String>(), actualResult);
+    PackageBuilder.computeResourceInfo(new CustomResourceIteration(), null, new File(targetLocation, "test.txt"), new Stack<String>(), actualResult, true);
     
     Assert.assertEquals(expectedResult, DumpUtil.dump(actualResult));
   }

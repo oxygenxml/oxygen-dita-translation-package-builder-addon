@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.CustomResourceIteration;
 import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
@@ -39,7 +40,7 @@ public class GenerateMilestoneTest {
 
 		PackageBuilder packageBuilder = new PackageBuilder();
 		
-		packageBuilder.generateChangeMilestone(rootDir, true);
+		packageBuilder.generateChangeMilestone(new CustomResourceIteration(), null, rootDir, true);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testGenerate/md5.txt"));

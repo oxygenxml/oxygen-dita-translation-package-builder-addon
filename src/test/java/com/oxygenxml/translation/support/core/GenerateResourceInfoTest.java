@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.CustomResourceIteration;
 import com.oxygenxml.translation.support.util.PathOption;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
@@ -22,7 +23,7 @@ public class GenerateResourceInfoTest {
 		File dirPath = pathOption.getPath("testIteration-ResourceInfoTest");
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-		PackageBuilder.computeResourceInfo(dirPath, new Stack<String>(), list);
+		PackageBuilder.computeResourceInfo(new CustomResourceIteration(), null, new File(dirPath, "test.txt"), new Stack<String>(), list, true);
 		
 		Assert.assertEquals(
 				"dir1/md5.txt      1308e502a17d62d0585d1487228b204c\n" + 
@@ -33,14 +34,13 @@ public class GenerateResourceInfoTest {
 		
 	}
 	
-	
 	@Test
 	public void testGenerateRelativePaths_2() throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
 		File dirPath = pathOption.getPath("testGenerate-ResourceInfoTest");
 
 		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 		
-		PackageBuilder.computeResourceInfo(dirPath, new Stack<String>(), list);
+		PackageBuilder.computeResourceInfo(new CustomResourceIteration(), null, new File(dirPath, "test.txt"), new Stack<String>(), list, true);
 		
 		String expectedResult = "md5.txt      f5e45edee5ee0e2dffe9fbe6a736ab02\n" + 
 								"md5_no2.txt  521304ca436443d97ccf68ee919c03b3\n";
@@ -50,8 +50,4 @@ public class GenerateResourceInfoTest {
 		System.out.println(DumpUtil.dump(list));
 				
 	}
-
-	
-		
-
 }
