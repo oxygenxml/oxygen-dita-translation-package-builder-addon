@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.oxygenxml.translation.support.core.PackageBuilder;
 import com.oxygenxml.translation.support.core.models.*;
+import com.oxygenxml.translation.support.util.OxygenParserCreator;
+import com.oxygenxml.translation.support.util.SaxResourceIteration;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 /**
  * Creates an AbstractWorker for generating the modified resources in a ditamap.
@@ -42,7 +44,7 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
     for (ProgressChangeListener l : listeners) {
       packageBuilder.addListener(l);
     }
-    modifiedResources = packageBuilder.generateModifiedResources(rootDir, isFromWorker);
+    modifiedResources = packageBuilder.generateModifiedResources(new SaxResourceIteration(), new OxygenParserCreator(), rootDir, isFromWorker);
     
     return null;
   }

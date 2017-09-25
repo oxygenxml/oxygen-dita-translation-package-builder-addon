@@ -26,10 +26,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.core.PackageBuilder;
+import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PreviewDialog;
@@ -135,60 +139,31 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           URL editorLocation = editor.getEditorLocation();
 
           File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
-          final File rootDir = fileOnDisk.getParentFile();
-          logger.debug("The root dir path is : " + rootDir.getPath());
+          /**
+           * TODO see if works 
+           */
+          final File rootDir = fileOnDisk;//.getParentFile();
+          logger.debug("The current ditaMAP is : " + rootDir.getPath());
           
-          final File milestoneFile = new File(rootDir, PackageBuilder.getMilestoneFileName());
+          final File milestoneFile = new File(rootDir.getParentFile(), PackageBuilder.getMilestoneFileName());
           //Ask the user if he wants to override the milestone in case it was already created.
           if(milestoneFile.exists()){
+            Date milestoneLastModified = loadMilestoneFile(rootDir);
             int buttonId = pluginWorkspaceAccess.showConfirmDialog("Override milestone",
-                "The milestone file is already there. Do you want to override it?", 
+                "An older milestone was created at : " + milestoneLastModified + ". Do you want to override it?", 
                 new String[] {"Yes", "No"}, 
                 new int[] {0, 1});
             if(buttonId == 0){
-              generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile);
+              generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile, null, true);
             }
           } else {
-            generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile);
+            generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile, null, true);
           }
         } catch (Exception e) {
           // Present the error to the user.
           logger.error(e, e);
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + e.getMessage());
         }
-      }
-      /**
-       * Generates the milestone file in the specified rootDir.
-       * 
-       * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
-       * @param rootDir The parent directory of the current ditamap.
-       * @param milestoneFile The predefined location of the milestone file.
-       */
-      private void generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
-          final File rootDir,
-          final File milestoneFile) {
-        // Generate the milestone on thread.
-        GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootDir);
-
-        // Install the progress tracker.
-        ProgressDialog.install(
-            milestoneWorker, 
-            (JFrame) pluginWorkspaceAccess.getParentFrame(), 
-            resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
-
-        // This listener notifies the user about how the operation ended.
-        milestoneWorker.addProgressListener(new ProgressChangeAdapter() {
-          public void done() { 
-            
-            pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
-          }
-          public void operationFailed(Exception ex) {
-            if(!(ex instanceof StoppedByUserException)){
-              pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
-            }
-          }
-        });
-        milestoneWorker.execute();
       }
     };
   }
@@ -211,86 +186,36 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         URL editorLocation = editor.getEditorLocation();
         // 1. Extract the parent directory of the current map. This is the rootDir
         File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
-        final File rootDir = fileOnDisk.getParentFile();
-        logger.debug("The root dir id : " + rootDir.getAbsolutePath());
+        final File rootDir = fileOnDisk;//.getParentFile();
+        logger.debug("The current ditaMAP is : " + rootDir.getAbsolutePath());
 
         try {
-          final File milestoneFile = new File(rootDir , PackageBuilder.getMilestoneFileName());      
+          //The milestone file is stored in the root dir of the current ditaMAP
+          final File milestoneFile = new File(rootDir.getParentFile() , PackageBuilder.getMilestoneFileName());      
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
           if(!milestoneFile.exists()){
             int buttonId = pluginWorkspaceAccess.showConfirmDialog(resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_TITLE),
                 resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_MESSAGE) +
-                rootDir.getPath() +"?", 
-                new String[] {resourceBundle.getMessage(Tags.YES_BUTTON), resourceBundle.getMessage(Tags.NO_BUTTON)},
-                new int[] {0, 1});
-            // If the user wants to pack the entire directory show a file chooser and create package.
-            if(buttonId == 0){     
+                milestoneFile.getAbsolutePath() +"?", 
+                new String[] {resourceBundle.getMessage(Tags.YES_BUTTON), resourceBundle.getMessage(Tags.NO_BUTTON), "Pack entire dir"},
+                new int[] {0, 1, 2});
+            //Generate the first milestone.
+            if(buttonId == 0){
+              generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile, frame, false);
+            }
+            //If the user wants to pack the entire directory show a file chooser and create package.
+            else if(buttonId == 2){     
               File chosenDirectory = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
                   new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
               if(chosenDirectory != null){
-                createPackage(frame, rootDir, chosenDirectory, resourceBundle, pluginWorkspaceAccess, true, null, false);
+                createPackage(frame, rootDir.getParentFile(), chosenDirectory, resourceBundle, pluginWorkspaceAccess, true, null, false);
               }             
             }else{
               return;
             }
           } else {  
-            // Find the number of modified resources on thread.
-            final GenerateModifiedResourcesWorker modifiedResourcesWorker = 
-                new GenerateModifiedResourcesWorker(rootDir);
-            // Install the progress tracker.
-            ProgressDialog.install(
-                modifiedResourcesWorker, 
-                frame , 
-                resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
-
-            // This listener notifies the user about how the operation ended.
-            modifiedResourcesWorker.addProgressListener(new ProgressChangeAdapter() {                                          
-              public void done() { 
-                if(logger.isDebugEnabled()){
-                  logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE5) + modifiedResourcesWorker.getModifiedResources().size());
-                }
-                // If the number of modified files is grater than 0 show the report dialog and create package.
-                if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
-                  ReportDialog.setParentFrame(frame);
-                  ReportDialog.setRootDir(rootDir);
-                  ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
-                  
-                  ReportDialog report = ReportDialog.getInstance();
-                  
-                  logger.debug("The Save button is : " + report.isSaveButtonPressed());
-                  //Create report and package only if the user pressed the "Save" button.
-                  if(report.isSaveButtonPressed()){
-                    File chosenDir = report.getChoosedLocation();
-                    if(chosenDir != null){
-                      createPackage(frame,
-                          rootDir, 
-                          chosenDir,
-                          resourceBundle,
-                          pluginWorkspaceAccess, 
-                          false, 
-                          modifiedResourcesWorker.getModifiedResources(),
-                          report.isShouldCreateReport());
-                    }
-                  }
-                  report.setSaveButtonPressed(false);
-                } else {  
-                  // Inform the user that no resources were modified.
-                  pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
-                      resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + new Date(milestoneFile.lastModified()));                  
-                }                  
-              }                
-              public void operationFailed(Exception ex) {
-                if(ex instanceof NoChangedFilesException){
-                  pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());                  
-                } else if(ex instanceof StoppedByUserException) {
-                  logger.error(ex, ex);
-                } else {
-                  pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_ERROR_MESSAGE) + ex.getMessage());
-                }               
-              } 
-            });
-            modifiedResourcesWorker.execute();      
+            showReportDialog(pluginWorkspaceAccess, frame, rootDir);      
           }
         } catch (Exception e) {
           //  Preset error to user.
@@ -298,7 +223,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION2_ERROR_MESSAGE) + e.getMessage());
         }
       }
-
     };
   }
   /**
@@ -332,7 +256,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 //        final File rootDir = new File(editorLocation.getFile()).getParentFile();
         File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
         final File rootDir = fileOnDisk.getParentFile();
-        logger.debug("The root dir id : " + rootDir.getAbsolutePath());
+        logger.debug("The root dir is : " + rootDir.getAbsolutePath());
         final File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION3_CHOOSE_FILE_TITLE), new String[] {"zip"},  null);
 
         // DIFF FLOW
@@ -437,10 +361,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       GridBagConstraints gbcScroll = new GridBagConstraints();
       gbcScroll.gridx = 0;
       gbcScroll.gridy = 1;
-      gbcLabel.gridwidth = 1;
-      gbcLabel.gridheight = 1;
-      gbcLabel.weightx = 0;
-      gbcLabel.weighty = 0;
+      gbcScroll.gridwidth = 1;
+      gbcScroll.gridheight = 1;
+      gbcScroll.weightx = 0;
+      gbcScroll.weighty = 0;
       gbcScroll.fill = GridBagConstraints.BOTH;
       gbcScroll.anchor = GridBagConstraints.LINE_START;
       panel.add(scroll , gbcScroll);
@@ -604,4 +528,144 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     }
     return new File(result).getParentFile();
   }
+  
+  /**
+   * Loads the last creation date of the milestone file.
+   * 
+   * @param rootDir The location of the "special file"(milestone file).
+   * 
+   * @return  The last creation date of the "special file"(milestone).
+   * 
+   * @throws JAXBException   Problems with JAXB, serialization/deserialization of a file.
+   */
+  private Date loadMilestoneFile(File rootDir) throws JAXBException, IOException {
+    File milestoneFile = new File(rootDir.getParentFile(),  PackageBuilder.getMilestoneFileName());
+
+    if (!milestoneFile.exists()) {
+      throw new IOException("No milestone was created.");
+    }
+
+    JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
+
+    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
+
+    InfoResources resources = (InfoResources) jaxbUnmarshaller.unmarshal(milestoneFile);    
+
+    return resources.getMilestoneCreation();
+  }
+  
+  /**
+   * Generates the milestone file in the specified rootDir.
+   * 
+   * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
+   * @param rootDir The parent directory of the current ditamap.
+   * @param milestoneFile The predefined location of the milestone file.
+   */
+  private void generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
+      final File rootDir,
+      final File milestoneFile,
+      final JFrame frame,
+      final boolean isFromAction1) {
+    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+    // Generate the milestone on thread.
+    GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootDir);
+
+    // Install the progress tracker.
+    ProgressDialog.install(
+        milestoneWorker, 
+        (JFrame) pluginWorkspaceAccess.getParentFrame(), 
+        resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
+
+    // This listener notifies the user about how the operation ended.
+    milestoneWorker.addProgressListener(new ProgressChangeAdapter() {
+      public void done() { 
+        if(isFromAction1){
+          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
+        } else {
+          showReportDialog(pluginWorkspaceAccess, frame, rootDir);
+        }
+      }
+      public void operationFailed(Exception ex) {
+        if(!(ex instanceof StoppedByUserException)){
+          pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
+        }
+      }
+    });
+    milestoneWorker.execute();
+  }
+  
+  /**
+   * @param pluginWorkspaceAccess
+   * @param frame
+   * @param rootDir
+   */
+  private void showReportDialog(final StandalonePluginWorkspace pluginWorkspaceAccess,
+      final JFrame frame,
+      final File rootDir) {
+    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+    // Find the number of modified resources on thread.
+    final GenerateModifiedResourcesWorker modifiedResourcesWorker = 
+        new GenerateModifiedResourcesWorker(rootDir);
+    // Install the progress tracker.
+    ProgressDialog.install(
+        modifiedResourcesWorker, 
+        frame , 
+        resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
+
+    // This listener notifies the user about how the operation ended.
+    modifiedResourcesWorker.addProgressListener(new ProgressChangeAdapter() {                                          
+      public void done() { 
+        if(logger.isDebugEnabled()){
+          logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE5) + modifiedResourcesWorker.getModifiedResources().size());
+        }
+        // If the number of modified files is grater than 0 show the report dialog and create package.
+        if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
+          ReportDialog.setParentFrame(frame);
+          ReportDialog.setRootDir(rootDir);
+          ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
+          
+          ReportDialog report = ReportDialog.getInstance();
+          
+          logger.debug("The Save button is : " + report.isSaveButtonPressed());
+          //Create report and package only if the user pressed the "Save" button.
+          if(report.isSaveButtonPressed()){
+            File chosenDir = report.getChoosedLocation();
+            if(chosenDir != null){
+              createPackage(frame,
+                  rootDir, 
+                  chosenDir,
+                  resourceBundle,
+                  pluginWorkspaceAccess, 
+                  false, 
+                  modifiedResourcesWorker.getModifiedResources(),
+                  report.isShouldCreateReport());
+            }
+          }
+          report.setSaveButtonPressed(false);
+        } else {  
+          try {
+            // Inform the user that no resources were modified.
+            Date milestoneLastModified = loadMilestoneFile(rootDir);
+            pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
+                resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + milestoneLastModified);                  
+          } catch (JAXBException e) {
+            logger.error(e, e);
+          } catch (IOException e) {
+            logger.error(e, e);
+          }                
+        }                  
+      }                
+      public void operationFailed(Exception ex) {
+        if(ex instanceof NoChangedFilesException){
+          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());                  
+        } else if(ex instanceof StoppedByUserException) {
+          logger.error(ex, ex);
+        } else {
+          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_ERROR_MESSAGE) + ex.getMessage());
+        }               
+      } 
+    });
+    modifiedResourcesWorker.execute();
+  }
+  
 }

@@ -10,7 +10,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import com.oxygenxml.translation.support.util.CustomParserCreator;
 import com.oxygenxml.translation.support.util.ParserCreator;
 
 public class HrefFinder {

@@ -22,6 +22,10 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.CustomResourceIteration;
+import com.oxygenxml.translation.support.util.ParserCreator;
+import com.oxygenxml.translation.support.util.ResourceIteration;
+import com.oxygenxml.translation.support.util.SaxResourceIteration;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
@@ -134,10 +138,11 @@ public class PackageBuilder {
    * @throws IOException Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  static void computeResourceInfo(File dirPath, Stack<String> dirs, ArrayList<ResourceInfo> list) throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
-    File[] everythingInThisDir = dirPath.listFiles();
+  static void computeResourceInfo(ResourceIteration iterator,ParserCreator parser, File dirPath, Stack<String> dirs, ArrayList<ResourceInfo> list, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
+    ArrayList<File> everythingInThisDir = iterator.listResources(parser, dirPath);
+//    int counter = 0;
 
-    if (everythingInThisDir != null){
+    if (everythingInThisDir != null /*&& !everythingInThisDir.isEmpty()*/){
       for (File name : everythingInThisDir) {
 
         if (name.isDirectory()){	
@@ -147,7 +152,7 @@ public class PackageBuilder {
 
           dirs.push(name.getName());
 
-          computeResourceInfo(name, dirs, list);
+          computeResourceInfo(iterator, parser, new File(name, "file.dita"), dirs, list, isFromTest);
 
           dirs.pop();
         }
@@ -157,14 +162,34 @@ public class PackageBuilder {
           if(isCanceled()){
             throw new StoppedByUserException("You pressed the Cancel button.");
           }
-          String relativePath = "";				
-          for(int i = 0; i < dirs.size(); i++) {
-            relativePath += dirs.get(i)+"/";					
+          if(iterator instanceof CustomResourceIteration){
+            String relativePath = "";				
+            for(int i = 0; i < dirs.size(); i++) {
+              relativePath += dirs.get(i)+"/";					
+            }
+            ResourceInfo resourceInfo = new ResourceInfo(generateMD5(name), relativePath + name.getName());
+            list.add(resourceInfo);
+          } else if(iterator instanceof SaxResourceIteration){
+            File base = dirPath.getParentFile();
+            String relativePath = base.toURI().relativize(name.toURI()).getPath();
+//            if(isCanceled()){
+//              throw new StoppedByUserException("You pressed the Cancel button.");
+//            }
+           
+//            if(!isFromTest){
+//              counter++;
+//              ProgressChangeEvent progress = new ProgressChangeEvent(counter , "");
+//              fireChangeEvent(progress);
+//              
+//            }
+            /**
+             * TODO Find out the root folder!
+             */
+            ResourceInfo resourceInfo = new ResourceInfo(generateMD5(name), relativePath/*, rootFolder*/);
+            list.add(resourceInfo);
           }
 
-          ResourceInfo resourceInfo = new ResourceInfo(generateMD5(name), relativePath + name.getName());
-
-          list.add(resourceInfo);	
+          	
         }
       }
     } else{
@@ -240,7 +265,7 @@ public class PackageBuilder {
    * @throws IOException	Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public ArrayList<ResourceInfo> generateModifiedResources(File rootDir, boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
+  public ArrayList<ResourceInfo> generateModifiedResources(ResourceIteration iterator, ParserCreator parser, File rootDir, boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
     /**
      * 1. Loads the milestone XML from rootDIr using JAXB
      * 2. Calls generateCurrentMD5() to get the current MD5s
@@ -250,10 +275,10 @@ public class PackageBuilder {
       logger.debug("Cames from modifiedResourcesWorker?-->" + isFromWorker);
     }
     // Store state.
-    ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir);
+    ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir.getParentFile());
     //Current states.
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
-    computeResourceInfo(rootDir, new Stack<String>(), currentStates);
+    computeResourceInfo(iterator, parser, rootDir, new Stack<String>(), currentStates, !isFromWorker);
     // A list to hold the modified resources.
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
     int counter = 0;
@@ -360,14 +385,14 @@ public class PackageBuilder {
         } finally {
           FileUtils.deleteDirectory(tempDir);
         }
-    } else {
+    } /*else {
       // Present the date when the milestore was created.
       File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
 
       // Trow a customn exception.
       NoChangedFilesException t = new NoChangedFilesException("There are no changed files since the milestone created on: " + new Date(milestoneFile.lastModified()));
       throw t;
-    }
+    }*/
 
     return result;
   }
@@ -388,11 +413,15 @@ public class PackageBuilder {
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws StoppedByUserException The user pressed the "Cancel" button.
    */
-  public File generateChangeMilestone(File rootDir, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
+  public File generateChangeMilestone(ResourceIteration iterator, ParserCreator parser, File rootDir, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-    computeResourceInfo(rootDir, new Stack<String>(), list);
 
-    File file = storeMilestoneFile(new InfoResources(list), rootDir);
+    computeResourceInfo(iterator, parser, rootDir, new Stack<String>(), list, isFromTest);
+    File milestoneFile = new File(rootDir.getParentFile(), MILESTONE_FILE_NAME);
+    /**
+     * TODO check functionality of the date and time of the milestone creation.
+     */
+    File file = storeMilestoneFile(new InfoResources(list, new Date(milestoneFile.lastModified())), rootDir.getParentFile());
     if(isCanceled()){
       throw new StoppedByUserException("You pressed the Cancel button.");
     }

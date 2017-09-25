@@ -1,6 +1,7 @@
 package com.oxygenxml.translation.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -10,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,11 +26,15 @@ import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Document;
@@ -183,7 +190,7 @@ public class ReportDialog extends OKCancelDialog {
     JLabel label = new JLabel("Package Location : ");
     checkbox = new JCheckBox("Generate report");
     //Show the user informations about the report creation.
-    final JTextArea textInfo = new JTextArea(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + rootDir.getPath());
+    final JTextArea textInfo = new JTextArea(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + new File(rootDir, REPORT_FILE_NAME).getAbsolutePath());
     textInfo.setWrapStyleWord(true);
     textInfo.setLineWrap(true);
 
@@ -261,7 +268,7 @@ public class ReportDialog extends OKCancelDialog {
     checkbox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(e.getStateChange() == ItemEvent.SELECTED){
-          textInfo.setText(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + rootDir.getPath());         
+          textInfo.setText(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + new File(rootDir, REPORT_FILE_NAME).getAbsolutePath());         
         } else {
           textInfo.setText(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL_TEXT2) + new Date(reportFile.lastModified()));
         }
@@ -273,28 +280,49 @@ public class ReportDialog extends OKCancelDialog {
     JLabel infoLabel = new JLabel(imageInfo, JLabel.HORIZONTAL);
 
     JPanel mainPanel = new JPanel(new GridBagLayout());
-    JPanel bottomPanel = new JPanel(new GridBagLayout());
+    JPanel infoPanel = new JPanel(new GridBagLayout());
     
-    JTextArea modifiedFilesInfo = new JTextArea();
-    modifiedFilesInfo.setText("A number of " + modifiedResources.size() + " files was modified since the last time the milestone was computed.");
+    final JTextArea modifiedFilesInfo = new JTextArea();
+    modifiedFilesInfo.setEditable(false);
+    modifiedFilesInfo.setText("A number of " + modifiedResources.size() +
+        " files was modified since the last time the milestone was computed. More details...");
     modifiedFilesInfo.setLineWrap(true);
     modifiedFilesInfo.setWrapStyleWord(true);
+    modifiedFilesInfo.setToolTipText("Click to see the list of files which will be packed in the zip.");
     
-//    JTextArea moreInfo = new JTextArea();
-//    modifiedFilesInfo.setText(" More details...");
-//    modifiedFilesInfo.setLineWrap(true);
-//    modifiedFilesInfo.setWrapStyleWord(true);
-//    moreInfo.addMouseListener(new MouseListener() {
-//      public void mouseReleased(MouseEvent e) {  }
-//      public void mousePressed(MouseEvent e) {
-//        //TODO show the list of modified files.
-//        logger.debug("Show list of modified files.");
-//      }
-//      public void mouseExited(MouseEvent e) {  }
-//      public void mouseEntered(MouseEvent e) {  }
-//      public void mouseClicked(MouseEvent e) {  }
-//    });
+    modifiedFilesInfo.addMouseListener(new MouseListener() {
+      public void mouseReleased(MouseEvent e) {  }
+      public void mousePressed(MouseEvent e) {   }
+      public void mouseExited(MouseEvent e) {  }
+      public void mouseEntered(MouseEvent e) { 
+        modifiedFilesInfo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+      }
+      public void mouseClicked(MouseEvent e) { 
+      //Show the list of modified files.
+        logger.debug("Show list of modified files.");
+        
+        try {
+          showReport(pluginWorkspace, modifiedResources);
+        } catch (IOException e1) {
+          logger.error(e1, e1);
+        }
+      }
+    });
     
+//    JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
+//    JPanel generateMilestonePanel = new JPanel(new GridBagLayout());
+//    File milestoneFile = new File(rootDir, PackageBuilder.getMilestoneFileName());
+//    String answer = "";
+//    if(milestoneFile.exists()){
+//      answer = "YES";
+//    } else {
+//      answer = "NO";
+//    }
+//    JLabel milestoneLabel = new JLabel("Is the milestone file created ? Answer : " + answer);
+//    JLabel questionLabel = new JLabel("Do you want to generate/override the milestone file?");
+//    JRadioButton radioButtonYES = new JRadioButton("YES");
+//    JRadioButton radioButtonNO = new JRadioButton("NO");
+  
     mainPanel.add(label, new GridBagConstraints(0, 0, 1, 1, 0, 0, 
         GridBagConstraints.WEST, 
         GridBagConstraints.NONE, 
@@ -311,31 +339,56 @@ public class ReportDialog extends OKCancelDialog {
         GridBagConstraints.WEST, 
         GridBagConstraints.NONE, 
         new Insets(1, 1, 1, 1), 1, 1));
-    mainPanel.add(bottomPanel, new GridBagConstraints(0, 2, 3, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.HORIZONTAL, 
-        new Insets(1, 1, 1, 1), 1, 1));
-
-    bottomPanel.add(infoLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.NONE, 
-        new Insets(1, 1, 1, 1), 1, 1));
-    bottomPanel.add(textInfo, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.HORIZONTAL, 
-        new Insets(1, 1, 1, 1), 1, 1));
-    bottomPanel.add(modifiedFilesInfo, new GridBagConstraints(0, 1, 2, 1, 1, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.HORIZONTAL, 
-        new Insets(1, 1, 1, 1), 1, 1));
-//    bottomPanel.add(moreInfo, new GridBagConstraints(1, 1, 1, 1, 1, 0, 
+//    mainPanel.add(separator, new GridBagConstraints(0, 2, 3, 1, 1, 0, 
 //        GridBagConstraints.WEST, 
 //        GridBagConstraints.HORIZONTAL, 
 //        new Insets(1, 1, 1, 1), 1, 1));
+//    mainPanel.add(generateMilestonePanel, new GridBagConstraints(0, 4, 3, 1, 0, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.NONE, 
+//        new Insets(1, 1, 1, 1), 1, 1));
+//    mainPanel.add(separator, new GridBagConstraints(0, 5, 3, 1, 1, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.HORIZONTAL, 
+//        new Insets(1, 1, 1, 1), 1, 1));
+    mainPanel.add(infoPanel, new GridBagConstraints(0, 2, 3, 1, 0, 0, 
+        GridBagConstraints.WEST, 
+        GridBagConstraints.NONE, 
+        new Insets(1, 1, 1, 1), 1, 1));
 
+    infoPanel.add(infoLabel, new GridBagConstraints(0, 0, 1, 2, 0, 0, 
+        GridBagConstraints.NORTH, 
+        GridBagConstraints.NONE, 
+        new Insets(1, 1, 1, 1), 1, 1));
+    infoPanel.add(textInfo, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
+        GridBagConstraints.WEST, 
+        GridBagConstraints.HORIZONTAL, 
+        new Insets(1, 1, 1, 1), 1, 1));
+    infoPanel.add(modifiedFilesInfo, new GridBagConstraints(1, 1, 1, 1, 0, 0, 
+      GridBagConstraints.WEST, 
+      GridBagConstraints.NONE, 
+      new Insets(1, 1, 1, 1), 1, 1));
+    
+//    generateMilestonePanel.add(milestoneLabel, new GridBagConstraints(0, 0, 2, 1, 1, 0, 
+//        GridBagConstraints.NORTH, 
+//        GridBagConstraints.NONE, 
+//        new Insets(1, 1, 1, 1), 1, 1));
+//    generateMilestonePanel.add(questionLabel, new GridBagConstraints(0, 1, 2, 1, 0, 0, 
+//        GridBagConstraints.NORTH, 
+//        GridBagConstraints.NONE, 
+//        new Insets(1, 1, 1, 1), 1, 1));
+//    generateMilestonePanel.add(radioButtonYES, new GridBagConstraints(0, 2, 1, 1, 0, 0, 
+//        GridBagConstraints.NORTH, 
+//        GridBagConstraints.NONE, 
+//        new Insets(1, 1, 1, 1), 1, 1));
+//    generateMilestonePanel.add(radioButtonNO, new GridBagConstraints(1, 2, 1, 1, 0, 0, 
+//        GridBagConstraints.NORTH, 
+//        GridBagConstraints.NONE, 
+//        new Insets(1, 1, 1, 1), 1, 1));
+    
     getContentPane().add(mainPanel, BorderLayout.CENTER);
 
-    setPreferredSize(new Dimension(500, 200));
+    setPreferredSize(new Dimension(500, 210));
     setMinimumSize(getPreferredSize());
     setLocationRelativeTo(parentFrame);
     pack();
@@ -456,5 +509,54 @@ public class ReportDialog extends OKCancelDialog {
     }
     instance.setVisible(true);
     return instance;
+  }
+  
+  /**
+   *  Shows a message dialog with the modified files that will be packed.
+   * 
+   * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
+   * @param list  The relative paths of the modified files.
+   * @throws IOException  Problems reading the files.
+   */
+  private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
+      ArrayList<ResourceInfo> list) throws IOException {
+//    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+
+    // Present a log with the overridden files.
+    if(list != null && !list.isEmpty()){
+      JTextArea text = new JTextArea(10, 40);
+
+      // Iterate with an index and put a new line
+      //    for all lines except the first one. 
+      text.append(list.get(0).getRelativePath());
+      for(int i = 1; i < list.size(); i++){
+        text.append("\n");
+        text.append(list.get(i).getRelativePath());
+      }
+      text.setLineWrap(true);
+      text.setWrapStyleWord(true);
+      text.setEditable(false);
+
+      JScrollPane scroll = new JScrollPane(text);
+      scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+      JPanel panel = new JPanel(new GridBagLayout());
+
+      GridBagConstraints gbcScroll = new GridBagConstraints();
+      gbcScroll.gridx = 0;
+      gbcScroll.gridy = 1;
+      gbcScroll.gridwidth = 1;
+      gbcScroll.gridheight = 1;
+      gbcScroll.weightx = 0;
+      gbcScroll.weighty = 0;
+      gbcScroll.fill = GridBagConstraints.BOTH;
+      gbcScroll.anchor = GridBagConstraints.LINE_START;
+      panel.add(scroll , gbcScroll);
+
+      JOptionPane.showMessageDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), panel, "Files which will be packed", JOptionPane.INFORMATION_MESSAGE);
+    }
+    else{
+      throw new IOException("The list containing the modified files is empty or null.");
+    }
   }
 }

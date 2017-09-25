@@ -114,7 +114,7 @@
     </key>
     <key value="action2_milestoneNotExists_dialog_message">
         <comment>Confirm dialog message in pack modified files.</comment>
-        <val lang="en_US"> The milestone file doesn't exist. Do you want to pack the entire directory : </val>
+        <val lang="en_US"> The milestone file doesn't exist. Do you want to create the milestone file : </val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>

@@ -3,6 +3,8 @@ package com.oxygenxml.translation.ui.worker;
 import java.io.File;
 
 import com.oxygenxml.translation.support.core.PackageBuilder;
+import com.oxygenxml.translation.support.util.OxygenParserCreator;
+import com.oxygenxml.translation.support.util.SaxResourceIteration;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 /**
  * Creates an AbstractWorker for generating the milestone file.
@@ -28,7 +30,7 @@ public class GenerateMilestoneWorker extends AbstractWorker{
     for (ProgressChangeListener l : listeners) {
       packageBuilder.addListener(l);
     } 
-    packageBuilder.generateChangeMilestone(rootDir, false);
+    packageBuilder.generateChangeMilestone(new SaxResourceIteration(), new OxygenParserCreator(), rootDir, false);
     
     return null;
   }
