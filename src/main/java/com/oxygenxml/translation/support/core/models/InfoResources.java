@@ -2,6 +2,7 @@ package com.oxygenxml.translation.support.core.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,7 +28,7 @@ public class InfoResources {
 	 * list Gathers the generated ResourceInfo objects.
 	 */
 	@XmlElement(name = "info-resource")
-	private ArrayList<ResourceInfo> list;
+	private List<ResourceInfo> list;
 	
 	public Date getMilestoneCreation() {
     return milestoneCreation;
@@ -36,11 +37,11 @@ public class InfoResources {
     this.milestoneCreation = milestoneCreation;
   }
 	
-	public ArrayList<ResourceInfo> getList() {
+	public List<ResourceInfo> getList() {
 		return list;
 	}
 	
-	public void setList(ArrayList<ResourceInfo> list) {
+	public void setList(List<ResourceInfo> list) {
 		this.list = list;
 	}
 	

@@ -1,8 +1,11 @@
 package com.oxygenxml.translation.support.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -10,8 +13,9 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import com.oxygenxml.translation.support.core.HrefFinder;
+import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
-public class SaxResourceIteration implements ResourceIteration {
+public class SaxResourceIteration implements IResource {
   /**
    *  Logger for logging.
    */
@@ -40,6 +44,16 @@ public class SaxResourceIteration implements ResourceIteration {
       logger.error(e, e);
     }
     return oldParsedFiles;
+  }
+
+  public Iterator<IResource> iterator() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

@@ -1,17 +1,19 @@
 package com.oxygenxml.translation.support.core;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.net.URL;
 import java.util.Comparator;
+import java.util.List;
 
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 
-public class DumpUtil {
+public class TestUtil {
 	/**
 	 * @param list A list with ResourceInfo objects.
 	 * 
 	 * @return A sorted and aligned string.
 	 */
-  public static String dump(ArrayList<ResourceInfo> list) {
+  public static String dump(List<ResourceInfo> list) {
     list.sort(new Comparator<Object>() {
       public int compare(Object ListOne, Object ListTwo) {
         return ((ResourceInfo)ListOne).getRelativePath().compareTo(((ResourceInfo)ListTwo).getRelativePath());
@@ -38,4 +40,16 @@ public class DumpUtil {
 		
 		return b.toString();
 	}
+  
+  /**
+   * Gets the needed resource.
+   * 
+   * @param dirName The name of the resource we need.
+   * 
+   * @return The file/directory specified by dirName.
+   */
+  public static File getPath(String dirName){
+    URL resource = TestUtil.class.getClassLoader().getResource(dirName);
+    return new File(resource.getPath());
+  }
 }

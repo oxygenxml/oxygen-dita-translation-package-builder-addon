@@ -26,10 +26,7 @@ public class GenerateMilestoneWorker extends AbstractWorker{
    */
   @Override
   protected Void doInBackground() throws Exception {
-    PackageBuilder packageBuilder = new PackageBuilder();
-    for (ProgressChangeListener l : listeners) {
-      packageBuilder.addListener(l);
-    } 
+    PackageBuilder packageBuilder = new PackageBuilder(listeners);
     packageBuilder.generateChangeMilestone(new SaxResourceIteration(), new OxygenParserCreator(), rootDir, false);
     
     return null;

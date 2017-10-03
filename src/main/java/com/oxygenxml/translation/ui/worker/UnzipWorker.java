@@ -43,10 +43,7 @@ public class UnzipWorker extends AbstractWorker {
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException {
-    ArchiveBuilder archiveBuilder = new ArchiveBuilder();
-    for (ProgressChangeListener l : listeners) {
-      archiveBuilder.addListener(l);
-    }
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
 
     unpackedFiles = archiveBuilder.unzipDirectory(zipDir, rootDir, false);
 

@@ -4,15 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.oxygenxml.translation.support.core.PackageBuilder;
-import com.oxygenxml.translation.support.core.models.*;
-import com.oxygenxml.translation.support.util.OxygenParserCreator;
-import com.oxygenxml.translation.support.util.SaxResourceIteration;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.util.FileResourceBuilder;
 /**
  * Creates an AbstractWorker for generating the modified resources in a ditamap.
  * 
  * @author Bivolan Dalina
- *
  */
 public class GenerateModifiedResourcesWorker extends AbstractWorker{
   /**
@@ -23,9 +20,6 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
    * The list with all the modified resources.
    */
   private ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
-  public ArrayList<ResourceInfo> getModifiedResources() {
-    return modifiedResources;
-  }
   /**
    * True if the method : generateModifiedResources(rootDir); is called by this worker.
    */
@@ -40,12 +34,18 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
   @Override
   protected Void doInBackground() throws Exception {
     isFromWorker = true;
-    PackageBuilder packageBuilder = new PackageBuilder();
-    for (ProgressChangeListener l : listeners) {
-      packageBuilder.addListener(l);
-    }
-    modifiedResources = packageBuilder.generateModifiedResources(new SaxResourceIteration(), new OxygenParserCreator(), rootDir, isFromWorker);
+    PackageBuilder packageBuilder = new PackageBuilder(listeners);
+    modifiedResources = packageBuilder.generateModifiedResources(
+        FileResourceBuilder.wrap(rootDir), 
+        isFromWorker);
     
     return null;
+  }
+  
+  /**
+   * @return The resources that had modifications.
+   */
+  public ArrayList<ResourceInfo> getModifiedResources() {
+    return modifiedResources;
   }
 }

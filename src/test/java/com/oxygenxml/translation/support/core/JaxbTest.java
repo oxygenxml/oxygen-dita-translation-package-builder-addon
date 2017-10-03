@@ -3,7 +3,7 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -13,28 +13,29 @@ import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.PathOption;
+import com.oxygenxml.translation.support.util.FileResourceBuilder;
+import com.oxygenxml.translation.support.util.IRootResource;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 public class JaxbTest {
-  private PathOption pathOption = new PathOption();
-	private File rootDir = pathOption.getPath("JAXB-test");
+	private File rootDir = TestUtil.getPath("JAXB-test");
 
 	@Test
 	public void testMarshaller() throws JAXBException, IOException, StoppedByUserException {
 
 		InfoResources info = new InfoResources();
 		ResourceInfo resource = new  ResourceInfo();
-		ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 
 		resource.setMd5("12345");
 		resource.setRelativePath("dir1/test.txt");
 
-		list.add(resource);
+		@SuppressWarnings("unchecked")
+    List<ResourceInfo> list = Arrays.asList(new ResourceInfo[] {resource});
+	  info.setList(list);
 
-		info.setList(list);
-		
-		PackageBuilder.storeMilestoneFile(info, rootDir);
+		new PackageBuilder().storeMilestoneFile(info, rootDir);
 
 	    String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
 		+"<resources>\n"
@@ -45,16 +46,22 @@ public class JaxbTest {
 		+"</resources>\n";
 
 	    
-	  String actualResult = IOUtils.toString(new FileInputStream(new File(rootDir, "translation_builder_milestone.xml")), "utf-8");
+	  String actualResult = IOUtils.toString
+	      (new FileInputStream(new File(rootDir, "translation_builder_milestone.xml")), "utf-8");
 	  
 		Assert.assertEquals(expectedResult, actualResult);
 	}
 
+	/**
+	 * Tests the milestone file loading.
+	 *  
+	 *  @throws Exception If it fails.
+	 */
 	@Test
-	public void testUnmarshaller() throws JAXBException, IOException {
-		ArrayList<ResourceInfo> list = PackageBuilder.loadMilestoneFile(rootDir);
-		String dump = DumpUtil.dump(list);
+	public void testUnmarshaller() throws Exception {
+	  IRootResource rootResource = FileResourceBuilder.wrap(rootDir);
+		List<ResourceInfo> list = PackageBuilder.loadMilestoneFile(rootResource);
+		String dump = TestUtil.dump(list);
 		Assert.assertEquals("dir1/test.txt  12345\n", dump);;
 	}
-
 }

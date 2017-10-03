@@ -32,10 +32,7 @@ public class CopyDirectoryWorker extends AbstractWorker {
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException {
-    ArchiveBuilder archiveBuilder = new ArchiveBuilder();
-    for (ProgressChangeListener l : listeners) {
-      archiveBuilder.addListener(l);
-    }
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
     archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0}, false);
 
     return null;

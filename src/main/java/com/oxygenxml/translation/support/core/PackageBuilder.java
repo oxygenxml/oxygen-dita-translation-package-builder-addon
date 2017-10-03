@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -22,10 +23,9 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.translation.support.core.models.InfoResources;
 import com.oxygenxml.translation.support.core.models.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.support.util.CustomResourceIteration;
+import com.oxygenxml.translation.support.util.IResource;
+import com.oxygenxml.translation.support.util.IRootResource;
 import com.oxygenxml.translation.support.util.ParserCreator;
-import com.oxygenxml.translation.support.util.ResourceIteration;
-import com.oxygenxml.translation.support.util.SaxResourceIteration;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
@@ -34,7 +34,6 @@ import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 
-import de.schlichtherle.io.FileInputStream;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -48,17 +47,20 @@ public class PackageBuilder {
   /**
    * Predefined name of the file that stores a hash for each file.
    */
-  private final static String MILESTONE_FILE_NAME = "translation_builder_milestone.xml";
+  public final static String MILESTONE_FILE_NAME = "translation_builder_milestone.xml";
   /**
    *  A list of custom listeners.
    */
-  private static List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-
-  public PackageBuilder(){
+  private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+  
+  /**
+   * Constructor.
+   */
+  public PackageBuilder(List<ProgressChangeListener> listeners) {
+    this.listeners = listeners; 
   }
-
-  public void addListener(ProgressChangeListener listener) {
-    PackageBuilder.listeners.add(listener);
+  
+  public PackageBuilder() {
   }
 
   public static String getMilestoneFileName() {
@@ -76,11 +78,11 @@ public class PackageBuilder {
    * @throws FileNotFoundException The file doesn't exist.
    * @throws IOException Problems reading the file.
    */
-  static String generateMD5(File file) throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+  public static String generateMD5(File file) throws NoSuchAlgorithmException, FileNotFoundException, IOException {
     MessageDigest md = MessageDigest.getInstance("MD5");
 
     byte[] dataBytes = new byte[8 * 1024];
-    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+    BufferedInputStream bis = new BufferedInputStream(new java.io.FileInputStream(file));
     int nread = 0;
     try {
       while ((nread = bis.read(dataBytes)) != -1) {
@@ -94,13 +96,6 @@ public class PackageBuilder {
       }
     }
 
-//    byte[] mdbytes = md.digest();
-//    StringBuffer sb = new StringBuffer();
-//    for (int i = 0; i < mdbytes.length; i++) {
-//      sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-//    }
-//    return sb.toString();
-    
     return toHexString(md.digest());
 
   }
@@ -128,7 +123,6 @@ public class PackageBuilder {
    * Relative path: dir2/test.txt
    * Relative path: dir2/dir21/test.txt
    * 
-   * @param dirPath The location of the directory to iterate.
    * @param dirs A stack used to compute a path relative to an ancestor.
    * @param list A list of ResourceTnfo objects which contains an unique MD5 and a relative path for
    *        every file inside dirPath.
@@ -138,62 +132,28 @@ public class PackageBuilder {
    * @throws IOException Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  static void computeResourceInfo(ResourceIteration iterator,ParserCreator parser, File dirPath, Stack<String> dirs, ArrayList<ResourceInfo> list, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
-    ArrayList<File> everythingInThisDir = iterator.listResources(parser, dirPath);
-//    int counter = 0;
+  void computeResourceInfo(IResource resource, List<ResourceInfo> list) 
+      throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
+    
+    Iterator<IResource> everythingInThisDir = resource.iterator();
 
-    if (everythingInThisDir != null /*&& !everythingInThisDir.isEmpty()*/){
-      for (File name : everythingInThisDir) {
-
-        if (name.isDirectory()){	
-          if(isCanceled()){
-            throw new StoppedByUserException("You pressed the Cancel button.");
-          }
-
-          dirs.push(name.getName());
-
-          computeResourceInfo(iterator, parser, new File(name, "file.dita"), dirs, list, isFromTest);
-
-          dirs.pop();
+    if (everythingInThisDir != null /*&& !everythingInThisDir.isEmpty()*/) {
+      while (everythingInThisDir.hasNext()) {
+        if(isCanceled()){
+          throw new StoppedByUserException();
         }
-        else if (name.isFile()
-            // Do not put the milestone file into the package.
-            && !name.getName().equals(MILESTONE_FILE_NAME)){	
-          if(isCanceled()){
-            throw new StoppedByUserException("You pressed the Cancel button.");
-          }
-          if(iterator instanceof CustomResourceIteration){
-            String relativePath = "";				
-            for(int i = 0; i < dirs.size(); i++) {
-              relativePath += dirs.get(i)+"/";					
-            }
-            ResourceInfo resourceInfo = new ResourceInfo(generateMD5(name), relativePath + name.getName());
-            list.add(resourceInfo);
-          } else if(iterator instanceof SaxResourceIteration){
-            File base = dirPath.getParentFile();
-            String relativePath = base.toURI().relativize(name.toURI()).getPath();
-//            if(isCanceled()){
-//              throw new StoppedByUserException("You pressed the Cancel button.");
-//            }
-           
-//            if(!isFromTest){
-//              counter++;
-//              ProgressChangeEvent progress = new ProgressChangeEvent(counter , "");
-//              fireChangeEvent(progress);
-//              
-//            }
-            /**
-             * TODO Find out the root folder!
-             */
-            ResourceInfo resourceInfo = new ResourceInfo(generateMD5(name), relativePath/*, rootFolder*/);
-            list.add(resourceInfo);
-          }
-
-          	
+        
+        IResource iResource = (IResource) everythingInThisDir.next();
+        
+        // Collect the milestone related info.
+        ResourceInfo resourceInfo = iResource.getResourceInfo();
+        if (resourceInfo != null) {
+          list.add(resourceInfo);
         }
+        
+        // Go deep.
+        computeResourceInfo(iResource, list);
       }
-    } else{
-      throw new IOException("Please select a directory.");
     }
   }
 
@@ -209,9 +169,9 @@ public class PackageBuilder {
    * @throws FileNotFoundException	The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  static File  storeMilestoneFile(InfoResources info, File rootDir) throws JAXBException, FileNotFoundException, StoppedByUserException{
+  File  storeMilestoneFile(InfoResources info, File rootDir) throws JAXBException, FileNotFoundException, StoppedByUserException{
     if(isCanceled()){
-      throw new StoppedByUserException("You pressed the Cancel button.");
+      throw new StoppedByUserException();
     }
     File milestoneFile = new File(rootDir + File.separator + MILESTONE_FILE_NAME);
 
@@ -228,14 +188,14 @@ public class PackageBuilder {
   /**
    * Loads the information about file changes from disk.
    * 
-   * @param rootDir The location of the "special file"(milestone file).
+   * @param iRootResource The location of the "special file"(milestone file).
    * 
    * @return	The content of the "special file"(milestone).
    * 
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    */
-  static ArrayList<ResourceInfo> loadMilestoneFile(File rootDir) throws JAXBException, IOException {
-    File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
+  static List<ResourceInfo> loadMilestoneFile(IRootResource iRootResource) throws JAXBException, IOException {
+    File milestoneFile = iRootResource.getMilestoneFile();
 
     if (!milestoneFile.exists()) {
       throw new IOException("No milestone was created.");
@@ -253,7 +213,6 @@ public class PackageBuilder {
   /**
    * Computes what resources were changed since the last created milestone.
    * 
-   * @param rootDir The location of the directory we want to see what files were changed.
    * @param isFromWorker True if the method is called by the GenerateModifiedResourcesWorker.
    *  
    * @return	A list of objects ResourceInfo which contains a MD5 and a relative path for
@@ -265,7 +224,9 @@ public class PackageBuilder {
    * @throws IOException	Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public ArrayList<ResourceInfo> generateModifiedResources(ResourceIteration iterator, ParserCreator parser, File rootDir, boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
+  public ArrayList<ResourceInfo> generateModifiedResources(
+      IRootResource resource, 
+      boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
     /**
      * 1. Loads the milestone XML from rootDIr using JAXB
      * 2. Calls generateCurrentMD5() to get the current MD5s
@@ -275,10 +236,13 @@ public class PackageBuilder {
       logger.debug("Cames from modifiedResourcesWorker?-->" + isFromWorker);
     }
     // Store state.
-    ArrayList<ResourceInfo> milestoneStates = loadMilestoneFile(rootDir.getParentFile());
+    List<ResourceInfo> milestoneStates = loadMilestoneFile(resource);
+    
+    System.out.println(TestUtil.dump(milestoneStates));
+    
     //Current states.
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
-    computeResourceInfo(iterator, parser, rootDir, new Stack<String>(), currentStates, !isFromWorker);
+    computeResourceInfo(resource, currentStates);
     // A list to hold the modified resources.
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
     int counter = 0;
@@ -293,7 +257,7 @@ public class PackageBuilder {
         PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
         counter++;
         if(isCanceled()){
-          throw new StoppedByUserException("You pressed the Cancel button.");
+          throw new StoppedByUserException();
         }
         ProgressChangeEvent progress = new ProgressChangeEvent(counter, 
             resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE1) + 
@@ -353,7 +317,7 @@ public class PackageBuilder {
             FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
 
             if(isCanceled()){
-              throw new StoppedByUserException("You pressed the Cancel button.");
+              throw new StoppedByUserException();
             }
             if(!isFromTest){
               PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
@@ -368,7 +332,7 @@ public class PackageBuilder {
           ArchiveBuilder archiveBuilder = new ArchiveBuilder();
           archiveBuilder.addListener(new ProgressChangeAdapter() {
             public boolean isCanceled() {
-              return PackageBuilder.isCanceled();
+              return PackageBuilder.this.isCanceled();
             }
 
             public void done() {
@@ -413,17 +377,17 @@ public class PackageBuilder {
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws StoppedByUserException The user pressed the "Cancel" button.
    */
-  public File generateChangeMilestone(ResourceIteration iterator, ParserCreator parser, File rootDir, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
+  public File generateChangeMilestone(IResource resource, ParserCreator parser, File rootDir, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 
-    computeResourceInfo(iterator, parser, rootDir, new Stack<String>(), list, isFromTest);
+    computeResourceInfo(resource, list);
     File milestoneFile = new File(rootDir.getParentFile(), MILESTONE_FILE_NAME);
     /**
      * TODO check functionality of the date and time of the milestone creation.
      */
     File file = storeMilestoneFile(new InfoResources(list, new Date(milestoneFile.lastModified())), rootDir.getParentFile());
     if(isCanceled()){
-      throw new StoppedByUserException("You pressed the Cancel button.");
+      throw new StoppedByUserException();
     }
     if(!isFromTest){
       PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
@@ -457,7 +421,7 @@ public class PackageBuilder {
    * 
    * @return True if the worker was canceled, false otherwise.
    */
-  private static boolean isCanceled() {
+  private boolean isCanceled() {
     boolean result = false;
     for (ProgressChangeListener progressChangeListener : listeners) {
       if (progressChangeListener.isCanceled()) {

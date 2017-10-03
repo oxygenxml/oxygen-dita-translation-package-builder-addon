@@ -11,7 +11,7 @@ import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
  *
  */
 public class PathOption {
-  public PathOption(){  }
+  public PathOption() {}
   /**
    * Gets the needed resource.
    * 
@@ -22,7 +22,7 @@ public class PathOption {
   public File getPath(String dirName){
     File basedir;
     if(TranslationPackageBuilderPlugin.getInstance() != null){
-      URL resource = getClass().getClassLoader().getResource(dirName);
+      URL resource = PathOption.class.getClassLoader().getResource(dirName);
       basedir = new File(resource.getPath());
     } else {
       basedir = new File("src/test/resources", dirName);

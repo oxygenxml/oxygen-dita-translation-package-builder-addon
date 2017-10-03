@@ -71,18 +71,11 @@ public class ZipWorker extends AbstractWorker {
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, JAXBException, NoChangedFilesException {
     if(packAll){
-      ArchiveBuilder archiveBuilder = new ArchiveBuilder();
-      for (ProgressChangeListener l : listeners) {
-        archiveBuilder.addListener(l);
-      }
+      ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
 
       archiveBuilder.zipDirectory(rootDir, zipDir, false);
-    }
-    else{
-      PackageBuilder packageBuilder = new PackageBuilder();
-      for (ProgressChangeListener l : listeners) {
-        packageBuilder.addListener(l);
-      }
+    } else{
+      PackageBuilder packageBuilder = new PackageBuilder(listeners);
       
       modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
           rootDir,

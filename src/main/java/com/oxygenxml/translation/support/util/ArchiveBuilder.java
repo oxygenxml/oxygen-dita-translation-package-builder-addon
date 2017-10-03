@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 
+import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.StoppedByUserException;
@@ -42,16 +43,11 @@ public final class ArchiveBuilder {
    */
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
 
-  public ArchiveBuilder(){
-
+  public ArchiveBuilder(List<ProgressChangeListener> listeners) {
+    this.listeners = listeners;
   }
-  /**
-   * Adds a listener to the list of listeners.
-   * 
-   * @param listener A ProgressChangeListener listener.
-   */
-  public void addListener(ProgressChangeListener listener) {
-    this.listeners.add(listener);
+  
+  public ArchiveBuilder() {
   }
 
   /**
@@ -105,7 +101,7 @@ public final class ArchiveBuilder {
             zout.putNextEntry(new ZipEntry(path));
 
             if(isCanceled()){
-              throw new StoppedByUserException("You pressed the Cancel button.");
+              throw new StoppedByUserException();
             }
 
             zipSubDirectory(path, file, zout, resourceCounter, isFromTest);
@@ -120,7 +116,7 @@ public final class ArchiveBuilder {
                 zout.write(buffer, 0, length);
               }
               if(isCanceled()){
-                throw new StoppedByUserException("You pressed the Cancel button.");
+                throw new StoppedByUserException();
               }
               if(!isFromTest){
                 PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
@@ -201,7 +197,7 @@ public final class ArchiveBuilder {
           nameList.add(name);
 
           if(isCanceled()){
-            throw new StoppedByUserException("You pressed the Cancel button.");
+            throw new StoppedByUserException();
           }
           if(!isFromTest){
             PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
@@ -243,7 +239,7 @@ public final class ArchiveBuilder {
         copyDirectory(new File(sourceLocation, children[i]),
             new File(targetLocation, children[i]), counter, isFromTest);
         if(isCanceled()){
-          throw new StoppedByUserException("You pressed the Cancel button.");
+          throw new StoppedByUserException();
         }
       }
     }
@@ -268,7 +264,7 @@ public final class ArchiveBuilder {
         out.close();
       }
       if(isCanceled()){
-        throw new StoppedByUserException("You pressed the Cancel button.");
+        throw new StoppedByUserException();
       }
       if(!isFromTest){
         PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
@@ -312,6 +308,13 @@ public final class ArchiveBuilder {
     for (ProgressChangeListener progressChangeListener : listeners) {
       progressChangeListener.operationFailed(ex);
     }
+  }
+
+  public void addListener(ProgressChangeAdapter progressChangeAdapter) {
+    if (listeners == null) {
+      listeners = new ArrayList<ProgressChangeListener>();
+    }
+    listeners.add(progressChangeAdapter);
   }
 
 }
