@@ -1,21 +1,13 @@
 package com.oxygenxml.translation.support.core;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.xml.sax.SAXException;
-
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.CustomParserCreator;
 import com.oxygenxml.translation.support.util.PathOption;
-import com.oxygenxml.translation.support.util.SaxResourceIteration;
 
-
+/**
+ * TODO Write some tests for the map structure iteration. 
+ *
+ */
 public class SaxTest {
 
   private PathOption pathOption = new PathOption();

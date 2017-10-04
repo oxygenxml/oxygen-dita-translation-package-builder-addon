@@ -11,10 +11,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.models.InfoResources;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.FileResourceBuilder;
-import com.oxygenxml.translation.support.util.IRootResource;
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.storage.InfoResources;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -35,7 +35,8 @@ public class JaxbTest {
     List<ResourceInfo> list = Arrays.asList(new ResourceInfo[] {resource});
 	  info.setList(list);
 
-		new PackageBuilder().storeMilestoneFile(info, rootDir);
+	  File milestone = new File(rootDir, "translation_builder_milestone.xml");
+		MilestoneUtil.storeMilestoneFile(info, milestone);
 
 	    String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
 		+"<resources>\n"
@@ -46,8 +47,8 @@ public class JaxbTest {
 		+"</resources>\n";
 
 	    
-	  String actualResult = IOUtils.toString
-	      (new FileInputStream(new File(rootDir, "translation_builder_milestone.xml")), "utf-8");
+    String actualResult = IOUtils.toString
+	      (new FileInputStream(milestone), "utf-8");
 	  
 		Assert.assertEquals(expectedResult, actualResult);
 	}
@@ -59,8 +60,8 @@ public class JaxbTest {
 	 */
 	@Test
 	public void testUnmarshaller() throws Exception {
-	  IRootResource rootResource = FileResourceBuilder.wrap(rootDir);
-		List<ResourceInfo> list = PackageBuilder.loadMilestoneFile(rootResource);
+	  IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
+		List<ResourceInfo> list = MilestoneUtil.loadMilestoneFile(rootResource);
 		String dump = TestUtil.dump(list);
 		Assert.assertEquals("dir1/test.txt  12345\n", dump);;
 	}

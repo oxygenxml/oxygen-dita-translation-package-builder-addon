@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.FileResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
@@ -25,7 +25,8 @@ public class GenerateResourceInfoTest {
     File dirPath = TestUtil.getPath("testIteration-ResourceInfoTest");
 
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-    new PackageBuilder().computeResourceInfo(FileResourceBuilder.wrap(dirPath), list);
+    new ChangePackageGenerator().computeResourceInfo(
+        new FileSystemResourceBuilder().wrapDirectory(dirPath), list);
 
     Assert.assertEquals(
         "dir1/md5.txt      1308e502a17d62d0585d1487228b204c\n" + 
@@ -45,7 +46,8 @@ public class GenerateResourceInfoTest {
 
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 
-    new PackageBuilder().computeResourceInfo(FileResourceBuilder.wrap(dirPath), list);
+    new ChangePackageGenerator().computeResourceInfo(
+        new FileSystemResourceBuilder().wrapDirectory(dirPath), list);
 
     String expectedResult = 
         "md5.txt      f5e45edee5ee0e2dffe9fbe6a736ab02\n" + 
@@ -63,10 +65,11 @@ public class GenerateResourceInfoTest {
   public void testGenerateResourceInfo() throws Exception {
     File rootDir = TestUtil.getPath("generateMilestone-Test");
     
-    PackageBuilder packageBuilder = new PackageBuilder();
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     
     ArrayList<ResourceInfo> milestoneInfo = new ArrayList<ResourceInfo>();
-    packageBuilder.computeResourceInfo(FileResourceBuilder.wrap(rootDir), milestoneInfo);
+    packageBuilder.computeResourceInfo(
+        new FileSystemResourceBuilder().wrapDirectory(rootDir), milestoneInfo);
 
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
     expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testGenerate/md5.txt"));

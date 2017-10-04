@@ -20,8 +20,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FileUtils;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
-import com.oxygenxml.translation.support.core.models.InfoResources;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.storage.InfoResources;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 /**
  * Creates a .xhtml report file, a list with all the modified resources.
  * 

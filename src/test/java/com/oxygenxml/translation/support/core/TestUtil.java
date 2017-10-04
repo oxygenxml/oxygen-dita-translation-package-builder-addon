@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 
 public class TestUtil {
 	/**

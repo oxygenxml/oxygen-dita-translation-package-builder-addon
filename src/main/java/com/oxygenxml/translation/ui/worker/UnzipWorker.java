@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**

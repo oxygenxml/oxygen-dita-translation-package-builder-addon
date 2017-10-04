@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.FileResourceBuilder;
-import com.oxygenxml.translation.support.util.IRootResource;
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 
 /**
  * MD5 and milestone generation tests.
@@ -25,12 +25,12 @@ public class GenerateMilestoneTest {
   public void testMd5_File() throws Exception {
     File file = TestUtil.getPath("md5Test.txt");
     
-    String cksum = PackageBuilder.generateMD5(file);
+    String cksum = MilestoneUtil.generateMD5(file);
     Assert.assertEquals("c439e0812a8e0a5434bffa6f063d4bec", cksum);
     
     file = TestUtil.getPath("generateMD5-test.txt");
 
-    cksum = PackageBuilder.generateMD5(file);
+    cksum = MilestoneUtil.generateMD5(file);
     Assert.assertEquals("95bcd2d5a06b5f63b84551ddd8ec1483", cksum);
   }
 
@@ -43,11 +43,11 @@ public class GenerateMilestoneTest {
 	public void testChangeMilestone() throws Exception {
 		File rootDir = TestUtil.getPath("generateMilestone-Test");
 
-		PackageBuilder packageBuilder = new PackageBuilder();
+		ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
 		
-		IRootResource rootResource = FileResourceBuilder.wrap(rootDir);
+		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
     packageBuilder.generateChangeMilestone(
-		    rootResource, null, rootDir, true);
+		    rootResource, true);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testGenerate/md5.txt"));
@@ -57,7 +57,7 @@ public class GenerateMilestoneTest {
 		expectedResult.add(new ResourceInfo("55047487acf9f525244b12cff4bfc49c", "testIteration/dir2/md5.txt"));
 		expectedResult.add(new ResourceInfo("5c24a78aec732e9626a4a7114efd98b1", "testIteration/dir2/md5_no2.txt"));
 		
-		List<ResourceInfo> actualResult = PackageBuilder.loadMilestoneFile(rootResource);
+		List<ResourceInfo> actualResult = MilestoneUtil.loadMilestoneFile(rootResource);
 		
 		Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));
 	}

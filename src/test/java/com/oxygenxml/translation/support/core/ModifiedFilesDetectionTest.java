@@ -12,9 +12,9 @@ import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.FileResourceBuilder;
-import com.oxygenxml.translation.support.util.IRootResource;
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
@@ -24,11 +24,11 @@ public class ModifiedFilesDetectionTest {
 	@Test
 	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException, StoppedByUserException {
 		File rootDir = TestUtil.getPath("modifiedFiles-Test");
-		IRootResource rootResource = FileResourceBuilder.wrap(rootDir);
+		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
 		
 		// Load and assert the milestone content.
 		List<ResourceInfo> actualResourcesFromMilestone = 
-		    PackageBuilder.loadMilestoneFile(rootResource);
+		    MilestoneUtil.loadMilestoneFile(rootResource);
 		
 		ArrayList<ResourceInfo> expectedResultMilestone = new ArrayList<ResourceInfo>();
 		expectedResultMilestone.add(new ResourceInfo("0330c493e6a1efda89242d99195c6eca" , "dir1/dir1.1/test.txt"));
@@ -41,7 +41,7 @@ public class ModifiedFilesDetectionTest {
 		
 		// Test how the change files are detected.
     ArrayList<ResourceInfo> actualResult = 
-        new PackageBuilder().generateModifiedResources(
+        new ChangePackageGenerator().collectModifiedResources(
             rootResource, false);
     
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();

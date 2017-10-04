@@ -7,17 +7,42 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.XMLReaderWithGrammar;
+import ro.sync.exml.workspace.api.util.XMLUtilAccess;
 
+/**
+ * A parser creator that delegates uses Oxygen's API to reuse the grammar. 
+ */
 public class OxygenParserCreator implements ParserCreator {
   /**
-   *  Entry point for accessing the DITA Maps area.
+   * Utility for creating parsers.
    */
-  private final StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
+  private XMLUtilAccess access;
+
+  /**
+   * Constructor.
+   * 
+   * @param access Utility for creating parsers.
+   */
+  public OxygenParserCreator(XMLUtilAccess access) {
+    this.access = access;
+  }
+  /**
+   * We reuse the grammar to speed up the parsing.
+   */
+  private Object grammar;
   
+  /**
+   * @see com.oxygenxml.translation.support.util.ParserCreator#createXMLReader()
+   */
   public XMLReader createXMLReader()
       throws SAXNotRecognizedException, SAXNotSupportedException, ParserConfigurationException, SAXException {
-    return pluginWorkspace.getXMLUtilAccess().newNonValidatingXMLReader();
+    
+    XMLReaderWithGrammar bundle = 
+        access.newNonValidatingXMLReader(grammar);
+    // Keep the grammar.
+    grammar = bundle.getGrammarCache();
+    
+    return bundle.getXmlReader();
   }
 }

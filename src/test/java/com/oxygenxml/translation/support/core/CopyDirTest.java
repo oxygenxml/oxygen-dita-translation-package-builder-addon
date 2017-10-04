@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.support.util.FileResourceBuilder;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
@@ -32,13 +32,14 @@ public class CopyDirTest {
     new ArchiveBuilder().copyDirectory(sourceLocation, targetLocation, new int[] {0}, true);
 
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
-    new PackageBuilder().computeResourceInfo(
-        FileResourceBuilder.wrap(sourceLocation), 
+    FileSystemResourceBuilder builder = new FileSystemResourceBuilder();
+    new ChangePackageGenerator().computeResourceInfo(
+        builder.wrapDirectory(sourceLocation), 
         expectedResult);
 
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
-    new PackageBuilder().computeResourceInfo(
-        FileResourceBuilder.wrap(targetLocation), actualResult);
+    new ChangePackageGenerator().computeResourceInfo(
+        builder.wrapDirectory(targetLocation), actualResult);
 
     Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));
   }
@@ -59,8 +60,8 @@ public class CopyDirTest {
         "";
 
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
-    new PackageBuilder().computeResourceInfo(
-        FileResourceBuilder.wrap(targetLocation), actualResult);
+    new ChangePackageGenerator().computeResourceInfo(
+        new FileSystemResourceBuilder().wrapDirectory(targetLocation), actualResult);
 
     Assert.assertEquals(expectedResult, TestUtil.dump(actualResult));
   }

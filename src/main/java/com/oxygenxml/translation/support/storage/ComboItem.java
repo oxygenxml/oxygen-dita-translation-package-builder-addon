@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.support.core.models;
+package com.oxygenxml.translation.support.storage;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

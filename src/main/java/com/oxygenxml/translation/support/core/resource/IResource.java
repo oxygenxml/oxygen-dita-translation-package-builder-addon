@@ -1,11 +1,11 @@
-package com.oxygenxml.translation.support.util;
+package com.oxygenxml.translation.support.core.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 
 /**
  * A resource to be analyzed and maybe sent to translation. 

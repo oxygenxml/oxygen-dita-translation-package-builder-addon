@@ -1,8 +1,10 @@
-package com.oxygenxml.translation.support.util;
+package com.oxygenxml.translation.support.core.resource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,13 +13,16 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
-import com.oxygenxml.translation.support.core.PackageBuilder;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Create objects over the file system.
  */
-public class FileResourceBuilder {
+public class FileSystemResourceBuilder implements IResourceBuilder {
   /**
    * Logger for logging.
    */
@@ -62,24 +67,29 @@ public class FileResourceBuilder {
     }
 
     /**
-     * @see com.oxygenxml.translation.support.util.IResource#iterator()
+     * @see com.oxygenxml.translation.support.core.resource.IResource#iterator()
      */
     public Iterator<IResource> iterator() {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Get iterator for: " + file);
+      }
       Iterator<IResource> toReturn = null;
-      
       File[] listFiles = file.listFiles();
       if (listFiles != null) {
         List<IResource> children = new ArrayList<IResource>(listFiles.length);
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < listFiles.length; i++) {
           File child = listFiles[i];
-          if (!child.getName().equals(PackageBuilder.MILESTONE_FILE_NAME)) {
+          if (!child.getName().equals(MilestoneUtil.getMilestoneFileName())) {
             // The milestone must not be added in the package.
             b.setLength(0);
             if (relativePath.length() > 0) {
               b.append(relativePath).append("/");
             }
             b.append(child.getName());
+            if (logger.isDebugEnabled()) {
+              logger.debug("  Child: " + child);
+            }
             children.add(wrap(child, b.toString()));
           }
         }
@@ -91,7 +101,7 @@ public class FileResourceBuilder {
     }
 
     /**
-     * @see com.oxygenxml.translation.support.util.IResource#getResourceInfo()
+     * @see com.oxygenxml.translation.support.core.resource.IResource#getResourceInfo()
      */
     public ResourceInfo getResourceInfo() {
       // We don't add directories into the milestone.
@@ -99,6 +109,9 @@ public class FileResourceBuilder {
     }
   }
   
+  /**
+   * The root resource.
+   */
   private static class RootDirResource extends DirResource implements IRootResource {
     /**
      * Constructor.
@@ -110,11 +123,10 @@ public class FileResourceBuilder {
     }
 
     /**
-     * @see com.oxygenxml.translation.support.util.IRootResource#getMilestoneFile()
+     * @see com.oxygenxml.translation.support.core.resource.IRootResource#getMilestoneFile()
      */
     public File getMilestoneFile() {
-      File milestoneFile = new File(file,  PackageBuilder.MILESTONE_FILE_NAME);
-      return milestoneFile;
+      return MilestoneUtil.getMilestoneFile(file);
     }
   }
   
@@ -133,7 +145,7 @@ public class FileResourceBuilder {
     }
 
     /**
-     * @see com.oxygenxml.translation.support.util.IResource#iterator()
+     * @see com.oxygenxml.translation.support.core.resource.IResource#iterator()
      */
     public Iterator<IResource> iterator() {
       // A file is a leaf. No children.
@@ -141,10 +153,10 @@ public class FileResourceBuilder {
     }
 
     /**
-     * @see com.oxygenxml.translation.support.util.IResource#getResourceInfo()
+     * @see com.oxygenxml.translation.support.core.resource.IResource#getResourceInfo()
      */
     public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
-      return new ResourceInfo(PackageBuilder.generateMD5(file), relativePath);
+      return new ResourceInfo(MilestoneUtil.generateMD5(file), relativePath);
     }
   }
 
@@ -167,17 +179,37 @@ public class FileResourceBuilder {
   /**
    * Creates a resource over the given file.
    * 
-   * @param file File to wrap as a resource.
+   * @param rootMap The root map over which to iterate.
    * 
    * @return An {@link IResource} wrapper over the given file.
    * 
    * @throws IOException The given file is not a directory. 
    */
-  public static IRootResource wrap(File dir) throws IOException {
-    if (!dir.isDirectory()) {
-      throw new IOException("Must start from a directory");
+  public IRootResource wrap(URL rootMap) throws IOException {
+    File locateFile = null;
+    PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+    if (pluginWorkspace != null) {
+      locateFile = pluginWorkspace.getUtilAccess().locateFile(rootMap);
+    } else {
+      locateFile = new File(rootMap.getPath());
     }
     
-    return new RootDirResource(dir);
+    if (locateFile.isDirectory()) {
+      throw new IOException("We need the root map as a starting point");
+    }
+    
+    
+    return wrapDirectory(locateFile.getParentFile());
+  }
+
+  /**
+   * USED ONLY FROM TESTS.
+   * 
+   * @param locateFile
+   * @return
+   * @throws IOException
+   */
+  public IRootResource wrapDirectory(File locateFile) throws IOException {
+    return new RootDirResource(locateFile);
   }
 }

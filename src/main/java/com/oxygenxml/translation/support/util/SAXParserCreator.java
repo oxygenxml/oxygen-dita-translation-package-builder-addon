@@ -9,19 +9,23 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-public class CustomParserCreator implements ParserCreator {
+/**
+ * An implementation that uses the SAX API ({@link SAXParserFactory}) to create a SAX Parser.
+ */
+public class SAXParserCreator implements ParserCreator {
 
+  /**
+   * @see com.oxygenxml.translation.support.util.ParserCreator#createXMLReader()
+   */
   public XMLReader createXMLReader()
       throws SAXNotRecognizedException, SAXNotSupportedException, ParserConfigurationException, SAXException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
-    factory.setFeature("http://apache.org/xml/features/xinclude", true);
+//    factory.setFeature("http://apache.org/xml/features/xinclude", true);
 
     SAXParser saxParser = factory.newSAXParser();
 
     return saxParser.getXMLReader();
   }
-
-
 }

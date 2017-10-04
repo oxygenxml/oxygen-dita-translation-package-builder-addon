@@ -1,30 +1,24 @@
 package com.oxygenxml.translation.support.core;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.support.core.models.InfoResources;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.core.resource.IResource;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.storage.InfoResources;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.support.util.IResource;
-import com.oxygenxml.translation.support.util.IRootResource;
 import com.oxygenxml.translation.support.util.ParserCreator;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
@@ -38,16 +32,19 @@ import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-
-public class PackageBuilder {
+/**
+ * What this class does:
+ * 
+ * 1. generateChangeMilestone   - iterates over a directory, computes MD5s and writes them in a marker file.
+ * 2. collectModifiedResources  - iterates over a directory, computes MD5s and compares them with the ones from the milestone. 
+ * 3. generateChangedFilesPackage - puts the modified files in ZIP
+ * 
+ */
+public class ChangePackageGenerator {
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(PackageBuilder.class); 
-  /**
-   * Predefined name of the file that stores a hash for each file.
-   */
-  public final static String MILESTONE_FILE_NAME = "translation_builder_milestone.xml";
+  private static Logger logger = Logger.getLogger(ChangePackageGenerator.class); 
   /**
    *  A list of custom listeners.
    */
@@ -56,63 +53,11 @@ public class PackageBuilder {
   /**
    * Constructor.
    */
-  public PackageBuilder(List<ProgressChangeListener> listeners) {
+  public ChangePackageGenerator(List<ProgressChangeListener> listeners) {
     this.listeners = listeners; 
   }
   
-  public PackageBuilder() {
-  }
-
-  public static String getMilestoneFileName() {
-    return MILESTONE_FILE_NAME;
-  }
-
-  /**
-   * Reads a file and generates an MD5 from its content.
-   * 
-   * @param file The file to read.
-   * 
-   * @return An unique MD5 hash.
-   * 
-   * @throws NoSuchAlgorithmException The MD5 algorithm is not available.
-   * @throws FileNotFoundException The file doesn't exist.
-   * @throws IOException Problems reading the file.
-   */
-  public static String generateMD5(File file) throws NoSuchAlgorithmException, FileNotFoundException, IOException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-
-    byte[] dataBytes = new byte[8 * 1024];
-    BufferedInputStream bis = new BufferedInputStream(new java.io.FileInputStream(file));
-    int nread = 0;
-    try {
-      while ((nread = bis.read(dataBytes)) != -1) {
-        md.update(dataBytes, 0, nread);
-      }
-    } finally {
-      try {
-        bis.close();
-      } catch (IOException e) {
-        logger.error(e, e);
-      }
-    }
-
-    return toHexString(md.digest());
-
-  }
-  
-  public static String toHexString(byte[] bytes) {
-    StringBuilder hexString = new StringBuilder();
-
-    for (int i = 0; i < bytes.length; i++) {
-        String hex = Integer.toHexString(0xFF & bytes[i]);
-        if (hex.length() == 1) {
-            hexString.append('0');
-        }
-        hexString.append(hex);
-    }
-
-    return hexString.toString();
-}
+  public ChangePackageGenerator() {}
 
   /**
    * Iterates over the descendents of the given files and computes a hash and a relative path.
@@ -158,59 +103,6 @@ public class PackageBuilder {
   }
 
   /**
-   * Saves the information about file changes on disk. 
-   * 
-   * @param info  An object of type InfoResources,this object will be serialized.
-   * @param rootDir	The directory were the "special file" will be created after serialization.
-   * 
-   * @return The "translation_bulder_milestone.xml" file.
-   * 
-   * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
-   * @throws FileNotFoundException	The file doesn't exist.
-   * @throws StoppedByUserException The user pressed the cancel button.
-   */
-  File  storeMilestoneFile(InfoResources info, File rootDir) throws JAXBException, FileNotFoundException, StoppedByUserException{
-    if(isCanceled()){
-      throw new StoppedByUserException();
-    }
-    File milestoneFile = new File(rootDir + File.separator + MILESTONE_FILE_NAME);
-
-    JAXBContext contextObj = JAXBContext.newInstance(InfoResources.class);  
-
-    Marshaller marshallerObj = contextObj.createMarshaller();  
-    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
-
-    marshallerObj.marshal(info, milestoneFile); 			 
-
-    return milestoneFile;
-  }
-
-  /**
-   * Loads the information about file changes from disk.
-   * 
-   * @param iRootResource The location of the "special file"(milestone file).
-   * 
-   * @return	The content of the "special file"(milestone).
-   * 
-   * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
-   */
-  static List<ResourceInfo> loadMilestoneFile(IRootResource iRootResource) throws JAXBException, IOException {
-    File milestoneFile = iRootResource.getMilestoneFile();
-
-    if (!milestoneFile.exists()) {
-      throw new IOException("No milestone was created.");
-    }
-
-    JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
-
-    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
-
-    InfoResources resources = (InfoResources) jaxbUnmarshaller.unmarshal(milestoneFile);    
-
-    return resources.getList();
-  }
-
-  /**
    * Computes what resources were changed since the last created milestone.
    * 
    * @param isFromWorker True if the method is called by the GenerateModifiedResourcesWorker.
@@ -224,7 +116,7 @@ public class PackageBuilder {
    * @throws IOException	Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public ArrayList<ResourceInfo> generateModifiedResources(
+  public ArrayList<ResourceInfo> collectModifiedResources(
       IRootResource resource, 
       boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
     /**
@@ -236,9 +128,7 @@ public class PackageBuilder {
       logger.debug("Cames from modifiedResourcesWorker?-->" + isFromWorker);
     }
     // Store state.
-    List<ResourceInfo> milestoneStates = loadMilestoneFile(resource);
-    
-    System.out.println(TestUtil.dump(milestoneStates));
+    List<ResourceInfo> milestoneStates = MilestoneUtil.loadMilestoneFile(resource);
     
     //Current states.
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
@@ -289,8 +179,7 @@ public class PackageBuilder {
       File rootDir,
       File packageLocation,
       ArrayList<ResourceInfo> modifiedResources,
-      boolean isFromTest
-      ) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException, NoChangedFilesException  {
+      boolean isFromTest) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException, NoChangedFilesException  {
 
     /**
      * 1. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
@@ -332,7 +221,7 @@ public class PackageBuilder {
           ArchiveBuilder archiveBuilder = new ArchiveBuilder();
           archiveBuilder.addListener(new ProgressChangeAdapter() {
             public boolean isCanceled() {
-              return PackageBuilder.this.isCanceled();
+              return ChangePackageGenerator.this.isCanceled();
             }
 
             public void done() {
@@ -366,7 +255,6 @@ public class PackageBuilder {
    * inside the directory (as a "special file"). 
    * 
    * 
-   * @param rootDir The directory were the "special file"(translation_builder_milestone.xml) is located.
    * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @return	The "special file"(translation_builder_milestone.xml).
@@ -377,25 +265,29 @@ public class PackageBuilder {
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws StoppedByUserException The user pressed the "Cancel" button.
    */
-  public File generateChangeMilestone(IResource resource, ParserCreator parser, File rootDir, boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
+  public File generateChangeMilestone(
+      IRootResource resource, 
+      boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 
     computeResourceInfo(resource, list);
-    File milestoneFile = new File(rootDir.getParentFile(), MILESTONE_FILE_NAME);
+    File milestoneFile = resource.getMilestoneFile();
     /**
      * TODO check functionality of the date and time of the milestone creation.
      */
-    File file = storeMilestoneFile(new InfoResources(list, new Date(milestoneFile.lastModified())), rootDir.getParentFile());
+    MilestoneUtil.storeMilestoneFile(
+        new InfoResources(list, new Date(milestoneFile.lastModified())), 
+        milestoneFile);
     if(isCanceled()){
       throw new StoppedByUserException();
     }
-    if(!isFromTest){
+    if (!isFromTest) {
       PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
       ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
       fireChangeEvent(progress);
     }
 
-    return file;
+    return milestoneFile;
   }
 
   /**

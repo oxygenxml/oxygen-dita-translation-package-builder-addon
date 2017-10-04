@@ -7,12 +7,11 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
-import com.oxygenxml.translation.support.core.PackageBuilder;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.core.ChangePackageGenerator;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
@@ -75,7 +74,7 @@ public class ZipWorker extends AbstractWorker {
 
       archiveBuilder.zipDirectory(rootDir, zipDir, false);
     } else{
-      PackageBuilder packageBuilder = new PackageBuilder(listeners);
+      ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
       
       modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
           rootDir,

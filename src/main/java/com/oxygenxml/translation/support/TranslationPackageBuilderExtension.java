@@ -26,15 +26,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.support.core.PackageBuilder;
-import com.oxygenxml.translation.support.core.models.InfoResources;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PreviewDialog;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
@@ -136,28 +133,34 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
         try {
-          URL editorLocation = editor.getEditorLocation();
-
-          File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
-          /**
-           * TODO see if works 
-           */
-          final File rootDir = fileOnDisk;//.getParentFile();
-          logger.debug("The current ditaMAP is : " + rootDir.getPath());
+          URL rootMapLocation = editor.getEditorLocation();
           
-          final File milestoneFile = new File(rootDir.getParentFile(), PackageBuilder.getMilestoneFileName());
+          logger.info("rootMapLocation " + rootMapLocation);
+
+          File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(rootMapLocation);
+          final File rootDir = fileOnDisk;//.getParentFile();
+          if (logger.isDebugEnabled()) {
+            logger.debug("The current ditaMAP is : " + rootDir.getPath());
+          }
+          
+          logger.info("rootDir " + rootDir);
+          
+          final File milestoneFile = MilestoneUtil.getMilestoneFile(rootDir.getParentFile());
+          
+          logger.info("milestone file " + milestoneFile);
+          
           //Ask the user if he wants to override the milestone in case it was already created.
           if(milestoneFile.exists()){
-            Date milestoneLastModified = loadMilestoneFile(rootDir);
+            Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMapLocation);
             int buttonId = pluginWorkspaceAccess.showConfirmDialog("Override milestone",
                 "An older milestone was created at : " + milestoneLastModified + ". Do you want to override it?", 
                 new String[] {"Yes", "No"}, 
                 new int[] {0, 1});
             if(buttonId == 0){
-              generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile, null, true);
+              generateMilestone(pluginWorkspaceAccess, rootMapLocation, milestoneFile, null, true);
             }
           } else {
-            generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile, null, true);
+            generateMilestone(pluginWorkspaceAccess, rootMapLocation, milestoneFile, null, true);
           }
         } catch (Exception e) {
           // Present the error to the user.
@@ -191,7 +194,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
         try {
           //The milestone file is stored in the root dir of the current ditaMAP
-          final File milestoneFile = new File(rootDir.getParentFile() , PackageBuilder.getMilestoneFileName());      
+          final File milestoneFile = new File(rootDir.getParentFile() , MilestoneUtil.getMilestoneFileName());      
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
           if(!milestoneFile.exists()){
@@ -202,20 +205,20 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                 new int[] {0, 1, 2});
             //Generate the first milestone.
             if(buttonId == 0){
-              generateMilestone(pluginWorkspaceAccess, rootDir, milestoneFile, frame, false);
+              generateMilestone(pluginWorkspaceAccess, editorLocation, milestoneFile, frame, false);
             }
             //If the user wants to pack the entire directory show a file chooser and create package.
             else if(buttonId == 2){     
               File chosenDirectory = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
                   new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
               if(chosenDirectory != null){
-                createPackage(frame, rootDir.getParentFile(), chosenDirectory, resourceBundle, pluginWorkspaceAccess, true, null, false);
+                createPackage(frame, editorLocation, chosenDirectory, resourceBundle, pluginWorkspaceAccess, true, null, false);
               }             
             }else{
               return;
             }
           } else {  
-            showReportDialog(pluginWorkspaceAccess, frame, rootDir);      
+            showReportDialog(pluginWorkspaceAccess, frame, editorLocation);      
           }
         } catch (Exception e) {
           //  Preset error to user.
@@ -436,7 +439,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * Packs the modified files or an entire directory in the specified chosenDir. 
    *  
    * @param frame  The parent frame used by the progress dialog.
-   * @param rootDir The location of the parent directory of the current ditamap.
+   * @param rootMap The location of the parent directory of the current ditamap.
    * @param chosenDir Where to save the archive.
    * @param resourceBundle  The message bundle used to get the translation of messages used in the plugin.
    * @param pluginWorkspace Entry point for accessing the DITA Maps area.
@@ -445,7 +448,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * @param shouldCreateReport  True if the user wants to create a report.
    */
   private void createPackage(final JFrame frame, 
-      final File rootDir, 
+      final URL rootMap, 
       File chosenDir,
       final PluginResourceBundle resourceBundle,
       final StandalonePluginWorkspace pluginWorkspace,
@@ -461,16 +464,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE1) + packAll);
     }
 
+    final File rootMapDir = MilestoneUtil.getFile(rootMap).getParentFile();
     if(packAll){
       if(logger.isDebugEnabled()){
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE2));
       }
-      zipTask = new ZipWorker(rootDir, chosenDir, packAll);
+      zipTask = new ZipWorker(rootMapDir, chosenDir, packAll);
     } else { 
       if (logger.isDebugEnabled()) {
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE3));
       }
-      zipTask = new ZipWorker(rootDir, chosenDir, packAll, modifiedResources);
+      zipTask = new ZipWorker(rootMapDir, chosenDir, packAll, modifiedResources);
     }
     // Install the progress tracker.
     ProgressDialog.install(
@@ -498,7 +502,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
             //Open the report file           
             try {
-              Desktop.getDesktop().open(new File(rootDir, ReportDialog.getReportFileName()));
+              Desktop.getDesktop().open(new File(rootMapDir, ReportDialog.getReportFileName()));
             } catch (IOException e1) {
               logger.error(e1, e1);
             }
@@ -528,47 +532,23 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     }
     return new File(result).getParentFile();
   }
-  
-  /**
-   * Loads the last creation date of the milestone file.
-   * 
-   * @param rootDir The location of the "special file"(milestone file).
-   * 
-   * @return  The last creation date of the "special file"(milestone).
-   * 
-   * @throws JAXBException   Problems with JAXB, serialization/deserialization of a file.
-   */
-  private Date loadMilestoneFile(File rootDir) throws JAXBException, IOException {
-    File milestoneFile = new File(rootDir.getParentFile(),  PackageBuilder.getMilestoneFileName());
 
-    if (!milestoneFile.exists()) {
-      throw new IOException("No milestone was created.");
-    }
-
-    JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
-
-    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
-
-    InfoResources resources = (InfoResources) jaxbUnmarshaller.unmarshal(milestoneFile);    
-
-    return resources.getMilestoneCreation();
-  }
   
   /**
    * Generates the milestone file in the specified rootDir.
    * 
    * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
-   * @param rootDir The parent directory of the current ditamap.
+   * @param rootMap The parent directory of the current ditamap.
    * @param milestoneFile The predefined location of the milestone file.
    */
   private void generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
-      final File rootDir,
+      final URL rootMap,
       final File milestoneFile,
       final JFrame frame,
       final boolean isFromAction1) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     // Generate the milestone on thread.
-    GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootDir);
+    GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootMap);
 
     // Install the progress tracker.
     ProgressDialog.install(
@@ -582,7 +562,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         if(isFromAction1){
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
         } else {
-          showReportDialog(pluginWorkspaceAccess, frame, rootDir);
+          showReportDialog(pluginWorkspaceAccess, frame, rootMap);
         }
       }
       public void operationFailed(Exception ex) {
@@ -597,15 +577,15 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   /**
    * @param pluginWorkspaceAccess
    * @param frame
-   * @param rootDir
+   * @param rootMap
    */
   private void showReportDialog(final StandalonePluginWorkspace pluginWorkspaceAccess,
       final JFrame frame,
-      final File rootDir) {
+      final URL rootMap) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     // Find the number of modified resources on thread.
     final GenerateModifiedResourcesWorker modifiedResourcesWorker = 
-        new GenerateModifiedResourcesWorker(rootDir);
+        new GenerateModifiedResourcesWorker(rootMap);
     // Install the progress tracker.
     ProgressDialog.install(
         modifiedResourcesWorker, 
@@ -621,18 +601,21 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // If the number of modified files is grater than 0 show the report dialog and create package.
         if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
           ReportDialog.setParentFrame(frame);
-          ReportDialog.setRootDir(rootDir);
+          File rootMapDir = MilestoneUtil.getFile(rootMap).getParentFile();
+          ReportDialog.setRootDir(rootMapDir);
           ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
           
           ReportDialog report = ReportDialog.getInstance();
           
-          logger.debug("The Save button is : " + report.isSaveButtonPressed());
+          if (logger.isDebugEnabled()) {
+            logger.debug("The Save button is : " + report.isSaveButtonPressed());
+          }
           //Create report and package only if the user pressed the "Save" button.
           if(report.isSaveButtonPressed()){
             File chosenDir = report.getChoosedLocation();
             if(chosenDir != null){
               createPackage(frame,
-                  rootDir, 
+                  rootMap, 
                   chosenDir,
                   resourceBundle,
                   pluginWorkspaceAccess, 
@@ -645,7 +628,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         } else {  
           try {
             // Inform the user that no resources were modified.
-            Date milestoneLastModified = loadMilestoneFile(rootDir);
+            Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMap);
             pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
                 resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + milestoneLastModified);                  
           } catch (JAXBException e) {

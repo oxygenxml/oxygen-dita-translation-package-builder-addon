@@ -1,10 +1,7 @@
-package com.oxygenxml.translation.support.core.models;
-
-import java.io.File;
+package com.oxygenxml.translation.support.storage;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -14,19 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "info-resource")
 @XmlAccessorType (XmlAccessType.FIELD)
 public class ResourceInfo {
-  /**
-   * The root folder of the current ditaMap.
-   */
-  @XmlAttribute(name = "rootFolder")
-  private File rootFolder;
-	public File getRootFolder() {
-    return rootFolder;
-  }
-
-  public void setRootFolder(File rootFolder) {
-    this.rootFolder = rootFolder;
-  }
-
   /**
 	 * md5 The unique generated hash.
 	 */
@@ -44,9 +28,7 @@ public class ResourceInfo {
 	@XmlElement(name = "relativePath")
 	private String relativePath;
 	
-	public ResourceInfo(){
-		
-	}
+	public ResourceInfo() {}
 	
 	public ResourceInfo(String md5, String relativePath){
 		this.md5 = md5;
@@ -56,12 +38,6 @@ public class ResourceInfo {
 	public ResourceInfo(String relativePath){
     this.relativePath = relativePath;
   }
-	
-	public ResourceInfo(String md5, String relativePath, File rootFolder) {
-	  this.md5 = md5;
-	  this.relativePath = relativePath;
-	  this.rootFolder = rootFolder;
-	}
 	
 	public String getMd5() {
 		return md5;

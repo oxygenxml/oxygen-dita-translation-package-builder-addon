@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.support.core.models;
+package com.oxygenxml.translation.support.storage;
 
 import java.util.ArrayList;
 

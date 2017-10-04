@@ -1,21 +1,21 @@
 package com.oxygenxml.translation.ui.worker;
 
-import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 
-import com.oxygenxml.translation.support.core.PackageBuilder;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
-import com.oxygenxml.translation.support.util.FileResourceBuilder;
+import com.oxygenxml.translation.support.core.ChangePackageGenerator;
+import com.oxygenxml.translation.support.core.resource.ResourceFactory;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 /**
  * Creates an AbstractWorker for generating the modified resources in a ditamap.
  * 
  * @author Bivolan Dalina
  */
-public class GenerateModifiedResourcesWorker extends AbstractWorker{
+public class GenerateModifiedResourcesWorker extends AbstractWorker {
   /**
-   * The location of the parent directory of the current ditamap.
+   * The root map.
    */
-  private File rootDir;
+  private URL rootMap;
   /**
    * The list with all the modified resources.
    */
@@ -25,8 +25,13 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
    */
   private boolean isFromWorker = false;
 
-  public GenerateModifiedResourcesWorker(File rootDir) {
-    this.rootDir = rootDir;
+  /**
+   * Constructor.
+   * 
+   * @param rootMap The root map.
+   */
+  public GenerateModifiedResourcesWorker(URL rootMap) {
+    this.rootMap = rootMap;
   }
   /**
    * Main task. Executed in background thread.
@@ -34,9 +39,9 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker{
   @Override
   protected Void doInBackground() throws Exception {
     isFromWorker = true;
-    PackageBuilder packageBuilder = new PackageBuilder(listeners);
-    modifiedResources = packageBuilder.generateModifiedResources(
-        FileResourceBuilder.wrap(rootDir), 
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
+    modifiedResources = packageBuilder.collectModifiedResources(
+        ResourceFactory.getInstance().getResource(rootMap), 
         isFromWorker);
     
     return null;

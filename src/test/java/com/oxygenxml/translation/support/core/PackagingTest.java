@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.ui.PackResult;
 
@@ -37,7 +37,7 @@ public class PackagingTest {
 		modifiedResources.add(new ResourceInfo("testGenerate/newAdded.txt"));
 		modifiedResources.add(new ResourceInfo("testIteration/dir1/md5.txt"));
 		PackResult nr = new PackResult();
-		PackageBuilder packageBuilder = new PackageBuilder();
+		ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
 		nr = packageBuilder.generateChangedFilesPackage(rootDir, packageLocation, modifiedResources, true);
 
 		

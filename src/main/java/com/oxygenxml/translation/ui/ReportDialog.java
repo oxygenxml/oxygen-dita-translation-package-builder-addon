@@ -50,9 +50,9 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
-import com.oxygenxml.translation.support.core.models.ComboHistory;
-import com.oxygenxml.translation.support.core.models.ComboItem;
-import com.oxygenxml.translation.support.core.models.ResourceInfo;
+import com.oxygenxml.translation.support.storage.ComboHistory;
+import com.oxygenxml.translation.support.storage.ComboItem;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginResourceBundle;

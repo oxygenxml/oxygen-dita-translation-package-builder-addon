@@ -1,5 +1,6 @@
-package com.oxygenxml.translation.support.core.models;
+package com.oxygenxml.translation.support.storage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,20 @@ public class InfoResources {
    */
   @XmlAttribute(name = "date")
   private Date milestoneCreation;
+  
+  /**
+   * The root folder of the current ditaMap.
+   */
+  @XmlAttribute(name = "rootFolder")
+  private File rootFolder;
+  public File getRootFolder() {
+    return rootFolder;
+  }
+
+  public void setRootFolder(File rootFolder) {
+    this.rootFolder = rootFolder;
+  }
+
   
 	/**
 	 * list Gathers the generated ResourceInfo objects.
