@@ -19,13 +19,14 @@ public class SAXParserCreator implements ParserCreator {
    */
   public XMLReader createXMLReader()
       throws SAXNotRecognizedException, SAXNotSupportedException, ParserConfigurationException, SAXException {
+    
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
-
-//    factory.setFeature("http://apache.org/xml/features/xinclude", true);
-
+    factory.setValidating(false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    factory.setFeature("http://xml.org/sax/features/validation", false);
     SAXParser saxParser = factory.newSAXParser();
-
+    
     return saxParser.getXMLReader();
   }
 }

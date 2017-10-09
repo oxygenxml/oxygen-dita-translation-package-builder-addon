@@ -19,7 +19,6 @@ import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.support.util.ParserCreator;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
@@ -273,10 +272,14 @@ public class ChangePackageGenerator {
     computeResourceInfo(resource, list);
     File milestoneFile = resource.getMilestoneFile();
     /**
-     * TODO check functionality of the date and time of the milestone creation.
+     * TODO Adrian check functionality of the date and time of the milestone creation.
      */
+    long lastModified = milestoneFile.lastModified();
+    if (lastModified == 0) {
+      lastModified = new Date().getTime();
+    }
     MilestoneUtil.storeMilestoneFile(
-        new InfoResources(list, new Date(milestoneFile.lastModified())), 
+        new InfoResources(list, new Date(lastModified)), 
         milestoneFile);
     if(isCanceled()){
       throw new StoppedByUserException();

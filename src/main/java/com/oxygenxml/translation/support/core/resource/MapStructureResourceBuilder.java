@@ -37,7 +37,6 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(MapStructureResourceBuilder.class);
-  
   /**
    * An implementation that detects the resources referred inside the content of
    * the given resource.
@@ -52,9 +51,13 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      */
     protected URL resource;
     /**
+     * The root map.
+     */
+    private URL rootMap;
+    /**
      * A set with all the parsed resources so far. Used to avoid infinite recursion.
      */
-    private Set<URL> recursivityCheck;
+    private Set<URL> visitedURLs;
     /**
      * A path from the root resource to the current one.
      */
@@ -63,20 +66,24 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     /**
      * Constructor.
      * 
-     * @param resource The resource to wrap and parse for children.
+     * @param resource The resource to wrap and parse for children. Initial is the map file.
      * @param relativePath A path from the root resource to the current one. 
      * @param parserCreator Creates a parser.
      * @param recursivityCheck A set to collect all the parsed resources. 
      * Used to avoid infinite recursion.
+     * @param rootMap 
      */
     private SaxResource(
         URL resource, 
         String relativePath,
         ParserCreator parserCreator,
-        Set<URL> recursivityCheck) {
+        Set<URL> recursivityCheck, 
+        URL rootMap) {
       this.resource = resource;
       this.parserCreator = parserCreator;
-      this.recursivityCheck = recursivityCheck;
+      this.visitedURLs = recursivityCheck;
+      this.relativePath = relativePath;
+      this.rootMap = rootMap;
     }
     
     /**
@@ -84,8 +91,8 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      */
     public Iterator<IResource> iterator() {
       List<IResource> children = null;
-      if(!recursivityCheck.contains(resource)){
-        recursivityCheck.add(resource);
+      if(!visitedURLs.contains(resource)){
+        visitedURLs.add(resource);
         String name = URLUtil.extractFileName(resource);
         if(name.endsWith(".dita") || name.endsWith(".ditamap")){
           // Probably a DITA file.
@@ -94,12 +101,14 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
             if (currentHrefs != null) {
               children = new LinkedList<IResource>();
               for (URL child : currentHrefs) {
-                String childRelativePath = URLUtil.makeRelative(resource, child);
+                // The path is relative to root map.
+                String childRelativePath = URLUtil.makeRelative(rootMap, child);
                 children.add(new SaxResource(
                     child,
                     childRelativePath,
                     parserCreator, 
-                    recursivityCheck));
+                    visitedURLs,
+                    rootMap));
               }
             }
           } catch (Exception e) {
@@ -134,12 +143,11 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         InputSource is = new InputSource(toParse.toExternalForm());
 
         XMLReader xmlReader = parserCreator.createXMLReader();
-
-        MySaxParserHandler userhandler = new MySaxParserHandler(toParse);
-        xmlReader.setContentHandler(userhandler);
+        SaxContentHandler handler = new SaxContentHandler(toParse);
+        xmlReader.setContentHandler(handler);
         xmlReader.parse(is);
 
-        return userhandler.getDitaMapHrefs();
+        return handler.getDitaMapHrefs();
       }
     
   }
@@ -163,7 +171,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         String relativePath,
         ParserCreator parserCreator,
         Set<URL> recursivityCheck) {
-      super(resource, relativePath, parserCreator, recursivityCheck);  
+      super(resource, relativePath, parserCreator, recursivityCheck, resource);
     }
 
     /**

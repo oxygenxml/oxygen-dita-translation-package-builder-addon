@@ -47,6 +47,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
@@ -62,6 +63,11 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarToggleButton;
 
 public class ReportDialog extends OKCancelDialog {
+  
+  /**
+   * Options key to preserve history in dialog.
+   */
+  private static final String REPORT_DIALOG_HISTORY = "translation.pack.milestone.history.dialog";
   /**
    *  Logger for logging.
    */
@@ -73,14 +79,11 @@ public class ReportDialog extends OKCancelDialog {
   /**
    * Predefined name of the file that stores the relative path for each modified file.
    */
-  private final static String REPORT_FILE_NAME = "modified_resources_report.xhtml";
-  public static String getReportFileName() {
-    return REPORT_FILE_NAME;
-  }
+  private final static String REPORT_FILE_NAME = "_translation_report.xhtml";
   /**
    * Predefined name of the modified resources archive.
    */
-  private final static String ZIP_FILE_NAME = "to_translate_package.zip";
+  private final static String ZIP_FILE_NAME = "_translation_package.zip";
   /**
    *  Entry point for accessing the DITA Maps area.
    */
@@ -104,11 +107,16 @@ public class ReportDialog extends OKCancelDialog {
     return shouldCreateReport;
   }
   /**
-   * The parent directory of the current ditamap.
+   * DITA Map file.
    */
-  private static File rootDir;
-  public static void setRootDir(File rootDir) {
-    ReportDialog.rootDir = rootDir;
+  private static File rootMapFile;
+  
+  /**
+   * Setter of DITA ROOT MAP.
+   * @param rootMap
+   */
+  public static void setRootMap(File rootMap) {
+    ReportDialog.rootMapFile = rootMap;
   }
   /**
    * The location of the generated report.
@@ -170,14 +178,16 @@ public class ReportDialog extends OKCancelDialog {
     //--------------------------------------------------------------------------- modal
     super(parentFrame, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE), true);
     // The default location of the report file.
-    reportFile = new File(rootDir, REPORT_FILE_NAME);
+    reportFile = new File(rootMapFile.getParentFile(), getHTMLReportFile(rootMapFile));
     // The default location of the package.
-    defaultPackageLocation = new File(rootDir, ZIP_FILE_NAME);
+    defaultPackageLocation = new File(rootMapFile.getParent(), getZipFileName(rootMapFile));
     // Add into the comboBox the choosed paths stored in the optionsFile.
     try {
       ArrayList<ComboItem> savedPaths = loadSelectedPaths();
-      for (ComboItem resource : savedPaths) {
-        comboBox.addItem(resource.getPath());
+      if (savedPaths != null) {
+        for (ComboItem resource : savedPaths) {
+          comboBox.addItem(resource.getPath());
+        }
       }
     } catch (JAXBException e1) {
       logger.error(e1, e1);
@@ -190,7 +200,8 @@ public class ReportDialog extends OKCancelDialog {
     JLabel label = new JLabel("Package Location : ");
     checkbox = new JCheckBox("Generate report");
     //Show the user informations about the report creation.
-    final JTextArea textInfo = new JTextArea(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + new File(rootDir, REPORT_FILE_NAME).getAbsolutePath());
+    final JTextArea textInfo = new JTextArea(
+        resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + getHTMLReportFile(rootMapFile));
     textInfo.setWrapStyleWord(true);
     textInfo.setLineWrap(true);
 
@@ -268,7 +279,7 @@ public class ReportDialog extends OKCancelDialog {
     checkbox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(e.getStateChange() == ItemEvent.SELECTED){
-          textInfo.setText(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + new File(rootDir, REPORT_FILE_NAME).getAbsolutePath());         
+          textInfo.setText(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL) + getHTMLReportFile(rootMapFile));         
         } else {
           textInfo.setText(resourceBundle.getMessage(Tags.REPORT_DIALOG_LABEL_TEXT2) + new Date(reportFile.lastModified()));
         }
@@ -419,7 +430,10 @@ public class ReportDialog extends OKCancelDialog {
     if(!isInModel){
       comboBox.addItem(currentPath);
       try {
-       comboItems = loadSelectedPaths();
+        ArrayList<ComboItem> loadedPaths = loadSelectedPaths();
+        if (loadedPaths != null) {
+          comboItems.addAll(loadedPaths);
+        }
       } catch (JAXBException e) {
         logger.error(e, e);
       } catch (IOException e) {
@@ -445,7 +459,7 @@ public class ReportDialog extends OKCancelDialog {
     // Generate report if the user selected the checkbox
     if(checkbox.isSelected()){    
       shouldCreateReport = true;
-      new ReportGenerator(rootDir, modifiedResources, reportFile);
+      new ReportGenerator(rootMapFile.getParentFile(), modifiedResources, reportFile);
     }
 
     if(logger.isDebugEnabled()){
@@ -463,16 +477,15 @@ public class ReportDialog extends OKCancelDialog {
    * @throws StoppedByUserException  The user pressed the cancel button.
    */
   private void storeSelectedPaths(ComboHistory info) throws JAXBException, FileNotFoundException, StoppedByUserException{
-    JAXBContext contextObj = JAXBContext.newInstance(ComboHistory.class);  
-
-    Marshaller marshallerObj = contextObj.createMarshaller();  
-    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
-
+    
+    JAXBContext context = JAXBContext.newInstance(ComboHistory.class);  
+    Marshaller marshaller = context.createMarshaller();  
+    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); 
     StringWriter sw = new StringWriter();
-    marshallerObj.marshal(info, sw);
+    marshaller.marshal(info, sw);
     
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
-    optionsStorage.setOption("REPORT_DIALOG_HISTORY", sw.toString());
+    optionsStorage.setOption(REPORT_DIALOG_HISTORY, sw.toString());
   }
   /**
    * Loads chosen paths for the package location from disk.
@@ -483,20 +496,18 @@ public class ReportDialog extends OKCancelDialog {
    * @throws IOException  Problems reading the file/directory.
    */
   private ArrayList<ComboItem> loadSelectedPaths() throws JAXBException, IOException {
-    JAXBContext jaxbContext = JAXBContext.newInstance(ComboHistory.class); 
-
-    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-    
+    ArrayList<ComboItem> entries = null;
+    JAXBContext context = JAXBContext.newInstance(ComboHistory.class);
+    Unmarshaller unmarshaller = context.createUnmarshaller();
     WSOptionsStorage optionsStorage = PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage();
-    String option = optionsStorage.getOption("REPORT_DIALOG_HISTORY", null);
-    
-    if (option == null) {
-      logger.debug("The option is null!");
-      throw new IOException("No optionsFile was created.");
-    }
-    ComboHistory resources = (ComboHistory) jaxbUnmarshaller.unmarshal(new StringReader(option));    
+    String option = optionsStorage.getOption(REPORT_DIALOG_HISTORY, null);
 
-    return resources.getEntries();
+    if (option != null) {
+      ComboHistory resources = (ComboHistory) unmarshaller.unmarshal(new StringReader(option));
+      entries = resources.getEntries();
+    }
+
+    return entries;
   }
   /**
    * Creates a ReportDialog object if it wasn't created before.
@@ -520,7 +531,6 @@ public class ReportDialog extends OKCancelDialog {
    */
   private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
       ArrayList<ResourceInfo> list) throws IOException {
-//    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
 
     // Present a log with the overridden files.
     if(list != null && !list.isEmpty()){
@@ -559,4 +569,19 @@ public class ReportDialog extends OKCancelDialog {
       throw new IOException("The list containing the modified files is empty or null.");
     }
   }
+  
+  /**
+   * @return The name of the zip with the files to be translated.
+   */
+  public static String getZipFileName(File ditaRootMap) {
+    return FilenameUtils.removeExtension(ditaRootMap.getName()) + ZIP_FILE_NAME;
+  }
+  
+  /**
+   * @return The name of the HTML report of files contained in the ZIP.
+   */
+  public static String getHTMLReportFile(File ditaRootMap) {
+    return FilenameUtils.removeExtension(ditaRootMap.getName()) + REPORT_FILE_NAME;
+  }
+  
 }

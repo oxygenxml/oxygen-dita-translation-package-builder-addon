@@ -13,7 +13,7 @@ import ro.sync.util.URLUtil;
 /**
  * Detects the "href" attributes and extracts the referenced files. 
  */
-class MySaxParserHandler extends DefaultHandler {
+public class SaxContentHandler extends DefaultHandler {
   /**
    * The name of the attribute that represents a reference.
    */
@@ -23,6 +23,22 @@ class MySaxParserHandler extends DefaultHandler {
    */
   private static final String FORMAT_ATTRIBUTE_NAME = "format";
   /**
+   * Constant value: dita;
+   */
+  private static final String FORMAT_DITA_ATTRIBUTE_VALUE= "dita";
+  /**
+   * Constant value: ditamap;
+   */
+  private static final String FORMAT_DITAMAP_ATTRIBUTE_VALUE= "ditamap";
+  /**
+   * The name of the "scope" attribute which tells if this is a reference to be collected or not.
+   */
+  private static final String SCOPE_ATTRIBUTE_NAME = "scope";
+  /**
+   * Constant value: external;
+   */
+  private static final String SCOPE_ATTRIBUTE_VALUE= "external";
+  /**
    * The detected references.
    */
   private Set<URL> ditamapHrefs;
@@ -30,7 +46,7 @@ class MySaxParserHandler extends DefaultHandler {
    * Base URL for resolvinf relative references.
    */
   private URL baseUrl;
-  
+
   /**
    * @return The detected references. <code>null</code> if no references were detected.
    */
@@ -43,47 +59,57 @@ class MySaxParserHandler extends DefaultHandler {
    * 
    * @param baseUrl Base URL to resolve relative references.
    */
-  public MySaxParserHandler(URL baseUrl){
+  public SaxContentHandler(URL baseUrl){
     this.baseUrl = baseUrl;
   }
 
   @Override
   public void startElement(String namespace, String localName, String qName, Attributes attributes) throws SAXException {
+    
     boolean shouldParse = true;
     for (int att = 0; att < attributes.getLength(); att++) {
-      String attName = attributes.getQName(att);
-      
-      if(attName.equals(FORMAT_ATTRIBUTE_NAME)){
-        String value = attributes.getValue(attName);
-        if(value.equals("html")){
-          shouldParse = false;
-        }
-        
+      String attribute = attributes.getQName(att);
+      // Exclude all referred resources with scope external.
+      if(SCOPE_ATTRIBUTE_NAME.equals(attribute) && 
+         SCOPE_ATTRIBUTE_VALUE.equals(attributes.getValue(attribute))) {
+        shouldParse = false;
         break;
+      }
+      
+      // and all resources with format non dita.
+      if (shouldParse) {
+        if (FORMAT_ATTRIBUTE_NAME.equals(attribute)) {
+          String value = attributes.getValue(attribute);
+          boolean ditaFormat = FORMAT_DITA_ATTRIBUTE_VALUE.equals(value) || 
+              FORMAT_DITAMAP_ATTRIBUTE_VALUE.equals(value) || "".equals(value);
+          if (!ditaFormat) {
+            shouldParse = false;
+            break;
+          }
+        }
       }
     }
     
     if (shouldParse) {
       for (int att = 0; att < attributes.getLength(); att++) {
-        String attName = attributes.getQName(att);
+        String hrefAttribute = attributes.getQName(att);
         /**
          *  The href is relative
          *    1. Remove the anchor part (a.dita#id_topic/element_id)
          *    2. Make it absolute. Use the URL of the parsed file as base. 
          */
-        if (attName.equals(HREF_ATTRIBUTE_NAME)) {
-          String href = attributes.getValue(attName);
+        if (HREF_ATTRIBUTE_NAME.equals(hrefAttribute)) {
+          String href = attributes.getValue(hrefAttribute);
           int indexOf = href.indexOf("#");
           if(indexOf > 0 && indexOf < href.length() - 1){
             href = href.substring(0, indexOf);
           }
-          
+
           URL absoluteHref = URLUtil.resolveRelativeSystemIDs(baseUrl, href);
           if (ditamapHrefs == null) {
             ditamapHrefs = new HashSet<URL>();
           }
           ditamapHrefs.add(absoluteHref);
-          
           break;
         }
       } 

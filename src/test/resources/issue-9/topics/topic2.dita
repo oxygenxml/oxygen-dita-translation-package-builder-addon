@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dita PUBLIC "-//OASIS//DTD DITA Composite//EN" "ditabase.dtd">
+<dita>
+    <topic id="asdxasda">
+        <title></title>
+        <body>
+            <p conref="topic3.dita#topic_fgy_cjr_3bb/random_id"/>
+            
+        </body>
+        <related-links>
+            <link href="refFile.txt" format="txt"/>
+        </related-links>
+    </topic>
+</dita>

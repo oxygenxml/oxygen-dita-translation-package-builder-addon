@@ -50,16 +50,13 @@ public class ReportGenerator {
    * @throws FileNotFoundException  The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.
    */ 
-  private File storeReportFile(InfoResources info, File rootDir) throws JAXBException, FileNotFoundException, StoppedByUserException{
+  private File storeReportFile(InfoResources info, File rootDir) throws JAXBException, FileNotFoundException{
 
     File reportFile = new File(rootDir + File.separator + "report.xml");
-
-    JAXBContext contextObj = JAXBContext.newInstance(InfoResources.class);  
-
-    Marshaller marshallerObj = contextObj.createMarshaller();  
-    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
-
-    marshallerObj.marshal(info, reportFile);  
+    JAXBContext context = JAXBContext.newInstance(InfoResources.class);  
+    Marshaller marshaller = context.createMarshaller();  
+    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
+    marshaller.marshal(info, reportFile);  
 
     return reportFile;
   }
@@ -87,26 +84,40 @@ public class ReportGenerator {
       logger.error(e2, e2);
     } catch (JAXBException e2) {
       logger.error(e2, e2);
-    } catch (StoppedByUserException e2) {
-      logger.error(e2, e2);
     }
+    
     //Transform the .xml report file into a .xhtml file
-    File xslFile = new File(
-        TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), 
+    File xslFile = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), 
         "xsl/report_transformation.xsl");
+    
+    FileOutputStream outputStream = null;
     try {
-      TransformerFactory tFactory = TransformerFactory.newInstance();
+      TransformerFactory factory = TransformerFactory.newInstance();
 
-      Transformer transformer = tFactory.newTransformer (new StreamSource(xslFile.getAbsolutePath()));
-      transformer.transform(new StreamSource(xmlReport.getAbsolutePath()),
-         new StreamResult(new FileOutputStream(report.getAbsolutePath())));
-      }
-    catch (Exception ex) {
+      StreamSource xslSource = new StreamSource(xslFile.getAbsolutePath());
+      Transformer transformer = factory.newTransformer (xslSource);
+      
+      outputStream = new FileOutputStream(report.getAbsolutePath());
+      StreamSource xmlSource = new StreamSource(xmlReport.getAbsolutePath());
+      StreamResult outputTarget = new StreamResult(outputStream);
+      transformer.transform(xmlSource, outputTarget);
+      
+    } catch (Exception ex) {
       logger.error(ex, ex);
+    } finally {
+      if (outputStream != null) {
+        try {
+          outputStream.close();
+        } catch (IOException e) {
+          /*Nothing to do here*/
+          }
       }
+    }
     //Delete the .xml report file after converting it to a .xhtml file
     try {
-      FileUtils.forceDelete(xmlReport);
+      if (xmlReport != null) {
+        FileUtils.forceDelete(xmlReport);
+      }
     } catch (IOException e2) {  
       e2.printStackTrace();
     }

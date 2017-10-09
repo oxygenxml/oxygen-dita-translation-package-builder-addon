@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="add-terms-list">
+  <title>Adding Spell Check Term Lists</title>
+  <prolog>
+    <metadata>
+      <keywords>
+        <indexterm></indexterm>
+        <indexterm><indexterm></indexterm></indexterm>
+      </keywords>
+    </metadata>
+  </prolog>
+  <body>
+    <section id="create_and_add_personalized_term_lists">
+      <title></title>
+      <p><xref href="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes" format="html"
+              scope="external"/>
+        <xref href="https://en.wiskiPedia.org/wiki/List_of_ISO_639-1_codes" format=""
+          scope="external"/>
+        
+        <xref href="topic1.dita" format=""/>
+        <xref href="topic2.dita" format="dita"/>
+        
+        <ph conkeyref="reusables-preferences-pages/Open-the-preferences-page"/> and go to
+              <xref href="dictionaries-preferences-page.dita#dictionaries-preferences-page"></xref>.
+              <ph><xref href="dictionaries-preferences-page.dita#dictionaries-preferences-page/dictionary-folder"/>
+               </ph>
+              <ph><xref
+                  href="dictionaries-preferences-page.dita#dictionaries-preferences-page/include-dictionaries-term-lists"
+                    />, <xref
+                  href="dictionaries-preferences-page.dita#dictionaries-preferences-page/dictionary-note"
+                  />.</ph>
+      <xref href="http://tomcat.apache.org" format="org" scope="external"/>
+        </p>
+    </section>
+  </body>
+  <related-links>
+    <linklist><title>Related Information:</title><link href="add-Hunspell-dictionary.dita#add-Hunspell-dictionary"/></linklist>
+  </related-links>
+</topic>

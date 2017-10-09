@@ -3,7 +3,6 @@ package com.oxygenxml.translation.support.core.resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -76,11 +75,11 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
       Iterator<IResource> toReturn = null;
       File[] listFiles = file.listFiles();
       if (listFiles != null) {
-        List<IResource> children = new ArrayList<IResource>(listFiles.length);
+        List<IResource>  children = new ArrayList<IResource>(listFiles.length);
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < listFiles.length; i++) {
           File child = listFiles[i];
-          if (!child.getName().equals(MilestoneUtil.getMilestoneFileName())) {
+          if (!child.getName().contains(MilestoneUtil.MILESTONE_FILE_NAME)) {
             // The milestone must not be added in the package.
             b.setLength(0);
             if (relativePath.length() > 0) {

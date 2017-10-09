@@ -58,7 +58,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class); 
+  private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class);
   /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
@@ -135,19 +135,13 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         try {
           URL rootMapLocation = editor.getEditorLocation();
           
-          logger.info("rootMapLocation " + rootMapLocation);
-
           File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(rootMapLocation);
           final File rootDir = fileOnDisk;//.getParentFile();
           if (logger.isDebugEnabled()) {
             logger.debug("The current ditaMAP is : " + rootDir.getPath());
           }
           
-          logger.info("rootDir " + rootDir);
-          
-          final File milestoneFile = MilestoneUtil.getMilestoneFile(rootDir.getParentFile());
-          
-          logger.info("milestone file " + milestoneFile);
+          final File milestoneFile = MilestoneUtil.getMilestoneFile(rootDir);
           
           //Ask the user if he wants to override the milestone in case it was already created.
           if(milestoneFile.exists()){
@@ -194,7 +188,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
         try {
           //The milestone file is stored in the root dir of the current ditaMAP
-          final File milestoneFile = new File(rootDir.getParentFile() , MilestoneUtil.getMilestoneFileName());      
+          final File milestoneFile = new File(rootDir.getParentFile() , MilestoneUtil.getMilestoneFileName(rootDir));      
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
           if(!milestoneFile.exists()){
@@ -256,7 +250,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
         URL editorLocation = editor.getEditorLocation();
         // The parent directory of the current ditamap.
-//        final File rootDir = new File(editorLocation.getFile()).getParentFile();
         File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
         final File rootDir = fileOnDisk.getParentFile();
         logger.debug("The root dir is : " + rootDir.getAbsolutePath());
@@ -502,7 +495,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
             //Open the report file           
             try {
-              Desktop.getDesktop().open(new File(rootMapDir, ReportDialog.getReportFileName()));
+              Desktop.getDesktop().open(new File(rootMapDir, ReportDialog.getHTMLReportFile(new File(rootMap.getFile()))));
             } catch (IOException e1) {
               logger.error(e1, e1);
             }
@@ -547,6 +540,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final JFrame frame,
       final boolean isFromAction1) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+    
+    logger.info("generateMilestone: " + milestoneFile);
+    
     // Generate the milestone on thread.
     GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootMap);
 
@@ -601,8 +597,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // If the number of modified files is grater than 0 show the report dialog and create package.
         if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
           ReportDialog.setParentFrame(frame);
-          File rootMapDir = MilestoneUtil.getFile(rootMap).getParentFile();
-          ReportDialog.setRootDir(rootMapDir);
+//          File rootMapDir = MilestoneUtil.getFile(rootMap).getParentFile();
+          ReportDialog.setRootMap(new File(rootMap.getFile()));
           ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
           
           ReportDialog report = ReportDialog.getInstance();

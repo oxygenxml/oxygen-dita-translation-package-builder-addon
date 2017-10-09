@@ -1,13 +1,28 @@
 package com.oxygenxml.translation.support.core;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
 
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 
+/**
+ * Utility methods used for test.
+ */
 public class TestUtil {
+  
+  /**
+   * Private constructor to avoid instantiation of utility class.
+   */
+  private TestUtil() {}
+  
 	/**
 	 * @param list A list with ResourceInfo objects.
 	 * 
@@ -20,7 +35,7 @@ public class TestUtil {
       }
     });
 	  
-		StringBuilder b =new StringBuilder();
+		StringBuilder b = new StringBuilder();
 		int maxLength = 0;
 		for(int j = 0;j < list.size();j++){
 			int length = list.get(j).getRelativePath().length();
@@ -51,5 +66,30 @@ public class TestUtil {
   public static File getPath(String dirName){
     URL resource = TestUtil.class.getClassLoader().getResource(dirName);
     return new File(resource.getPath());
+  }
+  
+  /**
+   * Read content of file.
+   * 
+   * @param file The file we want to read from.
+   *  
+   * @return File content or empty string.
+   * 
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
+  public static String readFile(File file) throws FileNotFoundException, IOException {
+    InputStream is = new FileInputStream(file);
+    BufferedReader in = new BufferedReader(new InputStreamReader(is));
+
+    String line = in.readLine();
+    StringBuilder result = new StringBuilder(4000);
+    while (line != null) {
+      result.append(line);
+      result.append('\n');
+      line = in.readLine();
+    }
+    in.close();
+    return result.toString();
   }
 }

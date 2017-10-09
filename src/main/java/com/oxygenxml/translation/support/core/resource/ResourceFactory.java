@@ -1,8 +1,10 @@
 package com.oxygenxml.translation.support.core.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Creates various builders that pack resources into a ZIP. 
@@ -15,12 +17,15 @@ public class ResourceFactory {
   /**
    * The type of detection.
    */
-  private DetectionType detectionType;
+  private DetectionType detectionType = DetectionType.FILE_SYSTEM;
   /**
    * Constructor.
    */
   private ResourceFactory() {
-    detectionType = DetectionType.FILE_SYSTEM;
+    PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+    if (pluginWorkspace != null) {
+      detectionType = DetectionType.MAP_STRUCTURE;
+    }
   }
   
   /**

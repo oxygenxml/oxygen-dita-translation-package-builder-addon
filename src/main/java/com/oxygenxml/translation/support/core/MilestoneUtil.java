@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.core.resource.IRootResource;
@@ -33,11 +34,11 @@ public class MilestoneUtil {
   private static Logger logger = Logger.getLogger(MilestoneUtil.class);
 
   /**
-   * Predefined name of the file that stores a hash for each file.
+   * Predefined suffix of each generated milestone.
    */
-  private final static String MILESTONE_FILE_NAME = "translation_builder_milestone.xml";
+  public final static String MILESTONE_FILE_NAME = "_translation_milestone.xml";
 
-  /**
+  /**s
    * Reads a file and generates an MD5 from its content.
    * 
    * @param file The file to read.
@@ -99,10 +100,6 @@ public class MilestoneUtil {
   
     return toHexString(md.digest());
   
-  }
-
-  public static String getMilestoneFileName() {
-    return MILESTONE_FILE_NAME;
   }
 
   /**
@@ -176,9 +173,7 @@ public class MilestoneUtil {
    */
   public static Date getMilestoneCreationDate(URL rootMap) throws JAXBException, IOException {
     File rootMapFile = getFile(rootMap);
-    
-    File milestoneFile = new File(
-        rootMapFile.getParentFile(),  MilestoneUtil.getMilestoneFileName());
+    File milestoneFile = new File(rootMapFile.getParentFile(),MilestoneUtil.getMilestoneFileName(rootMapFile));
 
     if (!milestoneFile.exists()) {
       throw new IOException("No milestone was created.");
@@ -203,7 +198,7 @@ public class MilestoneUtil {
   public static File getMilestoneFile(URL resource) {
     File rootMapFile = getFile(resource);
     
-    return getMilestoneFile(rootMapFile.getParentFile());
+    return getMilestoneFile(rootMapFile);
   }
 
   /**
@@ -231,11 +226,16 @@ public class MilestoneUtil {
    * 
    * @return The file where the milestone information was saved for the given resource.
    */
-  public static File getMilestoneFile(File rootMapDirectory) {
-    File milestoneFile = 
-        new File(rootMapDirectory,  MilestoneUtil.getMilestoneFileName());
-
-    
-    return milestoneFile;
+  public static File getMilestoneFile(File rootMapFile) {
+    return new File(rootMapFile.getParentFile(), MilestoneUtil.getMilestoneFileName(rootMapFile));
+  }
+  
+  /**
+   * @param rootMapFile Current DITA file.
+   * @return Returns the corresponding milestone of the current dita map file.
+   */
+  public static String getMilestoneFileName(File rootMapFile) {
+    String name = FilenameUtils.removeExtension(rootMapFile.getName());
+    return name + MILESTONE_FILE_NAME;
   }
 }
