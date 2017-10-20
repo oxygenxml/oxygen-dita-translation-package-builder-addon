@@ -138,6 +138,7 @@ public class ChangePackageGenerator {
 
     // Compare serializedResources with newly generated hashes.
     for (ResourceInfo newInfo : currentStates) {
+      // TODO Use a HasSet to ensure better search performance.
       boolean modified = !milestoneStates.contains(newInfo);
       if (modified) {
         modifiedResources.add(newInfo);
@@ -199,9 +200,13 @@ public class ChangePackageGenerator {
         //Then we compress the tempDir and delete it.
         try{
           for(ResourceInfo aux : modifiedResources){
+            // TODO #9 It asumes that the map is in the root directory which might not always be true.
+            // TODO Pass a RelativePathResolver which will know the root directory and the map location and will be able to resolve.
             File dest = new File(tempDir, aux.getRelativePath());
             dest.getParentFile().mkdirs();
 
+            // TODO #9 It asumes that the map is in the root directory which might not always be true.
+            // TODO Pass a RelativePathResolver which will know the root directory and the map location and will be able to resolve.
             FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
 
             if(isCanceled()){
