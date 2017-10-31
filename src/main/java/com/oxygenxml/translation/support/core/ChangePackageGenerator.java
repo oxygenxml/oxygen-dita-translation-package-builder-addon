@@ -113,7 +113,7 @@ public class ChangePackageGenerator {
             PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
             if (pluginWorkspace != null) {
               pluginWorkspace.getResultsManager().
-              addResult("Transaltion Builder", 
+              addResult("Translation Package Builder", 
                   dpi, 
                   ResultType.PROBLEM, 
                   true, 
