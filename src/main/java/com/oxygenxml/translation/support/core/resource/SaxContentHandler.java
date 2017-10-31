@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -15,9 +16,17 @@ import ro.sync.util.URLUtil;
  */
 public class SaxContentHandler extends DefaultHandler {
   /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(SaxContentHandler.class.getName());
+  /**
    * The name of the attribute that represents a reference.
    */
   private static final String HREF_ATTRIBUTE_NAME = "href";
+  /**
+   * The name of the attribute that represents a content reference.
+   */
+  private static final String CONREF_ATTRIBUTE_NAME = "conref";
   /**
    * The name of the format attribute which tells if this is a reference to be collected or not.
    */
@@ -96,14 +105,15 @@ public class SaxContentHandler extends DefaultHandler {
     
     if (shouldParse) {
       for (int att = 0; att < attributes.getLength(); att++) {
-        String hrefAttribute = attributes.getQName(att);
+        String attributeName = attributes.getQName(att);
         /**
          *  The href is relative
          *    1. Remove the anchor part (a.dita#id_topic/element_id)
          *    2. Make it absolute. Use the URL of the parsed file as base. 
          */
-        if (HREF_ATTRIBUTE_NAME.equals(hrefAttribute)) {
-          String href = attributes.getValue(hrefAttribute);
+        if (HREF_ATTRIBUTE_NAME.equals(attributeName) ||
+            CONREF_ATTRIBUTE_NAME.equals(attributeName)) {
+          String href = attributes.getValue(attributeName);
           int indexOf = href.indexOf("#");
           if(indexOf > 0 && indexOf < href.length() - 1){
             href = href.substring(0, indexOf);

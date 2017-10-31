@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources date="2017-10-31T15:42:11.273+02:00">
+    <info-resource>
+        <md5>b0be3ea6c635a9048b57fa2d3396bca5</md5>
+        <relativePath>topics/topic2.dita</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>e64fe6340e17a3a0f984d192335b3893</md5>
+        <relativePath>topics/topic3.dita</relativePath>
+    </info-resource>
+</resources>

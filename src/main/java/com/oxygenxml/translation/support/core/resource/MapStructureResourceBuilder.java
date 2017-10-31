@@ -112,8 +112,9 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
               }
             }
           } catch (Exception e) {
-            // TODO THrow this further away. Define an exception.
-            logger.error(e, e);
+            try {
+              throw e;
+            } catch (Exception e1) {}
           } 
         }
       }
