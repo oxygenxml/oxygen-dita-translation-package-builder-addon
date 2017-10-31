@@ -149,6 +149,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
 
         return handler.getDitaMapHrefs();
       }
+
+    public URL getCurrentUrl() {
+      return resource;
+    }
     
   }
   

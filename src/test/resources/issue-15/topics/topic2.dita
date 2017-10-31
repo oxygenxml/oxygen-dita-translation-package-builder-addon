@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dita PUBLIC "-//OASIS//DTD DITA Composite//EN" "ditabase.dtd">
+<dita>
+    <topic id="asdxasda">
+        <title></title>
+        <body>
+            <p conref="not-referred-in-ditamap.dita#topic_fgy_cjr_3bb/random_id"/>
+            <p><xref href="topic3.dita#newId/BID">BOLD REF</xref></p>
+            <p><xref href="topic3.dita#newId/codeID">CODE REF</xref></p>
+        </body>
+    </topic>
+</dita>

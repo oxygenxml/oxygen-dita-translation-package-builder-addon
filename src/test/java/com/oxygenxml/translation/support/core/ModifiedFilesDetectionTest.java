@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
- * Tests for detecting the modified files with respect to a saven milestone. 
+ * Tests for detecting the modified files with respect to a saved milestone. 
  */
 public class ModifiedFilesDetectionTest {
 	@Test
@@ -26,9 +27,8 @@ public class ModifiedFilesDetectionTest {
 		File rootDir = TestUtil.getPath("modifiedFiles-Test");
 		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
 		
-		// Load and assert the milestone content.
-		List<ResourceInfo> actualResourcesFromMilestone = 
-		    MilestoneUtil.loadMilestoneFile(rootResource);
+    // Load and assert the milestone content.
+		List<ResourceInfo> actualResourcesFromMilestone = MilestoneUtil.loadMilestoneFile(rootResource);
 		
 		ArrayList<ResourceInfo> expectedResultMilestone = new ArrayList<ResourceInfo>();
 		expectedResultMilestone.add(new ResourceInfo("0330c493e6a1efda89242d99195c6eca" , "dir1/dir1.1/test.txt"));
@@ -40,15 +40,23 @@ public class ModifiedFilesDetectionTest {
 		    TestUtil.dump(actualResourcesFromMilestone));
 		
 		// Test how the change files are detected.
-    ArrayList<ResourceInfo> actualResult = 
-        new ChangePackageGenerator().collectModifiedResources(
+    ArrayList<ResourceInfo> actualResult = new ChangePackageGenerator().collectModifiedResources(
             rootResource, false);
     
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
-    ResourceInfo first = new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt");
+
+    expectedResult.add(new ResourceInfo("0330c493e6a1efda89242d99195c6eca" , "dir1/dir1.1/test.txt"));
+    expectedResult.add(new ResourceInfo("f4fbf41346cdf2995d37388c6331a184" , "dir1/new1.txt"));
+    expectedResult.add(new ResourceInfo("6d7e8058723731106992e9e54e91e478" , "dir2/new2.txt"));
+    expectedResult.add(new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt"));
     
-    expectedResult.add(first);
-    
-    Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));
+    Assert.assertEquals(TestUtil.dump(expectedResult), 
+        TestUtil.dump(actualResult));
 	}
+	
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(ModifiedFilesDetectionTest.class.getName());
+
 }

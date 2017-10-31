@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources>
+    <info-resource>
+        <md5>0330c493e6a1efda89242d99195c6eca</md5>
+        <relativePath>dir1/dir1.1/test.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>f4fbf41346cdf2995d37388c6331a184</md5>
+        <relativePath>dir1/new1.txt</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>6d7e8058723731106992e9e54e91e478</md5>
+        <relativePath>dir2/new2.txt</relativePath>
+    </info-resource>
+</resources>

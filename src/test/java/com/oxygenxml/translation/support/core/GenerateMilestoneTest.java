@@ -58,6 +58,7 @@ public class GenerateMilestoneTest {
 		expectedResult.add(new ResourceInfo("5c24a78aec732e9626a4a7114efd98b1", "testIteration/dir2/md5_no2.txt"));
 		
 		List<ResourceInfo> actualResult = MilestoneUtil.loadMilestoneFile(rootResource);
+		System.out.println(rootResource.getMilestoneFile().getAbsolutePath());
 		
 		Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));
 	}

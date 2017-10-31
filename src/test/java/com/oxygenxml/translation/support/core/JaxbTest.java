@@ -8,6 +8,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class JaxbTest {
     List<ResourceInfo> list = Arrays.asList(new ResourceInfo[] {resource});
 	  info.setList(list);
 
-	  File milestone = new File(rootDir, "translation_builder_milestone.xml");
+	  File milestone = new File(rootDir, "unknown_translation_milestone.xml");
 		MilestoneUtil.storeMilestoneFile(info, milestone);
 
 	    String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -52,6 +53,11 @@ public class JaxbTest {
 	  
 		Assert.assertEquals(expectedResult, actualResult);
 	}
+	
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(JaxbTest.class.getName());
 
 	/**
 	 * Tests the milestone file loading.
@@ -60,7 +66,8 @@ public class JaxbTest {
 	 */
 	@Test
 	public void testUnmarshaller() throws Exception {
-	  IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
+	  File file = new File(rootDir, "JAXB-test");
+	  IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(file);
 		List<ResourceInfo> list = MilestoneUtil.loadMilestoneFile(rootResource);
 		String dump = TestUtil.dump(list);
 		Assert.assertEquals("dir1/test.txt  12345\n", dump);;

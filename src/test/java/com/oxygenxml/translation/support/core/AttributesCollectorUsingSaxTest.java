@@ -3,7 +3,6 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -134,7 +133,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<resources date=\"" + date + "\">\n" + 
         "    <info-resource>\n" + 
-        "        <md5>7a8f7a71669bf123784c2eaad91e1aee</md5>\n" + 
+        "        <md5>7890fdbd90a03d403841b24ec0282e87</md5>\n" + 
         "        <relativePath>topics/topic2.dita</relativePath>\n" + 
         "    </info-resource>\n" + 
         "    <info-resource>\n" + 
@@ -142,6 +141,53 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
         "        <relativePath>topics/topic1.dita</relativePath>\n" + 
         "    </info-resource>\n" + 
         "</resources>\n" + 
+        "", 
+        result);
+  }
+
+  /**
+   * <p><b>Description:</b> Referred resources should appear only once in the milestone.</p>
+   * <p><b>Bug ID:</b></p>
+   *
+   * @author adrian_sorop
+   *
+   * @throws Exception
+   */
+  public void testDoNotAddSameFileTwice() throws Exception {
+    // Discovered while working on issue 15.
+    rootDir = TestUtil.getPath("issue-15");
+    File ditaFile = new File(rootDir,"rootMap.ditamap");
+    assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    URL url = URLUtil.correct(ditaFile);
+    
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    
+    MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
+    IRootResource rootRes = structureBuilder.wrap(url);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    generateChangeMilestone.deleteOnExit();
+    String result = TestUtil.readFile(generateChangeMilestone);
+    
+    String date = "";
+    String match = "<resources date=\"(.*)\">";
+    Pattern pattern = Pattern.compile(match);
+    Matcher matcher = pattern.matcher(result);
+    if (matcher.find( )) {
+      date = matcher.group(1);
+    }
+    
+    assertEquals(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<resources date=\"" + date + "\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>0e1933d1eb8126735d6aac07fe7eed8c</md5>\n" + 
+        "        <relativePath>topics/topic2.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>c9e3dcb387774f016ec14ff212060a9d</md5>\n" + 
+        "        <relativePath>topics/topic3.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "</resources>\n" +
         "", 
         result);
   }

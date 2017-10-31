@@ -2,6 +2,7 @@ package com.oxygenxml.translation.support.core.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 
@@ -24,4 +25,9 @@ public interface IResource {
    * @return Milestone information or <code>null</code> if this resource shouldn't be recorded.
    */
   ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException;
+  
+  /**
+   * @return The URL of the currently verified resource.
+   */
+  URL getCurrentUrl();
 }

@@ -3,6 +3,7 @@ package com.oxygenxml.translation.support.core.resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -106,6 +107,11 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
       // We don't add directories into the milestone.
       return null;
     }
+
+    public URL getCurrentUrl() {
+      // It's a folder. Do not add it.
+      return null;
+    }
   }
   
   /**
@@ -156,6 +162,17 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
      */
     public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
       return new ResourceInfo(MilestoneUtil.generateMD5(file), relativePath);
+    }
+
+    public URL getCurrentUrl() {
+      URL url = null;
+      try {
+        url = file.toURI().toURL();
+      } catch (MalformedURLException e) {
+        // warn
+        logger.warn(e, e);
+      }
+      return url;
     }
   }
 

@@ -61,6 +61,10 @@ public class SaxContentHandler extends DefaultHandler {
    */
   public SaxContentHandler(URL baseUrl){
     this.baseUrl = baseUrl;
+    
+    if (ditamapHrefs == null) {
+      ditamapHrefs = new HashSet<URL>();
+    }
   }
 
   @Override
@@ -106,9 +110,6 @@ public class SaxContentHandler extends DefaultHandler {
           }
 
           URL absoluteHref = URLUtil.resolveRelativeSystemIDs(baseUrl, href);
-          if (ditamapHrefs == null) {
-            ditamapHrefs = new HashSet<URL>();
-          }
           ditamapHrefs.add(absoluteHref);
           break;
         }

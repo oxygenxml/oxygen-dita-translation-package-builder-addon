@@ -3,8 +3,11 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,9 +27,10 @@ public class GenerateResourceInfoTest {
   public void testGenerateRelativePaths() throws NoSuchAlgorithmException, IOException, StoppedByUserException {
     File dirPath = TestUtil.getPath("testIteration-ResourceInfoTest");
 
+    Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
     new ChangePackageGenerator().computeResourceInfo(
-        new FileSystemResourceBuilder().wrapDirectory(dirPath), list);
+        new FileSystemResourceBuilder().wrapDirectory(dirPath), list, visited);
 
     Assert.assertEquals(
         "dir1/md5.txt      1308e502a17d62d0585d1487228b204c\n" + 
@@ -44,10 +48,10 @@ public class GenerateResourceInfoTest {
   public void testGenerateRelativePaths_2() throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
     File dirPath = TestUtil.getPath("testGenerate-ResourceInfoTest");
 
+    Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-
     new ChangePackageGenerator().computeResourceInfo(
-        new FileSystemResourceBuilder().wrapDirectory(dirPath), list);
+        new FileSystemResourceBuilder().wrapDirectory(dirPath), list, visited);
 
     String expectedResult = 
         "md5.txt      f5e45edee5ee0e2dffe9fbe6a736ab02\n" + 
@@ -66,10 +70,10 @@ public class GenerateResourceInfoTest {
     File rootDir = TestUtil.getPath("generateMilestone-Test");
     
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
-    
+    Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> milestoneInfo = new ArrayList<ResourceInfo>();
     packageBuilder.computeResourceInfo(
-        new FileSystemResourceBuilder().wrapDirectory(rootDir), milestoneInfo);
+        new FileSystemResourceBuilder().wrapDirectory(rootDir), milestoneInfo, visited);
 
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
     expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testGenerate/md5.txt"));

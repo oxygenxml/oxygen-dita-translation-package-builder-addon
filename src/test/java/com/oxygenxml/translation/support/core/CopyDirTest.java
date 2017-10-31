@@ -2,8 +2,11 @@ package com.oxygenxml.translation.support.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,13 +36,15 @@ public class CopyDirTest {
 
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
     FileSystemResourceBuilder builder = new FileSystemResourceBuilder();
+    Set<URL> visited = new HashSet<URL>();
     new ChangePackageGenerator().computeResourceInfo(
         builder.wrapDirectory(sourceLocation), 
-        expectedResult);
+        expectedResult, visited);
 
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
+    visited.clear();
     new ChangePackageGenerator().computeResourceInfo(
-        builder.wrapDirectory(targetLocation), actualResult);
+        builder.wrapDirectory(targetLocation), actualResult, visited);
 
     Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));
   }
@@ -58,10 +63,11 @@ public class CopyDirTest {
         "toCopy/dir1/file2.txt       df182645e551073d3505dced3455b694\n" +
         "toCopy/file1.txt            bc8dc04e5c01a166ba05cc5c2e09b261\n" +
         "";
-
+    
+    Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> actualResult = new ArrayList<ResourceInfo>();
     new ChangePackageGenerator().computeResourceInfo(
-        new FileSystemResourceBuilder().wrapDirectory(targetLocation), actualResult);
+        new FileSystemResourceBuilder().wrapDirectory(targetLocation), actualResult, visited);
 
     Assert.assertEquals(expectedResult, TestUtil.dump(actualResult));
   }

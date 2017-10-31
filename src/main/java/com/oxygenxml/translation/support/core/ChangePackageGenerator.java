@@ -3,11 +3,15 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
@@ -27,8 +31,11 @@ import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 
+import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -76,27 +83,47 @@ public class ChangePackageGenerator {
    * @throws IOException Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  void computeResourceInfo(IResource resource, List<ResourceInfo> list) 
+  void computeResourceInfo(IResource resource, List<ResourceInfo> list, Set<URL> visited) 
       throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
     
-    Iterator<IResource> everythingInThisDir = resource.iterator();
+    Iterator<IResource> referredResources = resource.iterator();
 
-    if (everythingInThisDir != null /*&& !everythingInThisDir.isEmpty()*/) {
-      while (everythingInThisDir.hasNext()) {
+    if (referredResources != null) {
+      while (referredResources.hasNext()) {
         if(isCanceled()){
           throw new StoppedByUserException();
         }
         
-        IResource iResource = (IResource) everythingInThisDir.next();
-        
-        // Collect the milestone related info.
-        ResourceInfo resourceInfo = iResource.getResourceInfo();
-        if (resourceInfo != null) {
-          list.add(resourceInfo);
+        IResource iResource = (IResource) referredResources.next();
+        URL currentUrl = iResource.getCurrentUrl();
+        if (currentUrl != null && !visited.contains(currentUrl)) {
+          visited.add(currentUrl);
+          try {
+            // Collect the milestone related info.
+            ResourceInfo resourceInfo = iResource.getResourceInfo();
+            if (resourceInfo != null) {
+              list.add(resourceInfo);
+            }
+          } catch (IOException e) {
+            DocumentPositionedInfo dpi = new DocumentPositionedInfo(
+                DocumentPositionedInfo.SEVERITY_WARN, 
+                e.getMessage(), 
+                null);
+
+            PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+            if (pluginWorkspace != null) {
+              pluginWorkspace.getResultsManager().
+              addResult("Transaltion Builder", 
+                  dpi, 
+                  ResultType.PROBLEM, 
+                  true, 
+                  false);
+            }
+          }
         }
         
         // Go deep.
-        computeResourceInfo(iResource, list);
+        computeResourceInfo(iResource, list, visited);
       }
     }
   }
@@ -127,22 +154,22 @@ public class ChangePackageGenerator {
       logger.debug("Cames from modifiedResourcesWorker?-->" + isFromWorker);
     }
     // Store state.
-    List<ResourceInfo> milestoneStates = MilestoneUtil.loadMilestoneFile(resource);
+    Set<ResourceInfo> resources = new HashSet<ResourceInfo>(MilestoneUtil.loadMilestoneFile(resource));
     
     //Current states.
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
-    computeResourceInfo(resource, currentStates);
+    computeResourceInfo(resource, currentStates, new HashSet<URL>());
+    
     // A list to hold the modified resources.
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
     int counter = 0;
-
     // Compare serializedResources with newly generated hashes.
     for (ResourceInfo newInfo : currentStates) {
-      // TODO Use a HasSet to ensure better search performance.
-      boolean modified = !milestoneStates.contains(newInfo);
-      if (modified) {
+      // Use a HasSet to ensure better search performance.
+      if (!resources.contains(newInfo)) {
         modifiedResources.add(newInfo);
       }
+      
       if(isFromWorker){
         PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
         counter++;
@@ -274,7 +301,7 @@ public class ChangePackageGenerator {
       boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
 
-    computeResourceInfo(resource, list);
+    computeResourceInfo(resource, list, new HashSet<URL>());
     File milestoneFile = resource.getMilestoneFile();
     /**
      * TODO Adrian check functionality of the date and time of the milestone creation.
