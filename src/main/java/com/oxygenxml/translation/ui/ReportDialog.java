@@ -62,6 +62,10 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarToggleButton;
 
+/**
+ * TODO Analyze all the statics.
+ *
+ */
 public class ReportDialog extends OKCancelDialog {
   
   /**
@@ -107,11 +111,15 @@ public class ReportDialog extends OKCancelDialog {
     return shouldCreateReport;
   }
   /**
+   * TODO Static is bad.
+   * 
    * DITA Map file.
    */
   private static File rootMapFile;
   
   /**
+   * TODO Static is bad.
+   * 
    * Setter of DITA ROOT MAP.
    * @param rootMap
    */
@@ -119,6 +127,8 @@ public class ReportDialog extends OKCancelDialog {
     ReportDialog.rootMapFile = rootMap;
   }
   /**
+   * TODO Static is bad.
+   * 
    * The location of the generated report.
    */
   private final File reportFile;
@@ -459,7 +469,7 @@ public class ReportDialog extends OKCancelDialog {
     // Generate report if the user selected the checkbox
     if(checkbox.isSelected()){    
       shouldCreateReport = true;
-      new ReportGenerator(rootMapFile.getParentFile(), modifiedResources, reportFile);
+      new ReportGenerator(rootMapFile, modifiedResources, reportFile);
     }
 
     if(logger.isDebugEnabled()){

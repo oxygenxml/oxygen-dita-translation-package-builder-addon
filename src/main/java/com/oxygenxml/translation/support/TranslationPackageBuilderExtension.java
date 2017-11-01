@@ -495,7 +495,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
             //Open the report file           
             try {
-              Desktop.getDesktop().open(new File(rootMapDir, ReportDialog.getHTMLReportFile(new File(rootMap.getFile()))));
+                File generatedFile = new File(rootMapDir, ReportDialog.getHTMLReportFile(new File(rootMap.getFile())));
+                  if (generatedFile != null && generatedFile.exists()) {
+                    Desktop.getDesktop().open(generatedFile);
+              }
             } catch (IOException e1) {
               logger.error(e1, e1);
             }
@@ -597,7 +600,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // If the number of modified files is grater than 0 show the report dialog and create package.
         if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
           ReportDialog.setParentFrame(frame);
-//          File rootMapDir = MilestoneUtil.getFile(rootMap).getParentFile();
           ReportDialog.setRootMap(new File(rootMap.getFile()));
           ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
           

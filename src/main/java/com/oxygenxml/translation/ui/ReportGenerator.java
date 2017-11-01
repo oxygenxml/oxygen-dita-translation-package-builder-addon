@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
 import com.oxygenxml.translation.support.storage.InfoResources;
@@ -30,12 +31,22 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
  */
 public class ReportGenerator {
   /**
+   * Stylesheet to transform the xml report to xhtml document.
+   */
+  private static final String REPORT_TRANSFORMATION_XSL = "xsl/report_transformation.xsl";
+  /**
    *  Logger for logging.
    */
   private static Logger logger = Logger.getLogger(ReportGenerator.class); 
   
-  public ReportGenerator(File rootDir, ArrayList<ResourceInfo> modifiedResources, File report){
-    generateReport(rootDir, modifiedResources, report);
+  /**
+   * 
+   * @param ditaMap The dita map to process.
+   * @param modifiedResources A list with the modified resources.
+   * @param report The report file.
+   */
+  public ReportGenerator(File ditaMap, ArrayList<ResourceInfo> modifiedResources, File report){
+    generateReport(ditaMap, modifiedResources, report);
   }
   
   /**
@@ -64,13 +75,14 @@ public class ReportGenerator {
   /**
    * Creates a .xhtml report file, a list with all the modified resources.
    * 
-   * @param rootDir The directory were the report will be created after serialization.
+   * @param ditaMap The ditamap to process.
    * @param modifiedResources All the modified files.
    * @param report  Where the generated report will be saved.
    * @throws TransformerFactoryConfigurationError A problem with configuration with the Transformer Factories exists.
    */
-  private void generateReport(final File rootDir, final ArrayList<ResourceInfo> modifiedResources, final File report)
+  private void generateReport(final File ditaMap, final ArrayList<ResourceInfo> modifiedResources, final File report)
       throws TransformerFactoryConfigurationError {
+    final File rootDir = ditaMap.getParentFile();
     ArrayList<ResourceInfo> relativePaths = new ArrayList<ResourceInfo>();
     for (int i = 0; i < modifiedResources.size(); i++) {
       relativePaths.add(new ResourceInfo(modifiedResources.get(i).getRelativePath()));
@@ -88,7 +100,7 @@ public class ReportGenerator {
     
     //Transform the .xml report file into a .xhtml file
     File xslFile = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), 
-        "xsl/report_transformation.xsl");
+        REPORT_TRANSFORMATION_XSL);
     
     FileOutputStream outputStream = null;
     try {
@@ -96,6 +108,12 @@ public class ReportGenerator {
 
       StreamSource xslSource = new StreamSource(xslFile.getAbsolutePath());
       Transformer transformer = factory.newTransformer (xslSource);
+      
+      String mapTitle = FilenameUtils.removeExtension(ditaMap.getName());
+      if (logger.isDebugEnabled()) {
+        logger.debug("ROOT MAP IS " + mapTitle != null ? mapTitle : "DITAMap");
+      }
+      transformer.setParameter("mapTitle", mapTitle != null ? mapTitle : "DITAMap");
       
       outputStream = new FileOutputStream(report.getAbsolutePath());
       StreamSource xmlSource = new StreamSource(xmlReport.getAbsolutePath());
