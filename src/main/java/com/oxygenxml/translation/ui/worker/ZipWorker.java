@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -13,6 +14,11 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.StoppedByUserException;
+
+import ro.sync.document.DocumentPositionedInfo;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 
 /**
  * Creates an AbstractWorker for packing a directory.
@@ -75,12 +81,31 @@ public class ZipWorker extends AbstractWorker {
       archiveBuilder.zipDirectory(rootDir, zipDir, false);
     } else{
       ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-      
+
       modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
           rootDir,
           zipDir, 
           modifiedResources, 
           false);
+
+      List<String> filesNotCopied = packageBuilder.getFilesNotCopied();
+
+      if (!filesNotCopied.isEmpty()) {
+        for (String relPath : filesNotCopied) {
+          PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+          if (pluginWorkspace != null) {
+            pluginWorkspace.getResultsManager().
+            addResult(
+                "Translation Package Builder", 
+                new DocumentPositionedInfo(
+                    DocumentPositionedInfo.SEVERITY_INFO, 
+                    "File not copied: " + relPath), 
+                ResultType.GENERIC, 
+                true, 
+                false);
+          }
+        }
+      }
     }
     return null;
   }

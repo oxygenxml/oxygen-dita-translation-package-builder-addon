@@ -3,6 +3,7 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -57,6 +58,11 @@ public class ChangePackageGenerator {
   private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
   
   /**
+   * A list containing all the resources that were unable to pack to archive.
+   */
+  private List<String> filesNotCopied = new ArrayList<String>();
+  
+  /**
    * Constructor.
    */
   public ChangePackageGenerator(List<ProgressChangeListener> listeners) {
@@ -98,26 +104,29 @@ public class ChangePackageGenerator {
         URL currentUrl = iResource.getCurrentUrl();
         if (currentUrl != null && !visited.contains(currentUrl)) {
           visited.add(currentUrl);
-          try {
-            // Collect the milestone related info.
-            ResourceInfo resourceInfo = iResource.getResourceInfo();
-            if (resourceInfo != null) {
-              list.add(resourceInfo);
-            }
-          } catch (IOException e) {
-            DocumentPositionedInfo dpi = new DocumentPositionedInfo(
-                DocumentPositionedInfo.SEVERITY_WARN, 
-                e.getMessage(), 
-                null);
+          if ("file".equals(currentUrl.getProtocol())) {
+            // #15 Pack just the local files into the achive. 
+            try {
+              // Collect the milestone related info.
+              ResourceInfo resourceInfo = iResource.getResourceInfo();
+              if (resourceInfo != null) {
+                list.add(resourceInfo);
+              }
+            } catch (IOException e) {
+              DocumentPositionedInfo dpi = new DocumentPositionedInfo(
+                  DocumentPositionedInfo.SEVERITY_WARN, 
+                  e.getMessage(), 
+                  null);
 
-            PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-            if (pluginWorkspace != null) {
-              pluginWorkspace.getResultsManager().
-              addResult("Translation Package Builder", 
-                  dpi, 
-                  ResultType.PROBLEM, 
-                  true, 
-                  false);
+              PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+              if (pluginWorkspace != null) {
+                pluginWorkspace.getResultsManager().
+                addResult("Translation Package Builder", 
+                    dpi, 
+                    ResultType.PROBLEM, 
+                    true, 
+                    false);
+              }
             }
           }
         }
@@ -227,14 +236,30 @@ public class ChangePackageGenerator {
         //Then we compress the tempDir and delete it.
         try{
           for(ResourceInfo aux : modifiedResources){
+            String relativePath = aux.getRelativePath();
+            /*
+             * #15 - the relative paths can be path/to.file.dita#ID
+             * We have to remove the anchors to allow file copy.
+             */
+            int indexOf = relativePath.indexOf("#");
+            if(indexOf > 0 && indexOf < relativePath.length() - 1){
+              relativePath = relativePath.substring(0, indexOf);
+            }
+
             // TODO #9 It asumes that the map is in the root directory which might not always be true.
             // TODO Pass a RelativePathResolver which will know the root directory and the map location and will be able to resolve.
-            File dest = new File(tempDir, aux.getRelativePath());
+            File dest = new File(tempDir, relativePath);
             dest.getParentFile().mkdirs();
 
             // TODO #9 It asumes that the map is in the root directory which might not always be true.
             // TODO Pass a RelativePathResolver which will know the root directory and the map location and will be able to resolve.
-            FileUtils.copyFile(new File(rootDir.getPath() + File.separator + aux.getRelativePath()), dest);
+
+            File sourceFile = new File(rootDir.getPath() + File.separator + relativePath);
+            try {
+              FileUtils.copyFile(sourceFile, dest);
+            } catch (IOException e) {
+              filesNotCopied.add(relativePath);
+            }
 
             if(isCanceled()){
               throw new StoppedByUserException();
@@ -356,6 +381,13 @@ public class ChangePackageGenerator {
       }
     }
     return result;
+  }
+  
+  /**
+   * @return The list of resource that were unable to copy.
+   */
+  public List<String> getFilesNotCopied() {
+    return filesNotCopied;
   }
 
 }

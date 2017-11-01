@@ -78,32 +78,31 @@ public class SaxContentHandler extends DefaultHandler {
 
   @Override
   public void startElement(String namespace, String localName, String qName, Attributes attributes) throws SAXException {
-    
-    boolean shouldParse = true;
+    boolean shouldCollect = true;
     for (int att = 0; att < attributes.getLength(); att++) {
       String attribute = attributes.getQName(att);
       // Exclude all referred resources with scope external.
       if(SCOPE_ATTRIBUTE_NAME.equals(attribute) && 
          SCOPE_ATTRIBUTE_VALUE.equals(attributes.getValue(attribute))) {
-        shouldParse = false;
+        shouldCollect = false;
         break;
       }
       
       // and all resources with format non dita.
-      if (shouldParse) {
+      if (shouldCollect) {
         if (FORMAT_ATTRIBUTE_NAME.equals(attribute)) {
           String value = attributes.getValue(attribute);
           boolean ditaFormat = FORMAT_DITA_ATTRIBUTE_VALUE.equals(value) || 
               FORMAT_DITAMAP_ATTRIBUTE_VALUE.equals(value) || "".equals(value);
           if (!ditaFormat) {
-            shouldParse = false;
+            shouldCollect = false;
             break;
           }
         }
       }
     }
     
-    if (shouldParse) {
+    if (shouldCollect) {
       for (int att = 0; att < attributes.getLength(); att++) {
         String attributeName = attributes.getQName(att);
         /**
@@ -118,6 +117,8 @@ public class SaxContentHandler extends DefaultHandler {
           if(indexOf > 0 && indexOf < href.length() - 1){
             href = href.substring(0, indexOf);
           }
+          
+          // TODO The anchor should be dropped here....
 
           URL absoluteHref = URLUtil.resolveRelativeSystemIDs(baseUrl, href);
           ditamapHrefs.add(absoluteHref);
