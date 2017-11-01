@@ -114,11 +114,11 @@ public class SaxContentHandler extends DefaultHandler {
             CONREF_ATTRIBUTE_NAME.equals(attributeName)) {
           String href = attributes.getValue(attributeName);
           int indexOf = href.indexOf("#");
-          if(indexOf > 0 && indexOf < href.length() - 1){
+          // An anchor exist..somewhere in the relative path.
+          if(indexOf != -1){
+            // The anchor should be dropped here....
             href = href.substring(0, indexOf);
           }
-          
-          // TODO The anchor should be dropped here....
 
           URL absoluteHref = URLUtil.resolveRelativeSystemIDs(baseUrl, href);
           ditamapHrefs.add(absoluteHref);

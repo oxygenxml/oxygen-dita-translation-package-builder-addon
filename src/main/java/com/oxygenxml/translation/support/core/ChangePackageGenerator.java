@@ -242,7 +242,7 @@ public class ChangePackageGenerator {
              * We have to remove the anchors to allow file copy.
              */
             int indexOf = relativePath.indexOf("#");
-            if(indexOf > 0 && indexOf < relativePath.length() - 1){
+            if(indexOf != -1){
               relativePath = relativePath.substring(0, indexOf);
             }
 
