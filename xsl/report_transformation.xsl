@@ -17,8 +17,9 @@
 				<h1>Modified files relative paths to <xsl:value-of select="$mapTitle"/></h1>
 				<ol type="1">
 					<xsl:for-each select="resources/info-resource">
+						<xsl:sort  data-type="text" order="ascending" select="relativePath"/>
 						<li>
-							<xsl:value-of select="relativePath" />
+							<xsl:value-of select="relativePath" />		
 						</li>
 					</xsl:for-each>
 				</ol>
