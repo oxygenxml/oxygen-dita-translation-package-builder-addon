@@ -7,9 +7,17 @@
         <language description="Japanese" lang="ja_JP" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
-    <key value="jmenu_title">
-        <comment>JMenu action.</comment>
+    <key value="translation_package_builder_plugin_name">
+        <comment>Name of the plugin</comment>
         <val lang="en_US">Translation Package Builder</val>
+        <val lang="de_DE">de_DE_translation</val>
+        <val lang="fr_FR">fr_FR_translation</val>
+        <val lang="ja_JP">ja_JP_translation</val>
+        <val lang="nl_NL">nl_NL_translation</val>
+    </key>
+        <key value="save">
+        <comment>Save message for save button</comment>
+        <val lang="en_US">Save</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>

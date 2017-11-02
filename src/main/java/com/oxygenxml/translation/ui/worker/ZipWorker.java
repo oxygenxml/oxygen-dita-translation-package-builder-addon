@@ -14,17 +14,17 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.StoppedByUserException;
+import com.oxygenxml.translation.ui.Tags;
 
 import ro.sync.document.DocumentPositionedInfo;
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Creates an AbstractWorker for packing a directory.
  * 
  * @author Bivolan Dalina
- *
  */
 public class ZipWorker extends AbstractWorker {
   /**
@@ -39,9 +39,6 @@ public class ZipWorker extends AbstractWorker {
    * An object that holds the number of modified files.
    */
   private PackResult modifiedFilesNumber;
-  public PackResult getModifiedFilesNumber() {
-    return modifiedFilesNumber;
-  }
   /**
    * True if the user wants to pack the entire directory.
    */
@@ -92,11 +89,11 @@ public class ZipWorker extends AbstractWorker {
 
       if (!filesNotCopied.isEmpty()) {
         for (String relPath : filesNotCopied) {
-          PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+          StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
           if (pluginWorkspace != null) {
             pluginWorkspace.getResultsManager().
             addResult(
-                "Translation Package Builder", 
+                pluginWorkspace.getResourceBundle().getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME), 
                 new DocumentPositionedInfo(
                     DocumentPositionedInfo.SEVERITY_INFO, 
                     "File not copied: " + relPath), 
@@ -108,5 +105,12 @@ public class ZipWorker extends AbstractWorker {
       }
     }
     return null;
+  }
+  
+  /**
+   * @return The number of modified files.
+   */
+  public PackResult getModifiedFilesNumber() {
+    return modifiedFilesNumber;
   }
 }

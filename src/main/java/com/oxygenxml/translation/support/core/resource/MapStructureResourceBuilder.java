@@ -23,6 +23,7 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.SAXParserCreator;
 import com.oxygenxml.translation.support.util.OxygenParserCreator;
 import com.oxygenxml.translation.support.util.ParserCreator;
+import com.oxygenxml.translation.support.util.ProjectConstants;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -94,7 +95,8 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       if(!visitedURLs.contains(resource)){
         visitedURLs.add(resource);
         String name = URLUtil.extractFileName(resource);
-        if(name.endsWith(".dita") || name.endsWith(".ditamap")){
+        if(name.endsWith(ProjectConstants.DITA_EXTENSION) || 
+            name.endsWith(ProjectConstants.DITA_MAP_EXTENSION)){
           // Probably a DITA file.
           try {
             Set<URL> currentHrefs = gatherReferences();

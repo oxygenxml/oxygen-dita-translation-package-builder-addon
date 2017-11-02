@@ -7,7 +7,7 @@ package com.oxygenxml.translation.ui;
  */
 public interface Tags {
   
-  public final String JMENU_TITLE = "jmenu_title";
+  public final String TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME = "translation_package_builder_plugin_name";
   public final String JMENU_ITEM1 = "jmenu_item1";
   public final String JMENU_TOOLTIP_ITEM1 = "jmenu_tooltip_item1";
   public final String JMENU_ITEM2 = "jmenu_item2";
@@ -88,4 +88,9 @@ public interface Tags {
   public final String CREATE_PACKAGE_LOGGER_MESSAGE3 = "createPackage_logger_message3";
   public final String CREATE_PACKAGE_LOGGER_MESSAGE4 = "createPackage_logger_message4";
   public final String CREATE_PACKAGE_LOGGER_MESSAGE5 = "createPackage_logger_message5";
+  
+  /**
+   * Save
+   */
+  public final String SAVE = "save";
 }

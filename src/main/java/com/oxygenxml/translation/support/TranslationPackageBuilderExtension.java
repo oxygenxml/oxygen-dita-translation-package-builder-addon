@@ -32,11 +32,12 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.ProjectConstants;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PreviewDialog;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
-import com.oxygenxml.translation.ui.ReportDialog;
+import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
@@ -82,7 +83,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       public void customizeDITAMapPopUpMenu(JPopupMenu popUp, WSDITAMapEditorPage ditaMapEditorPage) {
         //Create a submenu "Translation Package Builder" for the 3 actions.
         // Tooltips for all actions.
-        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.JMENU_TITLE));
+        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME));
         submenu.setMnemonic(KeyEvent.VK_S);
 
         // Action 1: Generate Milestone
@@ -495,7 +496,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
             //Open the report file           
             try {
-                File generatedFile = new File(rootMapDir, ReportDialog.getHTMLReportFile(new File(rootMap.getFile())));
+                File generatedFile = new File(rootMapDir, ProjectConstants.getHTMLReportFile(new File(rootMap.getFile())));
                   if (generatedFile != null && generatedFile.exists()) {
                     Desktop.getDesktop().open(generatedFile);
               }
@@ -543,8 +544,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final JFrame frame,
       final boolean isFromAction1) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
-    
-    logger.info("generateMilestone: " + milestoneFile);
     
     // Generate the milestone on thread.
     GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootMap);
@@ -599,15 +598,19 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         }
         // If the number of modified files is grater than 0 show the report dialog and create package.
         if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
-          ReportDialog.setParentFrame(frame);
-          ReportDialog.setRootMap(new File(rootMap.getFile()));
-          ReportDialog.setModifiedResources(modifiedResourcesWorker.getModifiedResources());
           
-          ReportDialog report = ReportDialog.getInstance();
+          GenerateArchivePackageDialog report = GenerateArchivePackageDialog.getInstance();
+          report.showDialog(
+              /*
+               * The list with the modified resources.
+               */
+              modifiedResourcesWorker.getModifiedResources(),
+              /*
+               * The root map
+               */
+              new File(rootMap.getFile())
+              );
           
-          if (logger.isDebugEnabled()) {
-            logger.debug("The Save button is : " + report.isSaveButtonPressed());
-          }
           //Create report and package only if the user pressed the "Save" button.
           if(report.isSaveButtonPressed()){
             File chosenDir = report.getChoosedLocation();
@@ -619,7 +622,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   pluginWorkspaceAccess, 
                   false, 
                   modifiedResourcesWorker.getModifiedResources(),
-                  report.isShouldCreateReport());
+                  report.generateXHTMLReport());
             }
           }
           report.setSaveButtonPressed(false);
