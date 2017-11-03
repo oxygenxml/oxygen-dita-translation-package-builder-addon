@@ -46,7 +46,11 @@ public interface Tags {
   public final String ACTION3_CONFIRM_DIALOG_BUTTON3 = "action3_confirmDialog_button3";
   public final String ACTION3_TEMPDIR_NAME = "action3_tempDir_name";
   public final String ACTION3_PROGRESS_DIALOG_TITLE = "action3_progresDialog_title";
-  public final String ACTION3_PREVIEW_DIALOG_TITLE = "action3_previewDialog_title";
+  /**
+   * Preview dialog title in apply package.
+   */
+  public final String PREVIEW = "preview";
+  
   public final String ACTION3_ERROR_MESSAGE = "action3_errorMessage";
   
   public final String SHOW_REPORT_LABEL = "showReport_label";
@@ -54,11 +58,20 @@ public interface Tags {
   public final String SHOW_REPORT_EXCEPTION_MESSAGE = "showReport_exception_message";
   
   public final String APPLY_BUTTON = "apply_button";
-  public final String SWICH_TO_TREE_VIEW_BUTTON = "switchToTreeView_button";
-  public final String SWICH_TO_LIST_VIEW_BUTTON = "switchToListView_button";
   
+  /**
+   * Switch to tree view
+   */
+  public final String SWICH_TO_TREE_VIEW = "switch_to_tree_view";
+  /**
+   * Switch to list view.
+   */
+  public final String SWICH_TO_LIST_VIEW = "switch_to_list_view";
   public final String PREVIEW_DIALOG_ERROR_MESSAGE = "previewDialog_errorMessage";
-  public final String PREVIEW_DIALOG_PROGRESS_TITLE = "previewDialog_progressDialog_title";
+  /**
+   * Applying selected files.
+   */
+  public final String APPLYING_SELECTED_FILES = "applying_selected_files";
   public final String PREVIEW_DIALOG_PROGRESS_INFOMESSAGE = "previewDialog_progressDialog_infoMessage";
   public final String PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE = "previewDialog_progressDialog_errorMessage";
   public final String PREVIEW_DIALOG_SUPPORTED_OXYFILE = "previewDialog_supportedOxyFile";

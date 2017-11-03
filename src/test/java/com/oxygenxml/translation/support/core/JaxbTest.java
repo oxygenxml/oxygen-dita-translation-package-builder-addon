@@ -8,7 +8,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,11 +52,6 @@ public class JaxbTest {
 	  
 		Assert.assertEquals(expectedResult, actualResult);
 	}
-	
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(JaxbTest.class.getName());
 
 	/**
 	 * Tests the milestone file loading.

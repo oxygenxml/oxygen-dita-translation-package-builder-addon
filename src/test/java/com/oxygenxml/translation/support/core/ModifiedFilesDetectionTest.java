@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -53,10 +52,5 @@ public class ModifiedFilesDetectionTest {
     Assert.assertEquals(TestUtil.dump(expectedResult), 
         TestUtil.dump(actualResult));
 	}
-	
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(ModifiedFilesDetectionTest.class.getName());
 
 }

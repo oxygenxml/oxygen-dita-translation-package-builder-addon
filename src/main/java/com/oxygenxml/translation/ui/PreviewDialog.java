@@ -57,7 +57,7 @@ public class PreviewDialog extends OKCancelDialog {
   /**
    *  Resource bundle.
    */
-  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+  private final static PluginResourceBundle messages = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
   /**
    * Logger for logging.
    */
@@ -118,13 +118,13 @@ public class PreviewDialog extends OKCancelDialog {
       final ArrayList<String> filePaths, 
       final File filesOnDiskDir, 
       final File translatedFilesDir) {
-    super(parentFrame, resourceBundle.getMessage(Tags.ACTION3_PREVIEW_DIALOG_TITLE), false);
+    super(parentFrame, messages.getMessage(Tags.PREVIEW), false);
     this.filesOnDisk = filesOnDiskDir;
     this.translatedFiles = translatedFilesDir;
 
     final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
     
-    getOkButton().setText(resourceBundle.getMessage(Tags.APPLY_BUTTON));
+    getOkButton().setText(messages.getMessage(Tags.APPLY_BUTTON));
     // 1. Start the processing. (the CopyDirectoryWorker)
     // 2. Show the dialog. 
     // 3. The CopyDirectoryWorker notifies the dialog.
@@ -137,7 +137,7 @@ public class PreviewDialog extends OKCancelDialog {
     tableModel = new MyTableModel(loadPaths);
    
     
-    switchViewButton = new JButton(resourceBundle.getMessage(Tags.SWICH_TO_TREE_VIEW_BUTTON));
+    switchViewButton = new JButton(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
 
     resourcesTable = new JTable(tableModel);   
     resourcesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);     
@@ -175,7 +175,7 @@ public class PreviewDialog extends OKCancelDialog {
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     scrollPane.setPreferredSize(new Dimension(500, 200));
 
-    final JCheckBox selectAll = new JCheckBox(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_CHECKBOX));
+    final JCheckBox selectAll = new JCheckBox(messages.getMessage(Tags.PREVIEW_DIALOG_CHECKBOX));
     final JPanel panel = new JPanel(new GridBagLayout());
     // Switch the users view on switchViewButton click
     switchViewButton.addActionListener(new ActionListener() {
@@ -184,14 +184,14 @@ public class PreviewDialog extends OKCancelDialog {
         
         if (isListViewShowing) { 
           scrollPane.setViewportView(resourcesTable);
-          switchViewButton.setText(resourceBundle.getMessage(Tags.SWICH_TO_TREE_VIEW_BUTTON));
+          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
           selectAll.setVisible(true);
         } else {
           if(root == null) {
             createTreeView(filePaths, filesOnDiskDir, translatedFilesDir, pluginWorkspace);
           }
           
-          switchViewButton.setText(resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON));
+          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_LIST_VIEW));
           scrollPane.setViewportView(tree);
           selectAll.setVisible(false);
         }
@@ -244,10 +244,11 @@ public class PreviewDialog extends OKCancelDialog {
     infoText.setLineWrap(true);
     infoText.setWrapStyleWord(true);
     
-    panel.add(selectAll, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
-    panel.add(infoText, new GridBagConstraints(0, 1, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
-    panel.add(scrollPane, new GridBagConstraints(0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1, 1, 1, 1), 1, 1));
-    panel.add(switchViewButton, new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(1, 1, 1, 1), 1, 1));
+    Insets insets = new Insets(2, 2, 2, 2);
+    panel.add(selectAll, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
+    panel.add(infoText, new GridBagConstraints(0, 1, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
+    panel.add(scrollPane, new GridBagConstraints(0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 1, 1));
+    panel.add(switchViewButton, new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
     
     getContentPane().add(panel, BorderLayout.CENTER);
     
@@ -412,7 +413,7 @@ public class PreviewDialog extends OKCancelDialog {
     // List of unselected files from list view
     ArrayList<File> unSelectedListFiles = new ArrayList<File>();
     
-    if(switchViewButton.getText() == resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON)){
+    if(switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)){
       //Get all the selected paths
         TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
        
@@ -473,9 +474,9 @@ public class PreviewDialog extends OKCancelDialog {
       }
     }
 
-    if((selectedTreeFiles.isEmpty() && switchViewButton.getText() == resourceBundle.getMessage(Tags.SWICH_TO_LIST_VIEW_BUTTON)) || 
-        (selectedListFiles.isEmpty() && switchViewButton.getText() == resourceBundle.getMessage(Tags.SWICH_TO_TREE_VIEW_BUTTON))){
-      pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
+    if((selectedTreeFiles.isEmpty() && switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)) || 
+        (selectedListFiles.isEmpty() && switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_TREE_VIEW))){
+      pluginWorkspace.showErrorMessage(messages.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
     } else {
       setVisible(false);
       //Copy the files on thread.
@@ -484,11 +485,11 @@ public class PreviewDialog extends OKCancelDialog {
       ProgressDialog.install(
           copyDirTask, 
           (JFrame) pluginWorkspace.getParentFrame(), 
-          resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_TITLE));
+          messages.getMessage(Tags.APPLYING_SELECTED_FILES));
       // This listener notifies the user about how the operation ended.
       copyDirTask.addProgressListener(new ProgressChangeAdapter() {
         public void done() {
-          pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
+          pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
           try {
             FileUtils.deleteDirectory(translatedFiles);
           } catch (IOException e) {
@@ -499,7 +500,7 @@ public class PreviewDialog extends OKCancelDialog {
         public void operationFailed(Exception ex) {
           logger.error(ex, ex);
           if(!(ex instanceof StoppedByUserException)){
-            pluginWorkspace.showErrorMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
+            pluginWorkspace.showErrorMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
           }
 
           try {
@@ -541,7 +542,7 @@ public class PreviewDialog extends OKCancelDialog {
       if(!pluginWorkspace.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
         pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
       } else {
-        pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.PREVIEW_DIALOG_SUPPORTED_OXYFILE));
+        pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_SUPPORTED_OXYFILE));
       }
     } catch (MalformedURLException e2) {
       // Shouldn't happen.

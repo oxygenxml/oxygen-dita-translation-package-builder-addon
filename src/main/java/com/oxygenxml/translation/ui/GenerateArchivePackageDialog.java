@@ -78,10 +78,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    */
   private ArrayList<ResourceInfo> modifiedResources;
   /**
-   * True if the user pressed the "Save" button, false otherwise.
-   */
-  private boolean isSaveButtonPressed = false;
-  /**
    *  Where the package location is displayed.
    */
   private JComboBox<String> archiveLocationCombobox = new JComboBox<String>();
@@ -114,6 +110,10 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * Archive location field.
    */
   final JTextField locationField;
+  /**
+   * The generate report check box.
+   */
+  private final JCheckBox generateReportCheckbox;
   /**
    * Mouse Listener
    */
@@ -162,8 +162,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     modifiedFilesReport = new JLabel();
     // Add the listener once 
     modifiedFilesReport.addMouseListener(mouseListener);
-    
-    
     
     // Add into the comboBox the chosen paths stored in the optionsFile.
     ArrayList<ComboItem> savedPaths = HistoryUtils.loadSelectedPaths();
@@ -249,6 +247,18 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
       insets, 1, 1));
     
     getContentPane().add(mainPanel, BorderLayout.CENTER);
+  }
+  
+  /**
+   * Creates a dialog object if it wasn't created before.
+   * 
+   * @return An instance of the dialog which will allow users to save the package with modified files.
+   */
+  public static GenerateArchivePackageDialog getInstance(){
+    if(instance == null){
+      instance = new GenerateArchivePackageDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
+    }
+    return instance;
   }
   
   /**
@@ -374,7 +384,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
       HistoryUtils.storeSelectedPaths(new ComboHistory(comboItems));
     }
     
-    isSaveButtonPressed = true;
     // Generate report if the user selected the checkbox
     if(generateReportCheckbox.isSelected()){    
       new ReportGenerator(rootMapFile, modifiedResources, reportFile);
@@ -387,29 +396,12 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   }
   
   /**
-   * Creates a dialog object if it wasn't created before.
-   * 
-   * @return An instance of the dialog which will allow users to save the package with modified files.
-   */
-  public static GenerateArchivePackageDialog getInstance(){
-    if(instance == null){
-      instance = new GenerateArchivePackageDialog((JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame());
-    }
-    return instance;
-  }
-  
-  /**
    * @return Zip file.
    */
   public File getChoosedLocation(){
     return chosenZip;
   }
-  
-  /**
-   * The generate report check box.
-   */
-  private final JCheckBox generateReportCheckbox;
-  
+
   /**
    * @return <code>true</code> if an xhtml report should be created.
    */
@@ -417,17 +409,4 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     return generateReportCheckbox.isSelected();
   }
   
-  /**
-   * @param isSaveButtonPressed Sets the flag for the save button;
-   */
-  public void setSaveButtonPressed(boolean isSaveButtonPressed) {
-    this.isSaveButtonPressed = isSaveButtonPressed;
-  }
-  
-  /**
-   * @return <code>true</code> when the save button is pressed.
-   */
-  public boolean isSaveButtonPressed() {
-    return isSaveButtonPressed;
-  }
 }

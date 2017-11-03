@@ -281,7 +281,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action3_previewDialog_title">
+    <key value="preview">
         <comment>Preview dialog title in apply package.</comment>
         <val lang="en_US">Preview</val>
         <val lang="de_DE">de_DE_translation</val>
@@ -329,7 +329,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="switchToTreeView_button">
+    <key value="switch_to_tree_view">
         <comment>Switch to Tree View button.</comment>
         <val lang="en_US">Switch to Tree View</val>
         <val lang="de_DE">de_DE_translation</val>
@@ -337,7 +337,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="switchToListView_button">
+    <key value="switch_to_list_view">
         <comment>Switch to List View button.</comment>
         <val lang="en_US">Switch to List View</val>
         <val lang="de_DE">de_DE_translation</val>
@@ -354,7 +354,7 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="previewDialog_progressDialog_title">
+    <key value="applying_selected_files">
         <comment>Progress dialog title.</comment>
         <val lang="en_US">Applying selected files</val>
         <val lang="de_DE">de_DE_translation</val>

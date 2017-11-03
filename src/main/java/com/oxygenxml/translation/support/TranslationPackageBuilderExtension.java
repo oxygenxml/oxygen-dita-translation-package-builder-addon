@@ -51,6 +51,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.ditamap.WSDITAMapEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
+import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
  * Plugin extension - workspace access extension.
@@ -597,8 +598,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE5) + modifiedResourcesWorker.getModifiedResources().size());
         }
         // If the number of modified files is grater than 0 show the report dialog and create package.
-        if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){  
-          
+        if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){
           GenerateArchivePackageDialog report = GenerateArchivePackageDialog.getInstance();
           report.showDialog(
               /*
@@ -612,7 +612,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               );
           
           //Create report and package only if the user pressed the "Save" button.
-          if(report.isSaveButtonPressed()){
+          if (report.getResult() == OKCancelDialog.RESULT_OK) {
             File chosenDir = report.getChoosedLocation();
             if(chosenDir != null){
               createPackage(frame,
@@ -625,7 +625,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   report.generateXHTMLReport());
             }
           }
-          report.setSaveButtonPressed(false);
         } else {  
           try {
             // Inform the user that no resources were modified.
