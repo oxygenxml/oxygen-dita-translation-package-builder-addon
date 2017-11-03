@@ -1,5 +1,5 @@
-git config user.name "DalinaBivolan";
-git config user.email "dalinabivolan@gmail.com";
+git config user.name "AdrianSorop";
+git config user.email "adrian_sorop@sync.ro";
 git fetch;
 git checkout master;
 git reset;
