@@ -6,8 +6,8 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
         id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
-        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.7/translation-package-builder-1.0.7-plugin.jar"/>
-        <xt:version>1.0.7</xt:version>
+        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.8/translation-package-builder-1.0.8-plugin.jar"/>
+        <xt:version>1.0.8</xt:version>
         <xt:oxy_version>18.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Oxygen XML Editor</xt:author>
@@ -40,6 +40,29 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.8</h1>
+                <ul>
+                    <li>Milestones are now generated based on the DITA Map structure. The resources referred
+                        in the map will be scanned for changes. <a
+                            href="https://github.com/oxygenxml/Translation-Package-Builder/issues/8"
+                            >#8</a></li>
+                    <li>References to missing resources will be reported in oXygen's Results Manager but the
+                        packaging process will continue.<a
+                            href="https://github.com/oxygenxml/Translation-Package-Builder/issues/14"
+                            >#14</a></li>
+                    <li>In some cases the milestone report contained duplicate and invalid data, preventing
+                        the creation of the package.<a
+                            href="https://github.com/oxygenxml/Translation-Package-Builder/issues/15"
+                            >#15</a></li>
+                    <li>The root map was not added in the milestone even if it was modified.<a
+                        href="https://github.com/oxygenxml/Translation-Package-Builder/issues/16"
+                        >#16</a></li>
+                    <li>The generated XHTML report that contains the relative paths of the modified
+                        resources is now valid and the referred resources are sorted alphabetically.<a
+                            href="https://github.com/oxygenxml/Translation-Package-Builder/issues/17"
+                            >#17</a>
+                    </li>
+                </ul>
             </body>
         </html>
         </xt:description>
