@@ -3,14 +3,12 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -167,6 +165,12 @@ public class ChangePackageGenerator {
     
     //Current states.
     ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
+    
+    // Add the root map.
+    ResourceInfo rootResource = resource.getResourceInfo();
+    if (rootResource != null) {
+      currentStates.add(rootResource);
+    }
     computeResourceInfo(resource, currentStates, new HashSet<URL>());
     
     // A list to hold the modified resources.
@@ -325,7 +329,13 @@ public class ChangePackageGenerator {
       IRootResource resource, 
       boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-
+    
+    // Add the root map
+    ResourceInfo rootResourceInfo = resource.getResourceInfo();
+    if (rootResourceInfo != null) {
+      list.add(rootResourceInfo);
+    }
+    
     computeResourceInfo(resource, list, new HashSet<URL>());
     File milestoneFile = resource.getMilestoneFile();
     /**

@@ -13,17 +13,16 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.support.util.SAXParserCreator;
 import com.oxygenxml.translation.support.util.OxygenParserCreator;
 import com.oxygenxml.translation.support.util.ParserCreator;
 import com.oxygenxml.translation.support.util.ProjectConstants;
+import com.oxygenxml.translation.support.util.SAXParserCreator;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -34,10 +33,6 @@ import ro.sync.util.URLUtil;
  * the given resource. 
  */
 public class MapStructureResourceBuilder implements IResourceBuilder {
-  /**
-   * Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(MapStructureResourceBuilder.class);
   /**
    * An implementation that detects the resources referred inside the content of
    * the given resource.
@@ -128,7 +123,14 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @see com.oxygenxml.translation.support.core.resource.IResource#getResourceInfo()
      */
     public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
-      return new ResourceInfo(MilestoneUtil.generateMD5(resource), relativePath);
+      ResourceInfo resourceInfo = new ResourceInfo(MilestoneUtil.generateMD5(resource), relativePath);
+      if (relativePath.isEmpty()) {
+        // It's the root map
+        String name = new File(resource.getFile()).getName();
+        resourceInfo.setRelativePath(name);
+      }
+      
+      return resourceInfo;
     }
     
     /**

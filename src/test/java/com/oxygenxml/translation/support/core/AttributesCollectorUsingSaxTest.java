@@ -141,6 +141,10 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<resources date=\"" + date + "\">\n" + 
         "    <info-resource>\n" + 
+        "        <md5>e1e34845870edb1bc7d9bf0f5f376104</md5>\n" + 
+        "        <relativePath>rootMap.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" +
+        "    <info-resource>\n" + 
         "        <md5>7890fdbd90a03d403841b24ec0282e87</md5>\n" + 
         "        <relativePath>topics/topic2.dita</relativePath>\n" + 
         "    </info-resource>\n" + 
@@ -192,6 +196,10 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<resources date=\"" + date + "\">\n" + 
         "    <info-resource>\n" + 
+        "        <md5>c0da2b0039d8a6cf3b919f0afd8cd31e</md5>\n" + 
+        "        <relativePath>rootMap.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" +
+        "    <info-resource>\n" + 
         "        <md5>0e1933d1eb8126735d6aac07fe7eed8c</md5>\n" + 
         "        <relativePath>topics/topic2.dita</relativePath>\n" + 
         "    </info-resource>\n" + 
@@ -242,6 +250,10 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     assertEquals(
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<resources date=\"" + date + "\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>4eac4ec9ff52e4d44bf7fe40d5a5d0c1</md5>\n" + 
+        "        <relativePath>rootMap.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" +
         "    <info-resource>\n" + 
         "        <md5>60dafdffec23064b1d73898fe4e9537f</md5>\n" + 
         "        <relativePath>topics/topic2.dita</relativePath>\n" + 
