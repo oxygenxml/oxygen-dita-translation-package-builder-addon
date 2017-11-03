@@ -43,10 +43,6 @@ public class ModifiedFilesDetectionTest {
             rootResource, false);
     
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
-
-    expectedResult.add(new ResourceInfo("0330c493e6a1efda89242d99195c6eca" , "dir1/dir1.1/test.txt"));
-    expectedResult.add(new ResourceInfo("f4fbf41346cdf2995d37388c6331a184" , "dir1/new1.txt"));
-    expectedResult.add(new ResourceInfo("6d7e8058723731106992e9e54e91e478" , "dir2/new2.txt"));
     expectedResult.add(new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt"));
     
     Assert.assertEquals(TestUtil.dump(expectedResult), 

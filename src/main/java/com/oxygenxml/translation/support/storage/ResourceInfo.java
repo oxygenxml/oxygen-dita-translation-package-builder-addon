@@ -70,7 +70,19 @@ public class ResourceInfo {
 			return false;
 		}
 		ResourceInfo res = (ResourceInfo) obj;
-		return this.getMd5().equals(res.getMd5()) && this.getRelativePath().equals(res.getRelativePath());
+		return 
+		    /*
+		     * Same MD5 and same Relative Path
+		     */
+		    (this.getMd5().equals(res.getMd5()) && this.getRelativePath().equals(res.getRelativePath())) &&
+		    /*
+		     * Same Hash codes.
+		     */
+		    this.hashCode() == res.hashCode();
 	}
 	
+	@Override
+	public int hashCode() {
+	  return this.md5.hashCode() + this.relativePath.hashCode();
+	}
 }
