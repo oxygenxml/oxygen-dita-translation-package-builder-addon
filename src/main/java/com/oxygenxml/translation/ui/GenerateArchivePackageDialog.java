@@ -98,9 +98,13 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    */
   private File chosenZipFromChooser;
   /**
-   * Text area where the information regarding the modified files will be presented.
+   * Information message where the information regarding the modified files will be presented.
    */
-  private JLabel modifiedFilesReport;
+  private JLabel moreDetailsLabel;
+  /**
+   * More info about the modified files.
+   */
+  private JLabel modifiedFilesLabel;
   
   /**
    * Text area where the information about XHTML report are presented.
@@ -120,7 +124,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   private MouseListener mouseListener = new MouseAdapter() {
     @Override
     public void mouseEntered(MouseEvent e) {
-      modifiedFilesReport.setCursor(new Cursor(Cursor.HAND_CURSOR));
+      moreDetailsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -158,10 +162,10 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     // Set location
     setLocationRelativeTo(parentFrame);
     
-    
-    modifiedFilesReport = new JLabel();
+    modifiedFilesLabel = new JLabel();
+    moreDetailsLabel = new JLabel();
     // Add the listener once 
-    modifiedFilesReport.addMouseListener(mouseListener);
+    moreDetailsLabel.addMouseListener(mouseListener);
     
     // Add into the comboBox the chosen paths stored in the optionsFile.
     ArrayList<ComboItem> savedPaths = HistoryUtils.loadSelectedPaths();
@@ -241,10 +245,14 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
         GridBagConstraints.WEST, 
         GridBagConstraints.HORIZONTAL, 
         insets, 1, 1));
-    infoPanel.add(modifiedFilesReport, new GridBagConstraints(1, 1, 1, 1, 0, 0, 
+    infoPanel.add(modifiedFilesLabel, new GridBagConstraints(1, 1, 1, 1, 0, 0, 
       GridBagConstraints.WEST, 
       GridBagConstraints.NONE, 
       insets, 1, 1));
+    infoPanel.add(moreDetailsLabel, new GridBagConstraints(1, 2, 1, 1, 0, 0, 
+        GridBagConstraints.WEST, 
+        GridBagConstraints.NONE, 
+        insets, 1, 1));
     
     getContentPane().add(mainPanel, BorderLayout.CENTER);
   }
@@ -297,16 +305,16 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     text.append("(").append(modifiedResources.size()).append(")");
     text.append(" files were modified since ");
     text.append(new Date(reportFile.lastModified()));
-    text.append(" More details...");
+    modifiedFilesLabel.setText(text.toString());
+    text.setLength(0);
+    text.append("More details...");
+    moreDetailsLabel.setText(text.toString());
+    moreDetailsLabel.setToolTipText("Click to see the list of files which will be archived.");
     
-    modifiedFilesReport.setText(text.toString());
-    modifiedFilesReport.setToolTipText("Click to see the list of files which will be packed in the zip.");
-    
-    Font font = modifiedFilesReport.getFont();
-    @SuppressWarnings("rawtypes")
+    Font font = moreDetailsLabel.getFont();
     Map attributes = font.getAttributes();
-    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-    modifiedFilesReport.setFont(font.deriveFont(attributes));
+    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
+    moreDetailsLabel.setFont(font.deriveFont(attributes));
     
   }
   

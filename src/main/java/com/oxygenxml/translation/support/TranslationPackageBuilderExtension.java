@@ -89,22 +89,16 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
         // Action 1: Generate Milestone
         JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM1));
-        menuItemMilestone.setAccelerator(KeyStroke.getKeyStroke(
-            KeyEvent.VK_2, ActionEvent.ALT_MASK));
         menuItemMilestone.addActionListener(generateMilestoneAction);
         menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM1));
 
         // Action 2: Create Changed Files Package
         JMenuItem menuItemPakage = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM2));
-        menuItemPakage.setAccelerator(KeyStroke.getKeyStroke(
-            KeyEvent.VK_3, ActionEvent.ALT_MASK));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);
         menuItemPakage.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM2));
 
         // Action 3: Unzip package that came from translation.
         JMenuItem menuItemApply = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM3));
-        menuItemApply.setAccelerator(KeyStroke.getKeyStroke(
-            KeyEvent.VK_4, ActionEvent.ALT_MASK));
         menuItemApply.addActionListener(applyTranslatedFilesAction);
         menuItemApply.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM3));
 
