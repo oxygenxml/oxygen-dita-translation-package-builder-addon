@@ -89,9 +89,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       List<IResource> children = null;
       if(!visitedURLs.contains(resource)){
         visitedURLs.add(resource);
-        String name = URLUtil.extractFileName(resource);
-        if(name.endsWith(ProjectConstants.DITA_EXTENSION) || 
-            name.endsWith(ProjectConstants.DITA_MAP_EXTENSION)){
+        String extension = URLUtil.getExtension(URLUtil.extractFileName(resource)).toLowerCase();
+        if(ProjectConstants.DITA_EXTENSION.equals(extension) || 
+            ProjectConstants.DITA_MAP_EXTENSION.equals(extension) || 
+              ProjectConstants.XML_EXTENSION.equals(extension)){
           // Probably a DITA file.
           try {
             Set<URL> currentHrefs = gatherReferences();

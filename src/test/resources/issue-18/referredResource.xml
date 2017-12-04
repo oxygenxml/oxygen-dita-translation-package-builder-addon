@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="referredResource">
+    <title>Referred resource</title>
+    <body>
+        <p>This file is referred in the DITA map strucutre.</p>
+        <p>From this file do a conref to another dita file, with <i>xml</i> extension :
+                <i>reusable.dita</i>.</p>
+        <p conref="reusable.xml#reusable/justID"></p>
+        <p>This <i>reusable.xml</i> file shoud be added in the milestone.</p>
+    </body>
+</topic>

@@ -15,14 +15,20 @@ import org.apache.commons.io.FilenameUtils;
 public class ProjectConstants {
   
   /**
-   * DITA file extension: .dita.
+   * DITA file extension: dita.
    */
-  public static final String DITA_EXTENSION = ".dita";
+  public static final String DITA_EXTENSION = "dita";
   
   /**
-   * DITA Map file extension: .ditamap.
+   * DITA Map file extension: ditamap.
    */
-  public static final String DITA_MAP_EXTENSION = ".ditamap";
+  public static final String DITA_MAP_EXTENSION = "ditamap";
+  
+  /**
+   * XML file extension: xml.
+   */
+  public static final String XML_EXTENSION = "xml";
+  
   
   /**
    * Predefined name suffix of the file that stores the relative path for modified files.

@@ -217,7 +217,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
   }
 
   /**
-   * <p><b>Description:</b>Add the conref to milestone package even if the file is 
+   * <p><b>Description:</b>Add the conref to milestone package even if the file is not  
    * referred directly to the map.</p>
    * <p><b>Bug ID:</b>#15</p>
    *
@@ -303,6 +303,56 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
         referredFiles.get(0).toString().contains("issue-15_1/topics/topicConref.dita"));
     assertTrue("Should be a xref to topic3.dita", 
         referredFiles.get(1).toString().contains("issue-15_1/topics/topic3.dita"));
+  }
+
+  /**
+   * <p><b>Description:</b> Collect references when DITA files with "xml" extension is used.</p>
+   * <p><b>Bug ID:</b> #18</p>
+   *
+   * @author adrian_sorop
+   *
+   * @throws Exception
+   */
+  public void testCollectReferencesFromXmlFiles() throws Exception {
+    // Discovered while working on issue 15.
+    File ditaFile = new File(TestUtil.getPath("issue-18"), "rootMap.ditamap");
+    assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    URL url = URLUtil.correct(ditaFile);
+    
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    
+    MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
+    IRootResource rootRes = structureBuilder.wrap(url);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    generateChangeMilestone.deleteOnExit();
+    String result = TestUtil.readFile(generateChangeMilestone);
+    
+    String date = "";
+    String match = "<resources date=\"(.*)\">";
+    Pattern pattern = Pattern.compile(match);
+    Matcher matcher = pattern.matcher(result);
+    if (matcher.find( )) {
+      date = matcher.group(1);
+    }
+    
+    assertEquals(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<resources date=\"" + date + "\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>3e1cb9e56ecb4972f6c56c58d9e9d49e</md5>\n" + 
+        "        <relativePath>rootMap.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>2356f5eff34f4a4dfb41b068084b2f28</md5>\n" + 
+        "        <relativePath>referredResource.xml</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>508760be2cd8f08bf808f8852e6d092e</md5>\n" + 
+        "        <relativePath>reusable.xml</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "</resources>\n" + 
+        "", 
+        result);
   }
   
 }
