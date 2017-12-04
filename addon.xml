@@ -40,6 +40,11 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.9</h1>
+                <ul>
+                    <li>XML files are scanned for changes <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/18">#18</a></li>
+                    <li>Small UI changes.</li>
+                </ul>
                 <h1>Release Notes 1.0.8</h1>
                 <ul>
                     <li>Milestones are now generated based on the DITA Map structure. The resources referred
