@@ -10,26 +10,26 @@ public class ReferredResource {
   private URL location;
   
   /**
-   * <code>true</code> if the file is binary.
+   * <code>true</code> if the file is parsable.
    */
-  private boolean isBinary;
+  private boolean xmlParsable;
   
   /**
    * Default constructor.
    */
   public ReferredResource() {
-    
   }
   
   /**
    * Create a new object. 
    * 
    * @param location The location of the resource.
-   * @param isBinary <code>true</code> if the file is binary
+   * @param isNonDita <code>true</code> if the file is non DITA 
+   * and should not be parsed as XML file.
    */
-  public ReferredResource(URL location, boolean isBinary) {
+  public ReferredResource(URL location, boolean isNonDita) {
     this.location = location;
-    this.isBinary = isBinary;
+    this.xmlParsable = isNonDita;
   }
 
   @Override
@@ -39,10 +39,8 @@ public class ReferredResource {
     }
     ReferredResource res = (ReferredResource)obj;
     return this.location.equals(res.getLocation()) && 
-        // Location
-        this.hashCode() == res.hashCode() &&
-        // binary res
-        this.isBinary == res.isBinary();
+        // DITA res (parsable XML resource)
+        this.xmlParsable == res.nonDita();
   }
   
   @Override
@@ -65,17 +63,17 @@ public class ReferredResource {
   }
 
   /**
-   * @return the isBinary
+   * @return <code>true</code> if the resource is parsable.
    */
-  public boolean isBinary() {
-    return isBinary;
+  public boolean nonDita() {
+    return xmlParsable;
   }
 
   /**
-   * @param isBinary the isBinary to set
+   * @param parsable <code>true</code> if file is parsable.
    */
-  public void setBinary(boolean isBinary) {
-    this.isBinary = isBinary;
+  public void setIsDita(boolean parsable) {
+    this.xmlParsable = parsable;
   }
 
   /* (non-Javadoc)
@@ -83,7 +81,7 @@ public class ReferredResource {
    */
   @Override
   public String toString() {
-    return "ReferredResource [location=" + location + ", isBinary=" + isBinary + "]";
+    return "ReferredResource [location=" + location + ", isBinary=" + xmlParsable + "]";
   }
   
 }

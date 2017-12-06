@@ -13,7 +13,6 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -33,12 +32,6 @@ import ro.sync.util.URLUtil;
  * the given resource. 
  */
 public class MapStructureResourceBuilder implements IResourceBuilder {
-  
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(MapStructureResourceBuilder.class.getName());
-
   /**
    * An implementation that detects the resources referred inside the content of
    * the given resource.
@@ -64,7 +57,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * A path from the root resource to the current one.
      */
     private String relativePath;
-    
+
     /**
      * Constructor.
      * 
@@ -87,33 +80,32 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       this.relativePath = relativePath;
       this.rootMap = rootMap;
     }
-    
+
     /**
      * @see com.oxygenxml.translation.support.core.resource.IResource#iterator()
      */
     public Iterator<IResource> iterator() {
       List<IResource> children = null;
-      if(!visitedURLs.contains(resource)){
+      // DITA resource 
+      if (resource != null && !visitedURLs.contains(resource) && !resource.nonDita()){
         visitedURLs.add(resource);
-        // Probably a DITA file.
         try {
           Set<ReferredResource> currentHrefs = gatherReferences();
           if (currentHrefs != null) {
             children = new LinkedList<IResource>();
             for (ReferredResource child : currentHrefs) {
               String childRelativePath = URLUtil.makeRelative(rootMap, child.getLocation());
-                logger.info("ADAUG : " + child.getLocation());
               // The path is relative to root map.
-              children.add(new SaxResource(
+              SaxResource res = new SaxResource(
                   child,
                   childRelativePath,
                   parserCreator, 
                   visitedURLs,
-                  rootMap));
+                  rootMap);
+              children.add(res);
             }
           }
         } catch (Exception e) {
-          e.printStackTrace();
           try {
             throw e;
           } catch (Exception e1) {}
@@ -133,10 +125,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         String name = new File(resource.getLocation().getFile()).getName();
         resourceInfo.setRelativePath(name);
       }
-      
+
       return resourceInfo;
     }
-    
+
     /**
      * Parses the resource to detect the referenced resources.
      *  
@@ -149,31 +141,27 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     private Set<ReferredResource> gatherReferences()
         throws ParserConfigurationException, SAXException, IOException {
 
-      Set<ReferredResource> ret = null;
-      if (!resource.isBinary()) {
-        URL toParse = URLUtil.correct(resource.getLocation());
-        InputSource is = new InputSource(toParse.toExternalForm());
-        XMLReader xmlReader = parserCreator.createXMLReader();
-        SaxContentHandler handler = new SaxContentHandler(toParse);
-        xmlReader.setContentHandler(handler);
-        xmlReader.parse(is);
-        ret = handler.getDitaMapHrefs();
-      }
+      URL toParse = URLUtil.correct(resource.getLocation());
+      InputSource is = new InputSource(toParse.toExternalForm());
+      XMLReader xmlReader = parserCreator.createXMLReader();
+      SaxContentHandler handler = new SaxContentHandler(toParse);
+      xmlReader.setContentHandler(handler);
+      xmlReader.parse(is);
 
-      return ret; 
+      return handler.getDitaMapHrefs(); 
     }
 
     public URL getCurrentUrl() {
       return resource.getLocation();
     }
-    
+
   }
-  
+
   /**
    * The root map.
    */
   private static class RootMapResource extends SaxResource implements IRootResource {
-    
+
     /**
      * Constructor.
      * 
@@ -197,7 +185,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     public File getMilestoneFile() {
       return MilestoneUtil.getMilestoneFile(resource.getLocation());
     }
-    
+
   }
 
   /**
@@ -213,7 +201,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       // Running from tests. Use a simple parser.
       parserCreator = new SAXParserCreator();
     }
-    
+
     return new RootMapResource(
         map, 
         "", 

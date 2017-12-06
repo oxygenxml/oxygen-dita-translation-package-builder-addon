@@ -103,8 +103,8 @@ public class SaxContentHandler extends DefaultHandler {
         boolean isConref = CONREF.equals(attributeName);
         boolean isHref = HREF.equals(attributeName);
         if (isHref || isConref) {
-          boolean isBinary = (isHref && "image".equals(localName));
-          ditamapHrefs.add(new ReferredResource(makeAbsoluteURL(attributes, attributeName), isBinary));
+          boolean parse = (isHref && "image".equals(localName));
+          ditamapHrefs.add(new ReferredResource(makeAbsoluteURL(attributes, attributeName), parse));
           break;
         }
       } 
@@ -120,7 +120,6 @@ public class SaxContentHandler extends DefaultHandler {
       href = href.substring(0, indexOf);
     }
 
-    URL absoluteHref = URLUtil.resolveRelativeSystemIDs(baseUrl, href);
-    return absoluteHref;
+    return URLUtil.resolveRelativeSystemIDs(baseUrl, href);
   }
 }
