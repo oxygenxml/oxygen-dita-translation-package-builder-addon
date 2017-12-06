@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -21,7 +22,6 @@ import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.OxygenParserCreator;
 import com.oxygenxml.translation.support.util.ParserCreator;
-import com.oxygenxml.translation.support.util.ProjectConstants;
 import com.oxygenxml.translation.support.util.SAXParserCreator;
 
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -33,6 +33,12 @@ import ro.sync.util.URLUtil;
  * the given resource. 
  */
 public class MapStructureResourceBuilder implements IResourceBuilder {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(MapStructureResourceBuilder.class.getName());
+
   /**
    * An implementation that detects the resources referred inside the content of
    * the given resource.
@@ -45,7 +51,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     /**
      * The resource to parse.
      */
-    protected URL resource;
+    protected ReferredResource resource;
     /**
      * The root map.
      */
@@ -53,7 +59,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     /**
      * A set with all the parsed resources so far. Used to avoid infinite recursion.
      */
-    private Set<URL> visitedURLs;
+    private Set<ReferredResource> visitedURLs;
     /**
      * A path from the root resource to the current one.
      */
@@ -70,10 +76,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @param rootMap 
      */
     private SaxResource(
-        URL resource, 
+        ReferredResource resource, 
         String relativePath,
         ParserCreator parserCreator,
-        Set<URL> recursivityCheck, 
+        Set<ReferredResource> recursivityCheck, 
         URL rootMap) {
       this.resource = resource;
       this.parserCreator = parserCreator;
@@ -89,34 +95,31 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       List<IResource> children = null;
       if(!visitedURLs.contains(resource)){
         visitedURLs.add(resource);
-        String extension = URLUtil.getExtension(URLUtil.extractFileName(resource)).toLowerCase();
-        if(ProjectConstants.DITA_EXTENSION.equals(extension) || 
-            ProjectConstants.DITA_MAP_EXTENSION.equals(extension) || 
-              ProjectConstants.XML_EXTENSION.equals(extension)){
-          // Probably a DITA file.
-          try {
-            Set<URL> currentHrefs = gatherReferences();
-            if (currentHrefs != null) {
-              children = new LinkedList<IResource>();
-              for (URL child : currentHrefs) {
-                // The path is relative to root map.
-                String childRelativePath = URLUtil.makeRelative(rootMap, child);
-                children.add(new SaxResource(
-                    child,
-                    childRelativePath,
-                    parserCreator, 
-                    visitedURLs,
-                    rootMap));
-              }
+        // Probably a DITA file.
+        try {
+          Set<ReferredResource> currentHrefs = gatherReferences();
+          if (currentHrefs != null) {
+            children = new LinkedList<IResource>();
+            for (ReferredResource child : currentHrefs) {
+              String childRelativePath = URLUtil.makeRelative(rootMap, child.getLocation());
+                logger.info("ADAUG : " + child.getLocation());
+              // The path is relative to root map.
+              children.add(new SaxResource(
+                  child,
+                  childRelativePath,
+                  parserCreator, 
+                  visitedURLs,
+                  rootMap));
             }
-          } catch (Exception e) {
-            try {
-              throw e;
-            } catch (Exception e1) {}
-          } 
-        }
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          try {
+            throw e;
+          } catch (Exception e1) {}
+        } 
       }
-      
+
       return children != null ? children.iterator() : null;
     }
 
@@ -124,10 +127,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @see com.oxygenxml.translation.support.core.resource.IResource#getResourceInfo()
      */
     public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
-      ResourceInfo resourceInfo = new ResourceInfo(MilestoneUtil.generateMD5(resource), relativePath);
+      ResourceInfo resourceInfo = new ResourceInfo(MilestoneUtil.generateMD5(resource.getLocation()), relativePath);
       if (relativePath.isEmpty()) {
         // It's the root map
-        String name = new File(resource.getFile()).getName();
+        String name = new File(resource.getLocation().getFile()).getName();
         resourceInfo.setRelativePath(name);
       }
       
@@ -143,21 +146,25 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @throws SAXException
      * @throws IOException
      */
-    private Set<URL> gatherReferences()
+    private Set<ReferredResource> gatherReferences()
         throws ParserConfigurationException, SAXException, IOException {
-        URL toParse = URLUtil.correct(resource);
-        InputSource is = new InputSource(toParse.toExternalForm());
 
+      Set<ReferredResource> ret = null;
+      if (!resource.isBinary()) {
+        URL toParse = URLUtil.correct(resource.getLocation());
+        InputSource is = new InputSource(toParse.toExternalForm());
         XMLReader xmlReader = parserCreator.createXMLReader();
         SaxContentHandler handler = new SaxContentHandler(toParse);
         xmlReader.setContentHandler(handler);
         xmlReader.parse(is);
-
-        return handler.getDitaMapHrefs();
+        ret = handler.getDitaMapHrefs();
       }
 
+      return ret; 
+    }
+
     public URL getCurrentUrl() {
-      return resource;
+      return resource.getLocation();
     }
     
   }
@@ -177,18 +184,18 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * Used to avoid infinite recursion.
      */
     private RootMapResource(
-        URL resource, 
+        ReferredResource resource, 
         String relativePath,
         ParserCreator parserCreator,
-        Set<URL> recursivityCheck) {
-      super(resource, relativePath, parserCreator, recursivityCheck, resource);
+        Set<ReferredResource> recursivityCheck) {
+      super(resource, relativePath, parserCreator, recursivityCheck, resource.getLocation());
     }
 
     /**
      * @see com.oxygenxml.translation.support.core.resource.IRootResource#getMilestoneFile()
      */
     public File getMilestoneFile() {
-      return MilestoneUtil.getMilestoneFile(resource);
+      return MilestoneUtil.getMilestoneFile(resource.getLocation());
     }
     
   }
@@ -196,7 +203,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
   /**
    * @see com.oxygenxml.translation.support.core.resource.IResourceBuilder#wrap(java.io.File)
    */
-  public IRootResource wrap(URL map) throws IOException {
+  public IRootResource wrap(ReferredResource map) throws IOException {
     ParserCreator parserCreator = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {
@@ -211,6 +218,6 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         map, 
         "", 
         parserCreator, 
-        new HashSet<URL>());
+        new HashSet<ReferredResource>());
   }
 }

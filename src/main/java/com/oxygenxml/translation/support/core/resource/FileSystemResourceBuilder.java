@@ -195,19 +195,19 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
   /**
    * Creates a resource over the given file.
    * 
-   * @param rootMap The root map over which to iterate.
+   * @param rootResource The root map over which to iterate.
    * 
    * @return An {@link IResource} wrapper over the given file.
    * 
    * @throws IOException The given file is not a directory. 
    */
-  public IRootResource wrap(URL rootMap) throws IOException {
+  public IRootResource wrap(ReferredResource rootResource) throws IOException {
     File locateFile = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {
-      locateFile = pluginWorkspace.getUtilAccess().locateFile(rootMap);
+      locateFile = pluginWorkspace.getUtilAccess().locateFile(rootResource.getLocation());
     } else {
-      locateFile = new File(rootMap.getPath());
+      locateFile = new File(rootResource.getLocation().getPath());
     }
     
     if (locateFile.isDirectory()) {

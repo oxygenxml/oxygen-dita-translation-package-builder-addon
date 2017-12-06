@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="referredResource">
+    <title>Referred resource</title>
+    <prolog>
+        <author type="contributor">adrian_sorop</author>
+        <critdates>
+            <!--adrian_sorop-->
+            <revised modified="2017/12/05"/>
+        </critdates>
+    </prolog>
+    <body>
+        <p>This file is referred in the DITA map strucutre.</p>
+        
+        <image href="Oxygen128.png"></image>
+        <p>From this file do a conref to another dita file, with <i>xml</i> extension :
+                <i>reusable.dita</i>.</p>
+        <p conref="conref_res.xml#reusable/justID"></p>
+        <p> <xref href="href_res.xml"></xref></p>
+        <p>This <i>reusable.xml</i> file shoud be adde<object width="560" height="315"
+                data="https://www.youtube.com/embed/QlF4rhAbwyc" outputclass="iframe">
+                <param name="allowfullscreen"/>
+            </object>d in the milestone.</p>
+    </body>
+</topic>
