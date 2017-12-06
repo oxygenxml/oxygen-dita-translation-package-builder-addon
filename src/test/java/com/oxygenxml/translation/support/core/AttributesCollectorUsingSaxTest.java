@@ -118,7 +118,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, false));
+    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -143,7 +143,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, false));
+    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -171,7 +171,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, false));
+    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -233,7 +233,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, false));
+    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -259,7 +259,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, false));
+    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
     try {
       File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
       generateChangeMilestone.deleteOnExit();

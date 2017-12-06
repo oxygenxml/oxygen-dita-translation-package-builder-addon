@@ -103,8 +103,8 @@ public class SaxContentHandler extends DefaultHandler {
         boolean isConref = CONREF.equals(attributeName);
         boolean isHref = HREF.equals(attributeName);
         if (isHref || isConref) {
-          boolean parse = (isHref && "image".equals(localName));
-          ditamapHrefs.add(new ReferredResource(makeAbsoluteURL(attributes, attributeName), parse));
+          boolean toParse = (isHref && "image".equals(localName));
+          ditamapHrefs.add(new ReferredResource(makeAbsoluteURL(attributes, attributeName), !toParse));
           break;
         }
       } 

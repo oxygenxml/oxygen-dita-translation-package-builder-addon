@@ -10,26 +10,19 @@ public class ReferredResource {
   private URL location;
   
   /**
-   * <code>true</code> if the file is parsable.
+   * <code>true</code> if the file is parsable using SAX.
    */
-  private boolean xmlParsable;
-  
-  /**
-   * Default constructor.
-   */
-  public ReferredResource() {
-  }
+  private boolean parsable;
   
   /**
    * Create a new object. 
    * 
    * @param location The location of the resource.
-   * @param isNonDita <code>true</code> if the file is non DITA 
-   * and should not be parsed as XML file.
+   * @param parsable <code>true</code> if file can be parsed as XML. 
    */
-  public ReferredResource(URL location, boolean isNonDita) {
+  public ReferredResource(URL location, boolean parsable) {
     this.location = location;
-    this.xmlParsable = isNonDita;
+    this.parsable = parsable;
   }
 
   @Override
@@ -40,7 +33,7 @@ public class ReferredResource {
     ReferredResource res = (ReferredResource)obj;
     return this.location.equals(res.getLocation()) && 
         // DITA res (parsable XML resource)
-        this.xmlParsable == res.nonDita();
+        this.parsable == res.isParsable();
   }
   
   @Override
@@ -56,24 +49,10 @@ public class ReferredResource {
   }
 
   /**
-   * @param location the location to set
+   * @return <code>true</code> if the resource is parsable as XML.
    */
-  public void setLocation(URL location) {
-    this.location = location;
-  }
-
-  /**
-   * @return <code>true</code> if the resource is parsable.
-   */
-  public boolean nonDita() {
-    return xmlParsable;
-  }
-
-  /**
-   * @param parsable <code>true</code> if file is parsable.
-   */
-  public void setIsDita(boolean parsable) {
-    this.xmlParsable = parsable;
+  public boolean isParsable() {
+    return parsable;
   }
 
   /* (non-Javadoc)
@@ -81,7 +60,7 @@ public class ReferredResource {
    */
   @Override
   public String toString() {
-    return "ReferredResource [location=" + location + ", isBinary=" + xmlParsable + "]";
+    return "ReferredResource [location=" + location + ", parsable=" + parsable + "]";
   }
   
 }

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -32,6 +33,10 @@ import ro.sync.util.URLUtil;
  * the given resource. 
  */
 public class MapStructureResourceBuilder implements IResourceBuilder {
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(MapStructureResourceBuilder.class.getName());
   /**
    * An implementation that detects the resources referred inside the content of
    * the given resource.
@@ -87,7 +92,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     public Iterator<IResource> iterator() {
       List<IResource> children = null;
       // DITA resource 
-      if (resource != null && !visitedURLs.contains(resource) && !resource.nonDita()){
+      if (resource != null && !visitedURLs.contains(resource) && resource.isParsable()){
         visitedURLs.add(resource);
         try {
           Set<ReferredResource> currentHrefs = gatherReferences();
@@ -106,9 +111,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
             }
           }
         } catch (Exception e) {
-          try {
-            throw e;
-          } catch (Exception e1) {}
+          logger.warn(e, e);
         } 
       }
 

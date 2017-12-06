@@ -56,6 +56,6 @@ public class ResourceFactory {
       throw new IllegalStateException("Unhandled detection type");
     }
     
-    return builder.wrap(new ReferredResource(map, false));
+    return builder.wrap(new ReferredResource(map, true));
   }
 }
