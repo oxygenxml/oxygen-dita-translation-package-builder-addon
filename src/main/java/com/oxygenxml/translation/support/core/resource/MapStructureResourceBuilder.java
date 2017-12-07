@@ -1,7 +1,6 @@
 package com.oxygenxml.translation.support.core.resource;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -49,7 +48,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     /**
      * The resource to parse.
      */
-    protected ReferredResource resource;
+    protected ReferencedResource resource;
     /**
      * The root map.
      */
@@ -57,7 +56,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     /**
      * A set with all the parsed resources so far. Used to avoid infinite recursion.
      */
-    private Set<ReferredResource> visitedURLs;
+    private Set<ReferencedResource> visitedURLs;
     /**
      * A path from the root resource to the current one.
      */
@@ -74,10 +73,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @param rootMap 
      */
     private SaxResource(
-        ReferredResource resource, 
+        ReferencedResource resource, 
         String relativePath,
         ParserCreator parserCreator,
-        Set<ReferredResource> recursivityCheck, 
+        Set<ReferencedResource> recursivityCheck, 
         URL rootMap) {
       this.resource = resource;
       this.parserCreator = parserCreator;
@@ -92,13 +91,13 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     public Iterator<IResource> iterator() {
       List<IResource> children = null;
       // DITA resource 
-      if (resource != null && !visitedURLs.contains(resource) && resource.isParsable()){
+      if (resource != null && !visitedURLs.contains(resource) && resource.isDITAResource()){
         visitedURLs.add(resource);
         try {
-          Set<ReferredResource> currentHrefs = gatherReferences();
+          Set<ReferencedResource> currentHrefs = gatherReferences();
           if (currentHrefs != null) {
             children = new LinkedList<IResource>();
-            for (ReferredResource child : currentHrefs) {
+            for (ReferencedResource child : currentHrefs) {
               String childRelativePath = URLUtil.makeRelative(rootMap, child.getLocation());
               // The path is relative to root map.
               SaxResource res = new SaxResource(
@@ -121,7 +120,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     /**
      * @see com.oxygenxml.translation.support.core.resource.IResource#getResourceInfo()
      */
-    public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+    public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, IOException {
       ResourceInfo resourceInfo = new ResourceInfo(MilestoneUtil.generateMD5(resource.getLocation()), relativePath);
       if (relativePath.isEmpty()) {
         // It's the root map
@@ -141,7 +140,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @throws SAXException
      * @throws IOException
      */
-    private Set<ReferredResource> gatherReferences()
+    private Set<ReferencedResource> gatherReferences()
         throws ParserConfigurationException, SAXException, IOException {
 
       URL toParse = URLUtil.correct(resource.getLocation());
@@ -175,10 +174,10 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * Used to avoid infinite recursion.
      */
     private RootMapResource(
-        ReferredResource resource, 
+        ReferencedResource resource, 
         String relativePath,
         ParserCreator parserCreator,
-        Set<ReferredResource> recursivityCheck) {
+        Set<ReferencedResource> recursivityCheck) {
       super(resource, relativePath, parserCreator, recursivityCheck, resource.getLocation());
     }
 
@@ -194,7 +193,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
   /**
    * @see com.oxygenxml.translation.support.core.resource.IResourceBuilder#wrap(java.io.File)
    */
-  public IRootResource wrap(ReferredResource map) throws IOException {
+  public IRootResource wrap(ReferencedResource map) throws IOException {
     ParserCreator parserCreator = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {
@@ -209,6 +208,6 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         map, 
         "", 
         parserCreator, 
-        new HashSet<ReferredResource>());
+        new HashSet<ReferencedResource>());
   }
 }

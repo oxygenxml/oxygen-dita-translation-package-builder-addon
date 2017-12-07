@@ -1,6 +1,7 @@
 package com.oxygenxml.translation.support.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,12 @@ import org.apache.log4j.Logger;
 
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
-import com.oxygenxml.translation.support.core.resource.ReferredResource;
+import com.oxygenxml.translation.support.core.resource.ReferencedResource;
 import com.oxygenxml.translation.support.core.resource.SaxContentHandler;
 
 import junit.framework.TestCase;
+import ro.sync.ecss.css.csstopdf.facade.CatalogResolverFacade;
+import ro.sync.exml.options.Options;
 import ro.sync.util.URLUtil;
 
 /**
@@ -31,6 +34,27 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(AttributesCollectorUsingSaxTest.class.getName());
+  
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    initializeCatalogs();
+  }
+  
+  private static final String CONFIG_FOLDER = "config";
+  
+  /**
+   * Initializes the catalogs. Search for them in the config folder.
+   * 
+   * @param options The command line options.
+   * @throws IOException When the installation dir does not exist.
+   */
+  private static void initializeCatalogs() throws IOException {
+    String defaultCatalog = new File(CONFIG_FOLDER + "/catalogs/catalog.xml").toURI().toString();
+    // Sets the catalogs
+    String[] catalogURIs = new String[] {defaultCatalog};
+    CatalogResolverFacade.setCatalogs(catalogURIs, "public");
+  }
 
   /**
    * Resources dir for this test.
@@ -61,7 +85,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     SAXParser parser = factory.newSAXParser();
     SaxContentHandler handler= new SaxContentHandler(url);
     parser.parse(ditaFile, handler);
-    List<ReferredResource> referredFiles = new ArrayList<ReferredResource>();
+    List<ReferencedResource> referredFiles = new ArrayList<ReferencedResource>();
     referredFiles.addAll(handler.getDitaMapHrefs());
     
     assertEquals("Two files should have been referred.", 2, referredFiles.size());
@@ -92,8 +116,12 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     SAXParser parser = factory.newSAXParser();
     SaxContentHandler handler= new SaxContentHandler(url);
     parser.parse(ditaFile, handler);
-    List<ReferredResource> referredFiles = new ArrayList<ReferredResource>();
+    List<ReferencedResource> referredFiles = new ArrayList<ReferencedResource>();
     referredFiles.addAll(handler.getDitaMapHrefs());
+    
+    for (ReferencedResource referencedResource : referredFiles) {
+      System.out.println(referencedResource);
+    }
     
     assertEquals("Four files should have been referred.", 4, referredFiles.size());
     assertTrue(referredFiles.toString().contains("issue-9/topics/dictionaries-preferences-page.dita"));
@@ -118,7 +146,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
+    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -143,7 +171,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
+    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -171,7 +199,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
+    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -205,7 +233,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     SaxContentHandler handler= new SaxContentHandler(url);
     parser.parse(ditaFile, handler);
     
-    List<ReferredResource> referredFiles = new ArrayList<ReferredResource>();
+    List<ReferencedResource> referredFiles = new ArrayList<ReferencedResource>();
     referredFiles.addAll(handler.getDitaMapHrefs());
     
     assertEquals("Two files should have been referred.", 2, referredFiles.size());
@@ -233,7 +261,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
+    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
@@ -259,19 +287,14 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferredResource(url, true));
-    try {
-      File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
-      generateChangeMilestone.deleteOnExit();
-      String result = TestUtil.readFile(generateChangeMilestone);
-      assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
-      assertTrue(result.contains("<relativePath>referredResource.xml</relativePath>"));
-      assertTrue(result.contains("<relativePath>href_res.xml</relativePath>"));
-      assertTrue(result.contains("<relativePath>Oxygen128.png</relativePath>"));
-      assertTrue(result.contains("<relativePath>conref_res.xml</relativePath>"));
-    } catch (Exception e) {
-      assertNull(e);
-    }
+    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    generateChangeMilestone.deleteOnExit();
+    String result = TestUtil.readFile(generateChangeMilestone);
+    assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
+    assertTrue(result.contains("<relativePath>referredResource.xml</relativePath>"));
+    assertTrue(result.contains("<relativePath>href_res.xml</relativePath>"));
+    assertTrue(result.contains("<relativePath>conref_res.xml</relativePath>"));
+    assertTrue(result.contains("<relativePath>Oxygen128.png</relativePath>"));
   }
-  
 }

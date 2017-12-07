@@ -15,5 +15,5 @@ public interface IResourceBuilder {
    * 
    * @throws IOException Problems with the given resource.
    */
-  IRootResource wrap(ReferredResource map) throws IOException;
+  IRootResource wrap(ReferencedResource map) throws IOException;
 }

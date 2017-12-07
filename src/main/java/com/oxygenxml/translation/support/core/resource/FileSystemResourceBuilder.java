@@ -201,7 +201,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
    * 
    * @throws IOException The given file is not a directory. 
    */
-  public IRootResource wrap(ReferredResource rootResource) throws IOException {
+  public IRootResource wrap(ReferencedResource rootResource) throws IOException {
     File locateFile = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {

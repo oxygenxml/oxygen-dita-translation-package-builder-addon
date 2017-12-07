@@ -2,7 +2,7 @@ package com.oxygenxml.translation.support.core.resource;
 
 import java.net.URL;
 
-public class ReferredResource {
+public class ReferencedResource {
   
   /**
    * URL location of the referred file.
@@ -10,30 +10,30 @@ public class ReferredResource {
   private URL location;
   
   /**
-   * <code>true</code> if the file is parsable using SAX.
+   * <code>true</code> if the file is DITA.
    */
-  private boolean parsable;
+  private boolean isDITAResourceReference;
   
   /**
    * Create a new object. 
    * 
    * @param location The location of the resource.
-   * @param parsable <code>true</code> if file can be parsed as XML. 
+   * @param isDITAReference <code>true</code> if the current resource is DITA.
    */
-  public ReferredResource(URL location, boolean parsable) {
+  public ReferencedResource(URL location, boolean isDITAReference) {
     this.location = location;
-    this.parsable = parsable;
+    this.isDITAResourceReference = isDITAReference;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (! (obj instanceof ReferredResource)) {
+    if (! (obj instanceof ReferencedResource)) {
       return false;
     }
-    ReferredResource res = (ReferredResource)obj;
+    ReferencedResource res = (ReferencedResource)obj;
     return this.location.equals(res.getLocation()) && 
         // DITA res (parsable XML resource)
-        this.parsable == res.isParsable();
+        this.isDITAResourceReference == res.isDITAResource();
   }
   
   @Override
@@ -49,10 +49,10 @@ public class ReferredResource {
   }
 
   /**
-   * @return <code>true</code> if the resource is parsable as XML.
+   * @return <code>true</code> if the resource is DITA.
    */
-  public boolean isParsable() {
-    return parsable;
+  public boolean isDITAResource() {
+    return isDITAResourceReference;
   }
 
   /* (non-Javadoc)
@@ -60,7 +60,7 @@ public class ReferredResource {
    */
   @Override
   public String toString() {
-    return "ReferredResource [location=" + location + ", parsable=" + parsable + "]";
+    return "ReferredResource [location=" + location + ", parsable=" + isDITAResourceReference + "]";
   }
   
 }
