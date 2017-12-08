@@ -6,8 +6,8 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
         id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
-        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.8/translation-package-builder-1.0.8-plugin.jar"/>
-        <xt:version>1.0.8</xt:version>
+        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.9/translation-package-builder-1.0.9-plugin.jar"/>
+        <xt:version>1.0.9</xt:version>
         <xt:oxy_version>18.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Oxygen XML Editor</xt:author>
@@ -40,6 +40,11 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.9</h1>
+                <ul>
+                    <li>XML files are scanned for changes <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/18">#18</a></li>
+                    <li>Small UI changes.</li>
+                </ul>
                 <h1>Release Notes 1.0.8</h1>
                 <ul>
                     <li>Milestones are now generated based on the DITA Map structure. The resources referred
