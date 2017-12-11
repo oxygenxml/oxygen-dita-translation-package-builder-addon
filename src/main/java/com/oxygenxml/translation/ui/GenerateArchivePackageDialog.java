@@ -59,7 +59,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   /**
    *  Resource bundle.
    */
-  private final static PluginResourceBundle messages = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+  private static final PluginResourceBundle messages = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
 
   /**
    * The location chosen by the user for the archive.

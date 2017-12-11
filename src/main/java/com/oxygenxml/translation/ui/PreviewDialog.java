@@ -51,25 +51,21 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  *  The dialog that shows a preview before applying a package.
  * 
  * @author Bivolan Dalina
- *
  */
 public class PreviewDialog extends OKCancelDialog {
   /**
    *  Resource bundle.
    */
-  private final static PluginResourceBundle messages = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+  private static final PluginResourceBundle messages = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(PreviewDialog.class); 
+  private static final Logger logger = Logger.getLogger(PreviewDialog.class.getName());
+
   /**
    *  The table that displays the relative paths of the translated files.
    */
   private JTable resourcesTable;
-  /**
-   *  The default tree model of the CheckBoxTree.
-   */
-  private DefaultTreeModel treeModel = null;
   /**
    *  Solves conflict between TableModelListener and ItemListener.
    */
@@ -102,7 +98,7 @@ public class PreviewDialog extends OKCancelDialog {
    *  True if the list view preview is displayed. 
    */
   private boolean isListViewShowing = true;
-  
+
   /**
    * A dialog that shows a preview of the files that are about to be applied. It compares the files from 
    * filesOnDisk with their counterparts from translatedFiles.
@@ -123,20 +119,19 @@ public class PreviewDialog extends OKCancelDialog {
     this.translatedFiles = translatedFilesDir;
 
     final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
-    
+
     getOkButton().setText(messages.getMessage(Tags.APPLY_BUTTON));
     // 1. Start the processing. (the CopyDirectoryWorker)
     // 2. Show the dialog. 
     // 3. The CopyDirectoryWorker notifies the dialog.
 
-    
+
     ArrayList<CheckboxTableItem> loadPaths = new ArrayList<CheckboxTableItem>();
     for (String data : filePaths) {
       loadPaths.add(new CheckboxTableItem(Boolean.TRUE , data));
     }
     tableModel = new MyTableModel(loadPaths);
-   
-    
+
     switchViewButton = new JButton(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
 
     resourcesTable = new JTable(tableModel);   
@@ -145,14 +140,14 @@ public class PreviewDialog extends OKCancelDialog {
     resourcesTable.setShowGrid(false);
     resourcesTable.getColumnModel().getColumn(0).setMaxWidth(40);
     resourcesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-    
+
     resourcesTable.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent event) {
         // Show a DIFF if the user double clicks on a file.
         if (event.getClickCount() == 2) {
           int selectedColumn = resourcesTable.getSelectedColumn();
           int selectedRow = resourcesTable.getSelectedRow();
-          
+
           Rectangle goodCell = resourcesTable.getCellRect(selectedRow, 1, true);
           // show DIFF only if the user double clicks on the second column cells
           if (goodCell.contains(event.getPoint())) {
@@ -168,8 +163,8 @@ public class PreviewDialog extends OKCancelDialog {
           }
         }
       }
-   });
-    
+    });
+
     final JScrollPane scrollPane = new JScrollPane();
     scrollPane.setViewportView(resourcesTable);
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -181,7 +176,7 @@ public class PreviewDialog extends OKCancelDialog {
     switchViewButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         isListViewShowing = !isListViewShowing;
-        
+
         if (isListViewShowing) { 
           scrollPane.setViewportView(resourcesTable);
           switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
@@ -190,14 +185,14 @@ public class PreviewDialog extends OKCancelDialog {
           if(root == null) {
             createTreeView(filePaths, filesOnDiskDir, translatedFilesDir, pluginWorkspace);
           }
-          
+
           switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_LIST_VIEW));
           scrollPane.setViewportView(tree);
           selectAll.setVisible(false);
         }
       }
     });
-   
+
     resourcesTable.getModel().addTableModelListener(new TableModelListener() {
       public void tableChanged(TableModelEvent e) {
         conflictFlag = true;
@@ -215,10 +210,10 @@ public class PreviewDialog extends OKCancelDialog {
         conflictFlag = false;
       }
     });
-    
+
     // By default all entries are selected.
     selectAll.setSelected(true);  
-   
+
     selectAll.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(conflictFlag == false){
@@ -238,27 +233,27 @@ public class PreviewDialog extends OKCancelDialog {
         }
       }
     });
-    
+
     JTextArea infoText = new JTextArea();
     infoText.setText("Double click on an Oxygen supported file to see the differences.");
     infoText.setLineWrap(true);
     infoText.setWrapStyleWord(true);
-    
+
     Insets insets = new Insets(2, 2, 2, 2);
     panel.add(selectAll, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
     panel.add(infoText, new GridBagConstraints(0, 1, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
     panel.add(scrollPane, new GridBagConstraints(0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 1, 1));
     panel.add(switchViewButton, new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
-    
+
     getContentPane().add(panel, BorderLayout.CENTER);
-    
+
     setMinimumSize(new Dimension(300, 200));
     setLocationRelativeTo(parentFrame);
     pack();
     setResizable(true);
     setVisible(true);
   }
-  
+
   /**
    * Builds a tree from a given forward slash delimited string.
    * 
@@ -317,7 +312,7 @@ public class PreviewDialog extends OKCancelDialog {
 
     return index;
   }
-  
+
   /**
    * Deletes the unselected files(from the tree view option) from a specific directory.
    * 
@@ -338,7 +333,6 @@ public class PreviewDialog extends OKCancelDialog {
               // delete the directory
               FileUtils.forceDelete(everythingInThisDir[i]);
             } catch (IOException e1) {
-              e1.printStackTrace();
               logger.error(e1, e1);
             }
             if (logger.isDebugEnabled()) {
@@ -351,20 +345,19 @@ public class PreviewDialog extends OKCancelDialog {
             deleteUnselectedFileFromDir(everythingInThisDir[i], selectedFiles);
           }
         } // if current file is a file and it should be deleted
-          else if (everythingInThisDir[i].isFile() && shouldDelete(selectedFiles, everythingInThisDir[i])){          
-            try {
-              // delete the current file
-              FileUtils.forceDelete(everythingInThisDir[i]);
-            } catch (IOException e1) {
-              e1.printStackTrace();
-              logger.error(e1, e1);
-            }
-            if (logger.isDebugEnabled()) {
-              logger.debug("Deleted if file: " + everythingInThisDir[i].getPath());
-            }
+        else if (everythingInThisDir[i].isFile() && shouldDelete(selectedFiles, everythingInThisDir[i])){          
+          try {
+            // delete the current file
+            FileUtils.forceDelete(everythingInThisDir[i]);
+          } catch (IOException e1) {
+            logger.error(e1, e1);
+          }
+          if (logger.isDebugEnabled()) {
+            logger.debug("Deleted if file: " + everythingInThisDir[i].getPath());
           }
         }
-      } 
+      }
+    } 
     else{
       throw new IOException("Please select a directory.");
     }
@@ -382,7 +375,7 @@ public class PreviewDialog extends OKCancelDialog {
       // Check in the selected files for its descendents.
       for (Iterator<File> iterator = selectedFiles.iterator(); iterator.hasNext();) {
         File file = (File) iterator.next();
-        
+
         boolean isDescendant = file.getAbsolutePath().startsWith(child.getAbsolutePath());
         if (isDescendant) {
           shouldDelete = false;
@@ -392,19 +385,19 @@ public class PreviewDialog extends OKCancelDialog {
     }
     return shouldDelete;
   }
-  
+
   @Override
   protected void doOK() {
-    
+
     applyChanges();
-    
+
     super.doOK();
   }
   /**
    * Override the selected files from both,list and tree, views in the parent directory of the current ditamap.
    */
   private void applyChanges() {
-    
+
     final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
     // List of selected files from the tree view
     ArrayList<File> selectedTreeFiles = new ArrayList<File>();
@@ -412,37 +405,36 @@ public class PreviewDialog extends OKCancelDialog {
     ArrayList<File> selectedListFiles = new ArrayList<File>();
     // List of unselected files from list view
     ArrayList<File> unSelectedListFiles = new ArrayList<File>();
-    
+
     if(switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)){
       //Get all the selected paths
-        TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
-       
-        for (TreePath treePath : treePaths) {
-            //Build the relative path 
-             Object[] obj = treePath.getPath();
-             int length = obj.length;
-             String relativePath = ""; 
-             if(length >= 2){
-               relativePath = relativePath + obj[1].toString();
-               for (int i = 2; i < length-1; i++) {
-                 relativePath = relativePath + "/" + obj[i].toString();
-               }
-             }
-             
-             if (logger.isDebugEnabled()) {
-               logger.debug(new File(translatedFiles.getPath(), relativePath));
-             }
-             File selectedFile = new File(translatedFiles.getPath(), relativePath);
-             selectedTreeFiles.add(selectedFile);
-        }
-        if(!selectedTreeFiles.isEmpty() && !selectedTreeFiles.get(0).equals(new File(translatedFiles.getPath()))){
-          try {
-            deleteUnselectedFileFromDir(translatedFiles, selectedTreeFiles);
-          } catch (IOException e1) { 
-            e1.printStackTrace();
-            logger.error(e1, e1);
+      TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
+
+      for (TreePath treePath : treePaths) {
+        //Build the relative path 
+        Object[] obj = treePath.getPath();
+        int length = obj.length;
+        String relativePath = ""; 
+        if(length >= 2){
+          relativePath = relativePath + obj[1].toString();
+          for (int i = 2; i < length-1; i++) {
+            relativePath = relativePath + "/" + obj[i].toString();
           }
         }
+
+        if (logger.isDebugEnabled()) {
+          logger.debug(new File(translatedFiles.getPath(), relativePath));
+        }
+        File selectedFile = new File(translatedFiles.getPath(), relativePath);
+        selectedTreeFiles.add(selectedFile);
+      }
+      if(!selectedTreeFiles.isEmpty() && !selectedTreeFiles.get(0).equals(new File(translatedFiles.getPath()))){
+        try {
+          deleteUnselectedFileFromDir(translatedFiles, selectedTreeFiles);
+        } catch (IOException e1) { 
+          logger.error(e1, e1);
+        }
+      }
     }
     else{
       for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -467,7 +459,6 @@ public class PreviewDialog extends OKCancelDialog {
               logger.debug("Deleted : " + unselectedFile.getAbsolutePath());
             }
           } catch (IOException e1) {
-            e1.printStackTrace();
             logger.error(e1, e1);
           }
         } 
@@ -513,7 +504,7 @@ public class PreviewDialog extends OKCancelDialog {
       copyDirTask.execute();
     }
   }
-  
+
   @Override
   protected void doCancel() {
     super.doCancel();
@@ -521,7 +512,7 @@ public class PreviewDialog extends OKCancelDialog {
     try {
       FileUtils.deleteDirectory(translatedFiles);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger.warn(e1, e1);
     }
   }
   /**
@@ -537,7 +528,7 @@ public class PreviewDialog extends OKCancelDialog {
     try {
       URL leftURL = localFile.toURI().toURL();
       URL rightURL = translatedFile.toURI().toURL();
-      
+
       //Check if the url it's a supported Oxygen file
       if(!pluginWorkspace.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
         pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
@@ -564,13 +555,15 @@ public class PreviewDialog extends OKCancelDialog {
       final StandalonePluginWorkspace pluginWorkspace) {
     // Lazy create the tree view.
     root = new DefaultMutableTreeNode(filesOnDiskDir.getName());
-    treeModel = new DefaultTreeModel(root);
+
+    // The default tree model of the CheckBoxTree.
+    DefaultTreeModel treeModel = new DefaultTreeModel(root);
     tree = new CheckBoxTree(treeModel); 
-  
+
     for (String data : filePaths) {
       buildTreeFromString(treeModel, data);
     }
-    
+
     tree.setEditable(false);
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     tree.setShowsRootHandles(true);
@@ -599,10 +592,10 @@ public class PreviewDialog extends OKCancelDialog {
               logger.debug(tree.getSelectionPath());
               logger.debug(new File(filesOnDiskDir, relativePath));
             }
-            
+
             File localFile = new File(filesOnDiskDir, relativePath);
             File translatedFile = new File(translatedFilesDir, relativePath);
-            
+
             showDiff(pluginWorkspace, localFile, translatedFile);
           }
         }

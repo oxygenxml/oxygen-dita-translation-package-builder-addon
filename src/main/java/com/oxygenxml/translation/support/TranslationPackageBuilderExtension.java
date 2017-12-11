@@ -59,7 +59,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class);
+  private static final Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class.getName());
   /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
@@ -284,9 +284,11 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                   resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
               // This listener notifies the user about how the operation ended.
               unzipTask.addProgressListener(new ProgressChangeAdapter() {
+                @Override
                 public void done() { 
                   new PreviewDialog(frame, unzipTask.getUnpackedFiles(), rootDir, tempDir);
                 }
+                @Override
                 public void operationFailed(Exception ex) {
                   if(!(ex instanceof StoppedByUserException)){
                     pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + ex.getMessage());
@@ -387,7 +389,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
 
     if(chosenDir != null) {        
-
       try { 
         // Unzip the chosen package over the parent  directory of the current ditamap on thread.
         final UnzipWorker unzipTask = new UnzipWorker(chosenDir, rootDir);
@@ -395,17 +396,22 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         ProgressDialog.install(unzipTask, frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
         // This listener notifies the user about how the operation ended.
         unzipTask.addProgressListener(new ProgressChangeAdapter() {
+          @Override
           public void done() {
             try {
               showReport(pluginWorkspaceAccess, unzipTask.getUnpackedFiles());
             } catch (Exception e) {
-              logger.error(e, e);
+              if (logger.isDebugEnabled()) {
+                logger.debug(e, e);
+              }
+
               if(!(e instanceof StoppedByUserException)){
                 pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
               }
               return;                  
             }
           }
+          @Override
           public void operationFailed(Exception ex) {
             if(!(ex instanceof StoppedByUserException)){
               pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + ex.getMessage());
@@ -416,8 +422,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
       } catch (Exception e) {
         // Preset error to user.
-        logger.error(e, e);
         pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
+        if (logger.isDebugEnabled()) {
+          logger.debug(e, e);
+        }
       }
     }
   }
@@ -470,7 +478,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
 
     // This listener notifies the user about how the operation ended.
-    zipTask.addProgressListener(new ProgressChangeAdapter() {                      
+    zipTask.addProgressListener(new ProgressChangeAdapter() {     
+      @Override
       public void done() { 
         if(packAll){
           JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_DIR_MESSAGE),
@@ -498,7 +507,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
           }
         }
-      }                      
+      }              
+      @Override
       public void operationFailed(Exception ex) {  
         //Treat differently Stop by user exceptions and the custom one about nothing to pack.
         if(ex instanceof NoChangedFilesException){
@@ -549,6 +559,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
 
     // This listener notifies the user about how the operation ended.
     milestoneWorker.addProgressListener(new ProgressChangeAdapter() {
+      @Override
       public void done() { 
         if(isFromAction1){
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
@@ -556,6 +567,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           showReportDialog(pluginWorkspaceAccess, frame, rootMap);
         }
       }
+      @Override
       public void operationFailed(Exception ex) {
         if(!(ex instanceof StoppedByUserException)){
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION1_ERROR_MESSAGE) + ex.getMessage());
@@ -584,7 +596,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
 
     // This listener notifies the user about how the operation ended.
-    modifiedResourcesWorker.addProgressListener(new ProgressChangeAdapter() {                                          
+    modifiedResourcesWorker.addProgressListener(new ProgressChangeAdapter() {
+      @Override
       public void done() { 
         if(logger.isDebugEnabled()){
           logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE5) + modifiedResourcesWorker.getModifiedResources().size());
@@ -629,7 +642,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             logger.error(e, e);
           }                
         }                  
-      }                
+      }        
+      @Override
       public void operationFailed(Exception ex) {
         if(ex instanceof NoChangedFilesException){
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());                  
