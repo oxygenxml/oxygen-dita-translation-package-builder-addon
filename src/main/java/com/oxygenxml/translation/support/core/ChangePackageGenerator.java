@@ -98,7 +98,7 @@ public class ChangePackageGenerator {
           throw new StoppedByUserException();
         }
         
-        IResource iResource = (IResource) referredResources.next();
+        IResource iResource = referredResources.next();
         URL currentUrl = iResource.getCurrentUrl();
         if (currentUrl != null && !visited.contains(currentUrl)) {
           visited.add(currentUrl);
@@ -114,7 +114,7 @@ public class ChangePackageGenerator {
               DocumentPositionedInfo dpi = new DocumentPositionedInfo(
                   DocumentPositionedInfo.SEVERITY_WARN, 
                   e.getMessage(), 
-                  null);
+                  resource.getCurrentUrl().toExternalForm());
 
               PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
               if (pluginWorkspace != null) {

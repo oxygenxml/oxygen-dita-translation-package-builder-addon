@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.xml.bind.JAXBException;
 
@@ -33,11 +32,11 @@ import org.apache.log4j.Logger;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ProjectConstants;
+import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PreviewDialog;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
-import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
@@ -54,7 +53,7 @@ import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributor
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 
 /**
- * Plugin extension - workspace access extension.
+ * Plug-in extension - workspace access extension.
  */
 public class TranslationPackageBuilderExtension implements WorkspaceAccessPluginExtension, Tags {
   /**
@@ -65,12 +64,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
   public void applicationStarted(final StandalonePluginWorkspace pluginWorkspaceAccess) {
-    //You can set or read global options.
-    //The "ro.sync.exml.options.APIAccessibleOptionTags" contains all accessible keys.
-    //      pluginWorkspaceAccess.setGlobalObjectProperty("can.edit.read.only.files", Boolean.FALSE);
-    // Check In action
-    //You can access the submenu Translation Package Builder only from the DITA Maps area.
-    // The submenu contains these 3 actions.
+    
     final Action generateMilestoneAction = createMilestoneAction(pluginWorkspaceAccess);
     final Action generateChangedFilesZipAction = createChangedFilesZipAction(pluginWorkspaceAccess);
     final Action applyTranslatedFilesAction = createApplyTranslatedFilesAction(pluginWorkspaceAccess);
@@ -132,12 +126,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           URL rootMapLocation = editor.getEditorLocation();
           
           File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(rootMapLocation);
-          final File rootDir = fileOnDisk;//.getParentFile();
+          
           if (logger.isDebugEnabled()) {
-            logger.debug("The current ditaMAP is : " + rootDir.getPath());
+            logger.debug("The current ditaMAP is : " + fileOnDisk.getPath());
           }
           
-          final File milestoneFile = MilestoneUtil.getMilestoneFile(rootDir);
+          final File milestoneFile = MilestoneUtil.getMilestoneFile(fileOnDisk);
           
           //Ask the user if he wants to override the milestone in case it was already created.
           if(milestoneFile.exists()){
@@ -179,12 +173,14 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         URL editorLocation = editor.getEditorLocation();
         // 1. Extract the parent directory of the current map. This is the rootDir
         File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
-        final File rootDir = fileOnDisk;//.getParentFile();
-        logger.debug("The current ditaMAP is : " + rootDir.getAbsolutePath());
+        
+        if (logger.isDebugEnabled()) {
+          logger.debug("The current ditaMAP is : " + fileOnDisk.getAbsolutePath());
+        }
 
         try {
           //The milestone file is stored in the root dir of the current ditaMAP
-          final File milestoneFile = new File(rootDir.getParentFile() , MilestoneUtil.getMilestoneFileName(rootDir));      
+          final File milestoneFile = new File(fileOnDisk.getParentFile() , MilestoneUtil.getMilestoneFileName(fileOnDisk));      
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
           if(!milestoneFile.exists()){
@@ -218,6 +214,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       }
     };
   }
+  
+  
   /**
    * Creates the action that applies the translated files.
    * 
@@ -271,7 +269,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             } catch (IOException e) {
               logger.error(e, e);
             }
-            if(tempFile.exists()){
+            if(tempFile != null && tempFile.exists()){
               final File tempDir = new File(tempFile.getParentFile(), resourceBundle.getMessage(Tags.ACTION3_TEMPDIR_NAME));
 
               if (logger.isDebugEnabled()) {

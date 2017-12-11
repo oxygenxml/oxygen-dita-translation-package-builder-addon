@@ -12,7 +12,7 @@ public class ReferencedResource {
   /**
    * <code>true</code> if the file is DITA.
    */
-  private boolean isDITAResourceReference;
+  private boolean isDITAResource;
   
   /**
    * Create a new object. 
@@ -22,7 +22,7 @@ public class ReferencedResource {
    */
   public ReferencedResource(URL location, boolean isDITAReference) {
     this.location = location;
-    this.isDITAResourceReference = isDITAReference;
+    this.isDITAResource = isDITAReference;
   }
 
   @Override
@@ -33,7 +33,7 @@ public class ReferencedResource {
     ReferencedResource res = (ReferencedResource)obj;
     return this.location.equals(res.getLocation()) && 
         // DITA res (parsable XML resource)
-        this.isDITAResourceReference == res.isDITAResource();
+        this.isDITAResource == res.isDITAResource();
   }
   
   @Override
@@ -52,7 +52,7 @@ public class ReferencedResource {
    * @return <code>true</code> if the resource is DITA.
    */
   public boolean isDITAResource() {
-    return isDITAResourceReference;
+    return isDITAResource;
   }
 
   /* (non-Javadoc)
@@ -60,7 +60,7 @@ public class ReferencedResource {
    */
   @Override
   public String toString() {
-    return "ReferredResource [location=" + location + ", parsable=" + isDITAResourceReference + "]";
+    return "ReferredResource [location=" + location + ", isDITAResource=" + isDITAResource + "]";
   }
   
 }

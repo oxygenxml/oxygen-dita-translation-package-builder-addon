@@ -91,7 +91,8 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
     public Iterator<IResource> iterator() {
       List<IResource> children = null;
       // DITA resource 
-      if (resource != null && !visitedURLs.contains(resource) && resource.isDITAResource()){
+      if (resource != null && !visitedURLs.contains(resource) && 
+          resource.isDITAResource() && resourceExists()){
         visitedURLs.add(resource);
         try {
           Set<ReferencedResource> currentHrefs = gatherReferences();
@@ -115,6 +116,13 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       }
 
       return children != null ? children.iterator() : null;
+    }
+    
+    /**
+     * @return <code>true</code> if the file exists on the disk.
+     */
+    private boolean resourceExists() {
+      return new File(resource.getLocation().getFile()).exists();
     }
 
     /**
@@ -142,7 +150,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      */
     private Set<ReferencedResource> gatherReferences()
         throws ParserConfigurationException, SAXException, IOException {
-
+      
       URL toParse = URLUtil.correct(resource.getLocation());
       InputSource is = new InputSource(toParse.toExternalForm());
       XMLReader xmlReader = parserCreator.createXMLReader();
