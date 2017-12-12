@@ -1,9 +1,6 @@
 package com.oxygenxml.translation.ui;
 /**
  * An interface used for accessing the key values from the "i18n/translation.xml" file.
- * 
- * @author Bivolan Dalina
- *
  */
 public interface Tags {
   
@@ -17,12 +14,40 @@ public interface Tags {
   
   public final String ACTION1_INFO_MESSAGE = "action1_infoMessage";
   public final String ACTION1_ERROR_MESSAGE = "action1_errorMessage";
-  public final String ACTION1_PROGRESS_TITLE = "action1_progress_title";
   
-  public final String ACTION2_CHOOSE_FILE_TITLE = "action2_chooseFile_title";
-  public final String ACTION2_CHOOSE_FILE_DESCRIPTOR = "action2_chooseFile_descriptor";
-  public final String ACTION2_NO_MILESTONE_DIALOG_TITLE = "action2_milestoneNotExists_dialog_title";
-  public final String ACTION2_NO_MILESTONE_DIALOG_MESSAGE = "action2_milestoneNotExists_dialog_message";
+  /**
+   * Title of progress dialog shown when a milestone is generating.
+   * 
+   * en: Generating Milestone
+   */
+  public final String GENERATING_MILESTONE = "Generating_milestone";
+  
+  /**
+   * en: Package location
+   */
+  public final String PACKAGE_LOCATION = "Package_location";
+  /**
+   * File type in file chooser. 
+   * 
+   * en: Zip Files
+   */
+  public final String ZIP_FILES = "Zip_files";
+  /**
+   * en: Milestone Missing
+   */
+  public final String MILESTONE_MISSING = "Milestone_missing";
+  
+  /**
+   * en: Create new milestone? \n {0}
+   */
+  public final String CREATE_NEW_MILESTONE = "Create_new_milestone";
+  /**
+   * Modified files generation, milestone is missing. We can generate 
+   * a new milestone or archive an entire directory. 
+   * 
+   * en: Pack entire dir
+   */
+  public final String PACK_ENTIRE_DIR = "Pack_entire_dir";
   
   public final String YES_BUTTON = "yes_button";
   public final String NO_BUTTON = "no_button";
@@ -30,8 +55,12 @@ public interface Tags {
   public final String ACTION2_PROGRESS_DIALOG_TITLE = "action2_progresDialog_title";
   public final String ACTION2_PACK_DIR_MESSAGE = "action2_packEntireDir_message";
   public final String ACTION2_PACK_DIR_TITLE = "action2_packEntireDir_title";
-  public final String ACTION2_PACK_MODIFIED_MESSAGE1 = "action2_packOnlyModified_message1";
-  public final String ACTION2_PACK_MODIFIED_MESSAGE2 = "action2_packOnlyModified_message2";
+  
+  /**
+   * en: A package containing {0} file(s) was created.
+   */
+  public final String REPORT_NUMBER_OF_MODIFIED_FILES = "Report_number_of_modified_files";
+  
   public final String ACTION2_PACK_MODIFIED_TITLE = "action2_packOnlyModified_title";
   public final String ACTION2_INFO_MESSAGE_EXCEPTION = "action2_infoMessage_exceptions";
   public final String ACTION2_NO_CHANGED_FILES_EXCEPTION = "action2_NoChangedFiles_exception";
@@ -67,11 +96,17 @@ public interface Tags {
    * Switch to list view.
    */
   public final String SWICH_TO_LIST_VIEW = "switch_to_list_view";
-  public final String PREVIEW_DIALOG_ERROR_MESSAGE = "previewDialog_errorMessage";
+  
   /**
-   * Applying selected files.
+   * en: There are no selected files to apply.
    */
-  public final String APPLYING_SELECTED_FILES = "applying_selected_files";
+  public final String NO_SELECTED_FILES_TO_APPLY = "No_selected_files_to_apply";
+  /**
+   * en: Applying selected files.
+   */
+  public final String APPLYING_SELECTED_FILES = "Applying_selected_files";
+  
+  
   public final String PREVIEW_DIALOG_PROGRESS_INFOMESSAGE = "previewDialog_progressDialog_infoMessage";
   public final String PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE = "previewDialog_progressDialog_errorMessage";
   public final String PREVIEW_DIALOG_SUPPORTED_OXYFILE = "previewDialog_supportedOxyFile";

@@ -467,7 +467,7 @@ public class PreviewDialog extends OKCancelDialog {
 
     if((selectedTreeFiles.isEmpty() && switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)) || 
         (selectedListFiles.isEmpty() && switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_TREE_VIEW))){
-      pluginWorkspace.showErrorMessage(messages.getMessage(Tags.PREVIEW_DIALOG_ERROR_MESSAGE));
+      pluginWorkspace.showErrorMessage(messages.getMessage(Tags.NO_SELECTED_FILES_TO_APPLY));
     } else {
       setVisible(false);
       //Copy the files on thread.

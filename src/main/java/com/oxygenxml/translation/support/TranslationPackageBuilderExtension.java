@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -184,10 +185,18 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           // What to do if the milestone file doesn't exist? 
           // Inform the user and offer the possibility to pack the entire dir
           if(!milestoneFile.exists()){
-            int buttonId = pluginWorkspaceAccess.showConfirmDialog(resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_TITLE),
-                resourceBundle.getMessage(Tags.ACTION2_NO_MILESTONE_DIALOG_MESSAGE) +
-                milestoneFile.getAbsolutePath() +"?", 
-                new String[] {resourceBundle.getMessage(Tags.YES_BUTTON), resourceBundle.getMessage(Tags.NO_BUTTON), "Pack entire dir"},
+            int buttonId = pluginWorkspaceAccess.showConfirmDialog(
+                // Title
+                resourceBundle.getMessage(Tags.MILESTONE_MISSING),
+                // Message
+                MessageFormat.format(resourceBundle.getMessage(Tags.CREATE_NEW_MILESTONE), milestoneFile.getAbsolutePath()),
+                //Buttons
+                new String[] {
+                    resourceBundle.getMessage(Tags.YES_BUTTON), 
+                    resourceBundle.getMessage(Tags.NO_BUTTON), 
+                    resourceBundle.getMessage(Tags.PACK_ENTIRE_DIR)},
+                // Button ids
+                // TODO Adrian - Use JOptionPane button constants.
                 new int[] {0, 1, 2});
             //Generate the first milestone.
             if(buttonId == 0){
@@ -195,8 +204,11 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
             //If the user wants to pack the entire directory show a file chooser and create package.
             else if(buttonId == 2){     
-              File chosenDirectory = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
-                  new String[] {"zip"}, resourceBundle.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), true);
+              File chosenDirectory = pluginWorkspaceAccess.chooseFile(
+                  resourceBundle.getMessage(Tags.PACKAGE_LOCATION),
+                  new String[] {"zip"}, 
+                  resourceBundle.getMessage(Tags.ZIP_FILES), 
+                  true);
               if(chosenDirectory != null){
                 createPackage(frame, editorLocation, chosenDirectory, resourceBundle, pluginWorkspaceAccess, true, null, false);
               }             
@@ -487,9 +499,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               JOptionPane.INFORMATION_MESSAGE);
         } else{
           int nrOfFiles = zipTask.getModifiedFilesNumber().getNumber();
-          JOptionPane.showMessageDialog(frame, resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_MESSAGE1) + 
-              nrOfFiles +
-              resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_MESSAGE2), 
+          JOptionPane.showMessageDialog(frame, 
+              MessageFormat.format(resourceBundle.getMessage(Tags.REPORT_NUMBER_OF_MODIFIED_FILES), nrOfFiles),
               resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_TITLE),
               JOptionPane.INFORMATION_MESSAGE);
           if(shouldCreateReport){
@@ -555,7 +566,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     ProgressDialog.install(
         milestoneWorker, 
         (JFrame) pluginWorkspaceAccess.getParentFrame(), 
-        resourceBundle.getMessage(Tags.ACTION1_PROGRESS_TITLE));
+        resourceBundle.getMessage(Tags.GENERATING_MILESTONE));
 
     // This listener notifies the user about how the operation ended.
     milestoneWorker.addProgressListener(new ProgressChangeAdapter() {

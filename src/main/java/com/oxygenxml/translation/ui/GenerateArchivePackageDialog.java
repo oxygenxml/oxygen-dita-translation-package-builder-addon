@@ -27,6 +27,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -153,7 +154,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
         /*
          * Title
          */
-        messages.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
+        messages.getMessage(Tags.PACKAGE_LOCATION),
         /*
          * Modal
          */
@@ -188,18 +189,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     // Show a file chooser when the user clicks on the folder image.
     folderButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        //Get the location from the file chooser.
-        chosenZipFromChooser = PluginWorkspaceProvider.getPluginWorkspace().chooseFile(messages.getMessage(Tags.ACTION2_CHOOSE_FILE_TITLE),
-            new String[] {"zip"},
-            messages.getMessage(Tags.ACTION2_CHOOSE_FILE_DESCRIPTOR), 
-            true);
-        //Update the package location field with the choosed location from the file chooser.
-        if(chosenZipFromChooser != null){
-          currentPath = chosenZipFromChooser.getPath();
-          archiveLocationCombobox.setSelectedItem(currentPath);
-          locationField.select(currentPath.length() - chosenZipFromChooser.getName().length(), 
-              currentPath.length() - ProjectConstants.ZIP_FILE_SUFFIX.length());
-        }
+         showArchiveSaveLocationChooser();
       }
     });
     
@@ -255,6 +245,26 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
         insets, 1, 1));
     
     getContentPane().add(mainPanel, BorderLayout.CENTER);
+  }
+  
+  /**
+   * @return The location where the archive will be saved.
+   */
+  private String showArchiveSaveLocationChooser() {
+    //Get the location from the file chooser.
+    chosenZipFromChooser = PluginWorkspaceProvider.getPluginWorkspace().chooseFile(
+        messages.getMessage(Tags.PACKAGE_LOCATION),
+        new String[] {"zip"},
+        messages.getMessage(Tags.ZIP_FILES), 
+        true);
+    //Update the package location field with the choosed location from the file chooser.
+    if(chosenZipFromChooser != null){
+      currentPath = chosenZipFromChooser.getPath();
+      archiveLocationCombobox.setSelectedItem(currentPath);
+      locationField.select(currentPath.length() - chosenZipFromChooser.getName().length(), 
+          currentPath.length() - ProjectConstants.ZIP_FILE_SUFFIX.length());
+    }
+    return currentPath;
   }
   
   /**
@@ -315,7 +325,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     Map attributes = font.getAttributes();
     attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
     moreDetailsLabel.setFont(font.deriveFont(attributes));
-    
   }
   
   /**
@@ -366,6 +375,14 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     if(!chosenZip.getName().endsWith(ProjectConstants.ZIP_FILE_EXTENSION)){
       chosenZip = new File(chosenZip.getPath() + ".zip");
     }
+    
+    if (chosenZip.exists()) {
+      int response = JOptionPane.showConfirmDialog(this, "Override " + chosenZip.getName() + "?", "Confirm Override", JOptionPane.YES_NO_OPTION);
+      if (response == JOptionPane.NO_OPTION) {
+        chosenZip = new File(showArchiveSaveLocationChooser());
+      }
+    }
+    
     // Find out if the currentPath is in the comboBox model.
     boolean isInModel = false;
     ComboBoxModel<String> model = archiveLocationCombobox.getModel();

@@ -71,13 +71,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action1_progress_title">
-        <comment>Progress dialog title for Generating milestone.</comment>
-        <val lang="en_US">Generate milestone file</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Generating_milestone">
+        <comment>Progress dialog title shown when a milestone is generating.</comment>
+        <val lang="en_US">Generating Milestone</val>
+        <val lang="de_DE">Generating Milestone</val>
+        <val lang="fr_FR">Generating Milestone</val>
+        <val lang="ja_JP">Generating Milestone</val>
+        <val lang="nl_NL">Generating Milestone</val>
     </key>
     <key value="action1_infoMessage">
         <comment>Info message in generate milestone.</comment>
@@ -95,39 +95,51 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action2_chooseFile_title">
-        <comment>Choose file title in pack modified files.</comment>
-        <val lang="en_US">Package location</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Package_location">
+        <comment>Title of dialog.</comment>
+        <val lang="en_US">Package Location</val>
+        <val lang="de_DE">Package Location</val>
+        <val lang="fr_FR">Package Location</val>
+        <val lang="ja_JP">Package Location</val>
+        <val lang="nl_NL">Package Location</val>
     </key>
-    <key value="action2_chooseFile_descriptor">
-        <comment>Choose file descriptor in pack modified files.</comment>
-        <val lang="en_US">Zip files</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Zip_files">
+        <comment>Zip Files</comment>
+        <val lang="en_US">Zip Files</val>
+        <val lang="de_DE">Zip Files</val>
+        <val lang="fr_FR">Zip Files</val>
+        <val lang="ja_JP">Zip Files</val>
+        <val lang="nl_NL">Zip Files</val>
     </key>
     
-    <key value="action2_milestoneNotExists_dialog_title">
+    <key value="Milestone_missing">
         <comment>Confirm dialog title in pack modified files.</comment>
-        <val lang="en_US">Didn't find "translation_builder_milestone.xml" </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="en_US">Milestone Missing</val>
+        <val lang="de_DE">Milestone Missing</val>
+        <val lang="fr_FR">Milestone Missing</val>
+        <val lang="ja_JP">Milestone Missing</val>
+        <val lang="nl_NL">Milestone Missing</val>
     </key>
-    <key value="action2_milestoneNotExists_dialog_message">
-        <comment>Confirm dialog message in pack modified files.</comment>
-        <val lang="en_US"> The milestone file doesn't exist. Do you want to create the milestone file : </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Create_new_milestone">
+        <comment>When the user wants to create the archive with modfied files, 
+        but the milestone is missing.</comment>
+        <val lang="en_US">Create new milestone?\n''{0}''</val>
+        <val lang="de_DE">Create new milestone?\n''{0}''</val>
+        <val lang="fr_FR">Create new milestone?\n''{0}''</val>
+        <val lang="ja_JP">Create new milestone?\n''{0}''</val>
+        <val lang="nl_NL">Create new milestone?\n''{0}''</val>
     </key>
+    
+    <key value="Pack_entire_dir">
+        <comment>Modified files generation, milestone is missing. We can generate
+        a new milestone or archive an entire directory. </comment>
+        <val lang="en_US">Pack entire dir</val>
+        <val lang="de_DE">Pack entire dir</val>
+        <val lang="fr_FR">Pack entire dir</val>
+        <val lang="ja_JP">Pack entire dir</val>
+        <val lang="nl_NL">Pack entire dir</val>
+    </key>
+    
     <key value="yes_button">
         <comment>"Yes" buttons.</comment>
         <val lang="en_US">Yes</val>
@@ -168,22 +180,17 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action2_packOnlyModified_message1">
-        <comment>Message dialog content in pack modified files.</comment>
-        <val lang="en_US">A package containing </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    
+    <key value="Report_number_of_modified_files">
+        <comment>When the modified files archive is generated, it shows how many files were added.</comment>
+        <val lang="en_US">A package containing {0} file(s) was created.</val>
+        <val lang="de_DE">A package containing {0} file(s) was created.</val>
+        <val lang="fr_FR">A package containing {0} file(s) was created.</val>
+        <val lang="ja_JP">A package containing {0} file(s) was created.</val>
+        <val lang="nl_NL">A package containing {0} file(s) was created.</val>
     </key>
-    <key value="action2_packOnlyModified_message2">
-        <comment>Message dialog content in pack modified files.</comment>
-        <val lang="en_US"> files was created.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
+    
+    
     <key value="action2_packOnlyModified_title">
         <comment>Message dialog title in pack modified files.</comment>
         <val lang="en_US">Modified files packed</val>
@@ -345,16 +352,15 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="previewDialog_errorMessage">
+    <key value="No_selected_files_to_apply">
         <comment>Message shown if the user doesn't select something in the dialog.</comment>
-        <val lang="en_US">Couldn't apply files.\n
-         No file selected.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="en_US">There are no selected files to apply.</val>
+        <val lang="de_DE">There are no selected files to apply.</val>
+        <val lang="fr_FR">There are no selected files to apply.</val>
+        <val lang="ja_JP">There are no selected files to apply.</val>
+        <val lang="nl_NL">There are no selected files to apply.</val>
     </key>
-    <key value="applying_selected_files">
+    <key value="Applying_selected_files">
         <comment>Progress dialog title.</comment>
         <val lang="en_US">Applying selected files</val>
         <val lang="de_DE">de_DE_translation</val>
