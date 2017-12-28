@@ -160,8 +160,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
          */
         true);
     
-    // Set location
-    setLocationRelativeTo(parentFrame);
     
     modifiedFilesLabel = new JLabel();
     moreDetailsLabel = new JLabel();
@@ -206,43 +204,101 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     JLabel label = new JLabel("Package Location: ");
     Insets insets = new Insets(2, 2, 2, 2);
     
-    mainPanel.add(label, new GridBagConstraints(0, 0, 1, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.NONE, 
-        insets, 1, 1));
-    mainPanel.add(archiveLocationCombobox, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.HORIZONTAL, 
-        insets, 1, 1));
-    mainPanel.add(folderButton, new GridBagConstraints(2, 0, 1, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.NONE, 
-        insets, 1, 1));
-    mainPanel.add(generateReportCheckbox, new GridBagConstraints(0, 1, 3, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.NONE, 
-        insets, 1, 1));
-    mainPanel.add(infoPanel, new GridBagConstraints(0, 2, 3, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.NONE, 
-        insets, 1, 1));
+   GridBagConstraints gbc = new GridBagConstraints(); 
+   
+   gbc.gridx = 0;
+   gbc.gridy = 0;
+   gbc.anchor = GridBagConstraints.NORTHWEST;
+   gbc.fill = GridBagConstraints.HORIZONTAL;
+   infoPanel.add(infoLabel, gbc);
+   
+//   
+//    infoPanel.add(infoLabel, new GridBagConstraints(0, 0, 1, 2, 0, 0, 
+//        GridBagConstraints.NORTH, 
+//        GridBagConstraints.NONE, 
+//        insets, 1, 1));
 
-    infoPanel.add(infoLabel, new GridBagConstraints(0, 0, 1, 2, 0, 0, 
-        GridBagConstraints.NORTH, 
-        GridBagConstraints.NONE, 
-        insets, 1, 1));
-    infoPanel.add(textInfo, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.HORIZONTAL, 
-        insets, 1, 1));
-    infoPanel.add(modifiedFilesLabel, new GridBagConstraints(1, 1, 1, 1, 0, 0, 
-      GridBagConstraints.WEST, 
-      GridBagConstraints.NONE, 
-      insets, 1, 1));
-    infoPanel.add(moreDetailsLabel, new GridBagConstraints(1, 2, 1, 1, 0, 0, 
-        GridBagConstraints.WEST, 
-        GridBagConstraints.NONE, 
-        insets, 1, 1));
+   gbc.gridx = 1;
+   infoPanel.add(textInfo, gbc);
+   
+//   infoPanel.add(textInfo, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.HORIZONTAL, 
+//        insets, 1, 1));
+   
+   gbc.gridy++;
+   infoPanel.add(modifiedFilesLabel, gbc);
+//   infoPanel.add(modifiedFilesLabel, new GridBagConstraints(1, 1, 1, 1, 0, 0, 
+//      GridBagConstraints.WEST, 
+//      GridBagConstraints.NONE, 
+//      insets, 1, 1));
+ 
+   gbc.gridy++;
+   infoPanel.add(moreDetailsLabel, gbc);
+   
+//    infoPanel.add(moreDetailsLabel, new GridBagConstraints(1, 2, 1, 1, 0, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.NONE, 
+//        insets, 1, 1));
+//    
+    
+    
+    
+     gbc = new GridBagConstraints();
+    
+    gbc.gridx = 0; 
+    gbc.gridy = 0;
+    gbc.anchor = GridBagConstraints.WEST;
+    mainPanel.add(label, gbc);
+    
+//    mainPanel.add(label, new GridBagConstraints(0, 0, 1, 1, 0, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.NONE, 
+//        insets, 1, 1));
+   
+    gbc.gridx = 1; 
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weightx = 1;
+    
+//    archiveLocationCombobox.setPreferredSize(new Dimension(400, 20));
+    mainPanel.add(archiveLocationCombobox, gbc);
+    
+//    mainPanel.add(archiveLocationCombobox, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.HORIZONTAL, 
+//        insets, 1, 1));
+  
+    gbc.gridx = 2;
+    gbc.weightx = 0;
+    gbc.fill = GridBagConstraints.NONE;
+    mainPanel.add(folderButton, gbc);
+    
+//    mainPanel.add(folderButton, new GridBagConstraints(2, 0, 1, 1, 0, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.NONE, 
+//        insets, 1, 1));
+
+    gbc.gridx = 0;
+    gbc.gridy++;
+    gbc.gridwidth = 3;
+    mainPanel.add(generateReportCheckbox, gbc);
+    
+//    mainPanel.add(generateReportCheckbox, new GridBagConstraints(0, 1, 3, 1, 0, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.NONE, 
+//        insets, 1, 1));
+    
+    gbc.gridy++;
+    gbc.weightx = 1;
+    gbc.weighty = 1;
+    gbc.anchor = GridBagConstraints.NORTHWEST;
+    gbc.fill = GridBagConstraints.NONE;
+    mainPanel.add(infoPanel, gbc);
+    
+//    mainPanel.add(infoPanel, new GridBagConstraints(0, 2, 3, 1, 0, 0, 
+//        GridBagConstraints.WEST, 
+//        GridBagConstraints.NONE, 
+//        insets, 1, 1));
     
     getContentPane().add(mainPanel, BorderLayout.CENTER);
   }
@@ -297,11 +353,11 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     initArchiveLocation();
     
     getOkButton().setText(messages.getMessage(Tags.SAVE));
-    
-    setPreferredSize(new Dimension(1024, 330));
-    setMinimumSize(getPreferredSize());
-    pack();
     setResizable(true);
+    pack();
+    setMinimumSize(getSize());
+    // Set location
+    setLocationRelativeTo(super.getParent());
     
     instance.setVisible(true);
   }
