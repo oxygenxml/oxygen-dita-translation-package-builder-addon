@@ -306,7 +306,7 @@
     </key>
     <key value="showReport_label">
         <comment>The label from showReport dialog.</comment>
-        <val lang="en_US">Package applied over the current map. The overridden files are : </val>
+        <val lang="en_US">Package applied over the current map. The overridden files are: </val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -482,7 +482,7 @@
     </key>
     <key value="reportDialog_label">
         <comment> The label from the report dialog.</comment>
-        <val lang="en_US">A report will be created at : </val>
+        <val lang="en_US">A report will be created at: </val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -498,15 +498,15 @@
     </key>
     <key value="reportDialog_label_text2">
         <comment> The label from the report dialog.</comment>
-        <val lang="en_US">The last report was created on : </val>
+        <val lang="en_US">The last report was created on:</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="reportDialog_logger_message1">
-        <comment> Logger mesage.</comment>
-        <val lang="en_US">The choosed package location from the report dialog is : </val>
+        <comment> Logger message.</comment>
+        <val lang="en_US">The choosed package location from the report dialog is: </val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
@@ -562,7 +562,7 @@
 	</key>
 	<key value="createPackage_logger_message5">
 		<comment> Create package method, logger message.</comment>
-		<val lang="en_US">Founded modified files : </val>
+		<val lang="en_US">Founded modified files: </val>
 		<val lang="de_DE">de_DE_translation</val>
 		<val lang="fr_FR">fr_FR_translation</val>
 		<val lang="ja_JP">ja_JP_translation</val>
