@@ -138,7 +138,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           if(milestoneFile.exists()){
             Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMapLocation);
             int buttonId = pluginWorkspaceAccess.showConfirmDialog("Override milestone",
-                "An older milestone was created at : " + milestoneLastModified + ". Do you want to override it?", 
+                "An older milestone was created at: " + milestoneLastModified + ". Do you want to override it?", 
                 new String[] {"Yes", "No"}, 
                 new int[] {0, 1});
             if(buttonId == 0){

@@ -1,6 +1,5 @@
 package com.oxygenxml.translation.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -29,7 +29,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
@@ -110,7 +109,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   /**
    * Text area where the information about XHTML report are presented.
    */
-  private JTextArea textInfo = new JTextArea();
+  private JLabel textInfo = new JLabel();
   /**
    * Archive location field.
    */
@@ -119,6 +118,12 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * The generate report check box.
    */
   private final JCheckBox generateReportCheckbox;
+  
+  /**
+   * The format of the date.
+   */
+  private static final String DATE_FORMAT = "yyyy.MM.dd 'at' HH:mm"; 
+  
   /**
    * Mouse Listener
    */
@@ -194,114 +199,75 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     // The default location of the report file.
     generateReportCheckbox = new JCheckBox("Generate report");
 
-    File imageInfoLocation = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), "InlineHelp16.png");
-    ImageIcon imageInfo = new ImageIcon(imageInfoLocation.getPath());
-    JLabel infoLabel = new JLabel(imageInfo, JLabel.HORIZONTAL);
-
-    JPanel mainPanel = new JPanel(new GridBagLayout());
-    JPanel infoPanel = new JPanel(new GridBagLayout());
-    
-    JLabel label = new JLabel("Package Location: ");
-    Insets insets = new Insets(2, 2, 2, 2);
-    
-   GridBagConstraints gbc = new GridBagConstraints(); 
-   
-   gbc.gridx = 0;
-   gbc.gridy = 0;
-   gbc.anchor = GridBagConstraints.NORTHWEST;
-   gbc.fill = GridBagConstraints.HORIZONTAL;
-   infoPanel.add(infoLabel, gbc);
-   
-//   
-//    infoPanel.add(infoLabel, new GridBagConstraints(0, 0, 1, 2, 0, 0, 
-//        GridBagConstraints.NORTH, 
-//        GridBagConstraints.NONE, 
-//        insets, 1, 1));
-
-   gbc.gridx = 1;
-   infoPanel.add(textInfo, gbc);
-   
-//   infoPanel.add(textInfo, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.HORIZONTAL, 
-//        insets, 1, 1));
-   
-   gbc.gridy++;
-   infoPanel.add(modifiedFilesLabel, gbc);
-//   infoPanel.add(modifiedFilesLabel, new GridBagConstraints(1, 1, 1, 1, 0, 0, 
-//      GridBagConstraints.WEST, 
-//      GridBagConstraints.NONE, 
-//      insets, 1, 1));
- 
-   gbc.gridy++;
-   infoPanel.add(moreDetailsLabel, gbc);
-   
-//    infoPanel.add(moreDetailsLabel, new GridBagConstraints(1, 2, 1, 1, 0, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.NONE, 
-//        insets, 1, 1));
-//    
-    
-    
-    
-     gbc = new GridBagConstraints();
+    getContentPane().setLayout(new GridBagLayout());
+    GridBagConstraints gbc = new GridBagConstraints();
     
     gbc.gridx = 0; 
     gbc.gridy = 0;
     gbc.anchor = GridBagConstraints.WEST;
-    mainPanel.add(label, gbc);
+    getContentPane().add(new JLabel("Package Location: "), gbc);
     
-//    mainPanel.add(label, new GridBagConstraints(0, 0, 1, 1, 0, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.NONE, 
-//        insets, 1, 1));
-   
     gbc.gridx = 1; 
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weightx = 1;
+    getContentPane().add(archiveLocationCombobox, gbc);
     
-//    archiveLocationCombobox.setPreferredSize(new Dimension(400, 20));
-    mainPanel.add(archiveLocationCombobox, gbc);
-    
-//    mainPanel.add(archiveLocationCombobox, new GridBagConstraints(1, 0, 1, 1, 1, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.HORIZONTAL, 
-//        insets, 1, 1));
-  
     gbc.gridx = 2;
     gbc.weightx = 0;
-    gbc.fill = GridBagConstraints.NONE;
-    mainPanel.add(folderButton, gbc);
+    getContentPane().add(folderButton, gbc);
     
-//    mainPanel.add(folderButton, new GridBagConstraints(2, 0, 1, 1, 0, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.NONE, 
-//        insets, 1, 1));
-
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 3;
-    mainPanel.add(generateReportCheckbox, gbc);
-    
-//    mainPanel.add(generateReportCheckbox, new GridBagConstraints(0, 1, 3, 1, 0, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.NONE, 
-//        insets, 1, 1));
+    generateReportCheckbox.setBorder(null);
+    gbc.insets = new Insets(5, 0, 5, 0);
+    getContentPane().add(generateReportCheckbox, gbc);
     
     gbc.gridy++;
-    gbc.weightx = 1;
-    gbc.weighty = 1;
+    gbc.weighty = 1;    
+    gbc.insets = new Insets(0, 0, 0, 0);
     gbc.anchor = GridBagConstraints.NORTHWEST;
     gbc.fill = GridBagConstraints.NONE;
-    mainPanel.add(infoPanel, gbc);
+    getContentPane().add(createInfoPanel(), gbc);
     
-//    mainPanel.add(infoPanel, new GridBagConstraints(0, 2, 3, 1, 0, 0, 
-//        GridBagConstraints.WEST, 
-//        GridBagConstraints.NONE, 
-//        insets, 1, 1));
-    
-    getContentPane().add(mainPanel, BorderLayout.CENTER);
   }
+
+
+  /**
+   * Create a panel that contains the information about the modified files.
+   * @return The panel.
+   */
+  private JPanel createInfoPanel() {
+    File imageInfoLocation = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(),
+        "InlineHelp16.png");
+    ImageIcon imageInfo = new ImageIcon(imageInfoLocation.getPath());
+
+    JPanel infoPanel = new JPanel(new GridBagLayout());
+    GridBagConstraints gbc = new GridBagConstraints();
+    
+    // add the info icon.
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridheight = 3;
+    gbc.insets.right = 5;
+    gbc.anchor = GridBagConstraints.NORTHWEST;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    infoPanel.add(new JLabel(imageInfo), gbc);
+
+    gbc.gridx = 1;
+    gbc.insets.right = 0;
+    gbc.gridheight = 1;
+    infoPanel.add(textInfo, gbc);
+
+    gbc.gridy++;
+    infoPanel.add(modifiedFilesLabel, gbc);
+
+    gbc.gridy++;
+    infoPanel.add(moreDetailsLabel, gbc);
+
+    return infoPanel;
+  }
+  
   
   /**
    * @return The location where the archive will be saved.
@@ -370,8 +336,11 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     StringBuilder text = new StringBuilder();
     text.append("(").append(modifiedResources.size()).append(")");
     text.append(" files were modified since ");
-    text.append(new Date(reportFile.lastModified()));
+    Date date = new Date(reportFile.lastModified());
+    SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
+    text.append(dataFormat.format(date));
     modifiedFilesLabel.setText(text.toString());
+    
     text.setLength(0);
     text.append("More details...");
     moreDetailsLabel.setText(text.toString());
@@ -387,11 +356,14 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * Configure the components which presents the informations about report file.
    */
   private void initReportFilesInfo() {
-    String text = messages.getMessage(Tags.REPORT_DIALOG_LABEL) + ProjectConstants.getHTMLReportFile(rootMapFile);
-    textInfo.setText(text);
-    textInfo.setWrapStyleWord(true);
-    textInfo.setLineWrap(true);
+    StringBuilder sb = new StringBuilder();
+    sb.append( messages.getMessage(Tags.REPORT_DIALOG_LABEL));
+    sb.append(ProjectConstants.getHTMLReportFile(rootMapFile));
     
+    textInfo.setText(sb.toString());
+//    textInfo.setWrapStyleWord(true);
+//    textInfo.setLineWrap(true);
+
     generateReportCheckbox.setSelected(true);
     generateReportCheckbox.setToolTipText(messages.getMessage(Tags.REPORT_DIALOG_CHECKBOX_TOOLTIP));
     
@@ -400,7 +372,9 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
         if(e.getStateChange() == ItemEvent.SELECTED){
           textInfo.setText(messages.getMessage(Tags.REPORT_DIALOG_LABEL) + ProjectConstants.getHTMLReportFile(rootMapFile));         
         } else {
-          textInfo.setText(messages.getMessage(Tags.REPORT_DIALOG_LABEL_TEXT2) + new Date(reportFile.lastModified()));
+          Date date = new Date(reportFile.lastModified());
+          SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
+          textInfo.setText(messages.getMessage(Tags.REPORT_DIALOG_LABEL_TEXT2) +" "+ dataFormat.format(date));
         }
       }
     });
