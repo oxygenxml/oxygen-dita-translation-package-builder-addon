@@ -250,7 +250,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   private JPanel createInfoPanel() {
     ImageIcon infoIcon = null;
     URL resource = getClass().getClassLoader().getResource(Icons.INFO_ICON);
-    System.out.println("resourceURL: "+ resource);
     if(resource != null) {
       infoIcon = (ImageIcon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
     }

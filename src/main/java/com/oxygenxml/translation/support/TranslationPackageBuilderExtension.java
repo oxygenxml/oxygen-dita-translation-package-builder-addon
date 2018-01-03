@@ -197,14 +197,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
                     resourceBundle.getMessage(Tags.NO_BUTTON), 
                     resourceBundle.getMessage(Tags.PACK_ENTIRE_DIR)},
                 // Button ids
-                // TODO Adrian - Use JOptionPane button constants.
-                new int[] {0, 1, 2});
+                new int[] {JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, JOptionPane.UNDEFINED_CONDITION});
             //Generate the first milestone.
-            if(buttonId == 0){
+            if(buttonId == JOptionPane.YES_OPTION){
               generateMilestone(pluginWorkspaceAccess, editorLocation, milestoneFile, frame, false);
-            }
-            //If the user wants to pack the entire directory show a file chooser and create package.
-            else if(buttonId == 2){     
+            } else if(buttonId == JOptionPane.NO_OPTION){     
+              //If the user wants to pack the entire directory show a file chooser and create package.
               File chosenDirectory = pluginWorkspaceAccess.chooseFile(
                   resourceBundle.getMessage(Tags.PACKAGE_LOCATION),
                   new String[] {"zip"}, 
