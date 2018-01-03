@@ -480,13 +480,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="reportDialog_label">
-        <comment> The label from the report dialog.</comment>
-        <val lang="en_US">A report will be created at: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="report_will_be_created">
+        <comment>In "Create Modified Files..." dialog this message will show where the 
+        report with files added to package will be saved.</comment>
+        <val lang="en_US">A report will be created at:</val>
+        <val lang="de_DE">A report will be created at:</val>
+        <val lang="fr_FR">A report will be created at:</val>
+        <val lang="ja_JP">A report will be created at:</val>
+        <val lang="nl_NL">A report will be created at:</val>
     </key>
     <key value="reportDialog_checkbox_tooltip">
         <comment> The checkbox tooltip from the report dialog.</comment>
@@ -496,13 +497,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="reportDialog_label_text2">
-        <comment> The label from the report dialog.</comment>
-        <val lang="en_US">The last report was created on:</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="last_report_creation_time">
+        <comment>In "Create Modified Files Package" is a label informing the user
+        when last report was created.</comment>
+        <val lang="en_US">Last report was created on:</val>
+        <val lang="de_DE">Last report was created on:</val>
+        <val lang="fr_FR">Last report was created on:</val>
+        <val lang="ja_JP">Last report was created on:</val>
+        <val lang="nl_NL">Last report was created on:</val>
     </key>
     <key value="reportDialog_logger_message1">
         <comment> Logger message.</comment>

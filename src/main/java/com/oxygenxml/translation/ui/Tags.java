@@ -124,9 +124,18 @@ public interface Tags {
   public final String GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE1 = "generateModified_progress_message1";
   public final String GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE2 = "generateModified_progress_message2";
   
-  public final String REPORT_DIALOG_LABEL = "reportDialog_label";
+  /**
+   * en: A report will be created at: a_date.
+   */
+  public final String XHTML_REPORT_LOCATION = "report_will_be_created";
+  
   public final String REPORT_DIALOG_CHECKBOX_TOOLTIP = "reportDialog_checkbox_tooltip";
-  public final String REPORT_DIALOG_LABEL_TEXT2 = "reportDialog_label_text2";
+  
+  /**
+   * en: Last report was created on: a_date.
+   */
+  public final String LAST_REPORT_CREATION_TIME = "last_report_creation_time";
+  
   public final String REPORT_DIALOG_LOGGER_MESSAGE = "reportDialog_logger_message1";
   public final String REPORT_DIALOG_FILE_DESCRIPTOR = "reportDialog_fileDescriptor";
   public final String REPORT_DIALOG_CHECKBOX_TEXT = "reportDialog_checkbox_text";

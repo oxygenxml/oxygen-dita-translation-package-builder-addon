@@ -107,7 +107,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   private JLabel modifiedFilesLabel;
   
   /**
-   * Text area where the information about XHTML report are presented.
+   * Where the information about XHTML report are presented.
    */
   private JLabel textInfo = new JLabel();
   /**
@@ -357,12 +357,9 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    */
   private void initReportFilesInfo() {
     StringBuilder sb = new StringBuilder();
-    sb.append( messages.getMessage(Tags.REPORT_DIALOG_LABEL));
+    sb.append(messages.getMessage(Tags.XHTML_REPORT_LOCATION)).append(" ");
     sb.append(ProjectConstants.getHTMLReportFile(rootMapFile));
-    
     textInfo.setText(sb.toString());
-//    textInfo.setWrapStyleWord(true);
-//    textInfo.setLineWrap(true);
 
     generateReportCheckbox.setSelected(true);
     generateReportCheckbox.setToolTipText(messages.getMessage(Tags.REPORT_DIALOG_CHECKBOX_TOOLTIP));
@@ -370,11 +367,11 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     generateReportCheckbox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(e.getStateChange() == ItemEvent.SELECTED){
-          textInfo.setText(messages.getMessage(Tags.REPORT_DIALOG_LABEL) + ProjectConstants.getHTMLReportFile(rootMapFile));         
+          textInfo.setText(messages.getMessage(Tags.XHTML_REPORT_LOCATION) + ProjectConstants.getHTMLReportFile(rootMapFile));         
         } else {
           Date date = new Date(reportFile.lastModified());
           SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
-          textInfo.setText(messages.getMessage(Tags.REPORT_DIALOG_LABEL_TEXT2) +" "+ dataFormat.format(date));
+          textInfo.setText(messages.getMessage(Tags.LAST_REPORT_CREATION_TIME) +" "+ dataFormat.format(date));
         }
       }
     });
