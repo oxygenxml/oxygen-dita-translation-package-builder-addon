@@ -52,6 +52,7 @@ import ro.sync.exml.workspace.api.editor.page.ditamap.WSDITAMapEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.util.URLUtil;
 
 /**
  * Plug-in extension - workspace access extension.
@@ -616,6 +617,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // If the number of modified files is grater than 0 show the report dialog and create package.
         if(!modifiedResourcesWorker.getModifiedResources().isEmpty()){
           GenerateArchivePackageDialog report = GenerateArchivePackageDialog.getInstance();
+          File correctedFile = URLUtil.getAbsoluteFileFromFileUrl(rootMap);
           report.showDialog(
               /*
                * The list with the modified resources.
@@ -624,9 +626,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               /*
                * The root map
                */
-              new File(rootMap.getFile())
+              correctedFile
               );
-          
           //Create report and package only if the user pressed the "Save" button.
           if (report.getResult() == OKCancelDialog.RESULT_OK) {
             File chosenDir = report.getChoosedLocation();

@@ -16,12 +16,14 @@ import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
 import javax.swing.ComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -34,7 +36,6 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 
-import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
 import com.oxygenxml.translation.support.storage.ComboHistory;
 import com.oxygenxml.translation.support.storage.ComboItem;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
@@ -185,16 +186,23 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
 
     // Install the Undo/Redo support
     UndoRedoUtils.installUndoRedoSupport(locationField);
-
-    File imageFolderLocation = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), "Open16.png");
-    ImageIcon image = new ImageIcon(imageFolderLocation.getPath());
-    final ToolbarToggleButton folderButton = new ToolbarToggleButton(image);
-    // Show a file chooser when the user clicks on the folder image.
-    folderButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-         showArchiveSaveLocationChooser();
-      }
-    });
+    
+    URL resource = PluginWorkspaceProvider.class.getClassLoader().getResource(Icons.OPEN_DIRECTOR_ICON);
+    Icon image = null;
+    if(resource != null) {
+       image = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
+    }
+    
+    ToolbarToggleButton folderButton = null;
+    if(image != null) {
+      folderButton = new ToolbarToggleButton(image);
+      // Show a file chooser when the user clicks on the folder image.
+      folderButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          showArchiveSaveLocationChooser();
+        }
+      });
+    }
     
     // The default location of the report file.
     generateReportCheckbox = new JCheckBox("Generate report");
@@ -214,7 +222,9 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     
     gbc.gridx = 2;
     gbc.weightx = 0;
-    getContentPane().add(folderButton, gbc);
+    if(folderButton != null) {
+      getContentPane().add(folderButton, gbc);
+    }
     
     gbc.gridx = 0;
     gbc.gridy++;
@@ -238,10 +248,13 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * @return The panel.
    */
   private JPanel createInfoPanel() {
-    File imageInfoLocation = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(),
-        "InlineHelp16.png");
-    ImageIcon imageInfo = new ImageIcon(imageInfoLocation.getPath());
-
+    ImageIcon infoIcon = null;
+    URL resource = getClass().getClassLoader().getResource(Icons.INFO_ICON);
+    System.out.println("resourceURL: "+ resource);
+    if(resource != null) {
+      infoIcon = (ImageIcon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
+    }
+    
     JPanel infoPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
     
@@ -252,7 +265,9 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     gbc.insets.right = 5;
     gbc.anchor = GridBagConstraints.NORTHWEST;
     gbc.fill = GridBagConstraints.HORIZONTAL;
-    infoPanel.add(new JLabel(imageInfo), gbc);
+    if(infoIcon != null) {
+      infoPanel.add(new JLabel(infoIcon), gbc);
+    }
 
     gbc.gridx = 1;
     gbc.insets.right = 0;
@@ -312,7 +327,8 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     this.modifiedResources = modifiedRes;
     this.rootMapFile = rootMap;
     
-    reportFile = new File(rootMapFile.getParentFile(), ProjectConstants.getHTMLReportFile(rootMapFile));
+    File parentFile = rootMapFile.getParentFile();
+    reportFile = new File(parentFile, ProjectConstants.getHTMLReportFile(rootMapFile));
     
     initModifiedFilesInfo();
     initReportFilesInfo();
@@ -397,7 +413,9 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   protected void doOK() {
     // The selected path from the comboBox.
     currentPath = ((JTextComponent) archiveLocationCombobox.getEditor().getEditorComponent()).getText();
+    
     chosenZip = new File(currentPath);
+    
     //Add .zip at the package name if the user forgot.
     if(!chosenZip.getName().endsWith(ProjectConstants.ZIP_FILE_EXTENSION)){
       chosenZip = new File(chosenZip.getPath() + ".zip");

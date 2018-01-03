@@ -9,15 +9,22 @@
   <formats>
     <format>jar</format>
   </formats>
-  <fileSets>
-      <fileSet>
-      <directory>target/lib</directory>
-      <outputDirectory>lib</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-  </fileSets>
+	<fileSets>
+		<fileSet>
+			<directory>target/lib</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/images</directory>
+			<outputDirectory>images</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+	</fileSets>
 
   <files>
     <file>
