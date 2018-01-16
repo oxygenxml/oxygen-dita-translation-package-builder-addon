@@ -14,7 +14,7 @@ before_script:
   - chmod +x travis/deploy.sh
   - chmod +x travis/checkForTag.sh
   - git config credential.helper "store --file=.git/credentials"
-  - echo "https://${MY_GH_TOKEN_OXYGEN}:@github.com" > .git/credentials
+  - echo "https://${OXYGEN_PLUGIN_TOKEN}:@github.com" > .git/credentials
   - ./travis/checkForTag.sh
 script:
  - mvn clean install -DskipTests
@@ -22,7 +22,7 @@ before_deploy:
   - ./travis/deploy.sh
 deploy:
   provider: releases
-  api_key: ${MY_GH_TOKEN_OXYGEN}
+  api_key: ${OXYGEN_PLUGIN_TOKEN}
   file:
     - target/translation-package-builder-${TRAVIS_TAG}-plugin.jar
     - target/addon.xml
