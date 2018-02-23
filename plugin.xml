@@ -4,7 +4,7 @@
 
 <plugin
  id="com.oxygenxml.translation.support"
- name="com.oxygenxml.translation.support"
+ name="Translation Package Builder"
  description="com.oxygenxml.translation.support"
  version="${project.version}"
  vendor="oXygen XML"

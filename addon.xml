@@ -11,7 +11,7 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
         <xt:oxy_version>18.1+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Oxygen XML Editor</xt:author>
-        <xt:name>Translation Package Builder (Experimental)</xt:name>
+        <xt:name>Translation Package Builder</xt:name>
         <xt:description><html xmlns="http://www.w3.org/1999/xhtml">
             <head>
                 <title>Translation Package Builder</title>
