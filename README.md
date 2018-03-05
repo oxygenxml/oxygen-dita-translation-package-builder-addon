@@ -13,3 +13,9 @@ How to install
 5. Restart the application.
 
 Result: A **Tranlation Package Builder** submenu will now be available in the contextual menu of the **DITA Maps Manager**. This submenu includes actions to generate a package of modified files that can be sent to translators, as well as an action to extract translated files back into your DITA project.
+
+Copyright and License
+---------------------
+Copyright 2018 Syncro Soft SRL.
+
+This project is licensed under [Apache License 2.0](https://github.com/oxygenxml/oxygen-dita-translation-package-builder/blob/master/LICENSE)
