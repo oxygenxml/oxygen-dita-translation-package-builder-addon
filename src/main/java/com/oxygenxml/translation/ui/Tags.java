@@ -7,7 +7,14 @@ public interface Tags {
   public final String TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME = "translation_package_builder_plugin_name";
   public final String JMENU_ITEM1 = "jmenu_item1";
   public final String JMENU_TOOLTIP_ITEM1 = "jmenu_tooltip_item1";
-  public final String JMENU_ITEM2 = "jmenu_item2";
+  
+  /**
+   * Name of the option that generates the archive with modified files.
+   * 
+   * en: Create modified files package
+   */
+  public final String CREATE_MODIFIED_FILES_PACKAGE = "create_modified_files_package";
+  
   public final String JMENU_TOOLTIP_ITEM2 = "jmenu_tooltip_item2";
   public final String JMENU_ITEM3 = "jmenu_item3";
   public final String JMENU_TOOLTIP_ITEM3 ="jmenu_tooltip_item3";

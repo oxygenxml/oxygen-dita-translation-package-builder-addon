@@ -204,7 +204,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
   public IRootResource wrap(ReferencedResource map) throws IOException {
     ParserCreator parserCreator = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-    if (pluginWorkspace != null) {
+    if (pluginWorkspace != null && pluginWorkspace.getXMLUtilAccess() != null) {
       // Running in Oxygen environment. Use a special parser.
       parserCreator = new OxygenParserCreator(pluginWorkspace.getXMLUtilAccess());
     } else {

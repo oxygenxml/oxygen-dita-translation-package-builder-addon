@@ -1,5 +1,18 @@
 package com.oxygenxml.translation.support.core;
 
+import com.oxygenxml.translation.support.core.resource.IResource;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.storage.InfoResources;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.PathUtil;
+import com.oxygenxml.translation.ui.NoChangedFilesException;
+import com.oxygenxml.translation.ui.PackResult;
+import com.oxygenxml.translation.ui.ProgressChangeAdapter;
+import com.oxygenxml.translation.ui.ProgressChangeEvent;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
+import com.oxygenxml.translation.ui.Tags;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,25 +24,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.bind.JAXBException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-
-import com.oxygenxml.translation.support.core.resource.IResource;
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.storage.InfoResources;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.ui.NoChangedFilesException;
-import com.oxygenxml.translation.ui.PackResult;
-import com.oxygenxml.translation.ui.ProgressChangeAdapter;
-import com.oxygenxml.translation.ui.ProgressChangeEvent;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
-import com.oxygenxml.translation.ui.StoppedByUserException;
-import com.oxygenxml.translation.ui.Tags;
-
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -202,7 +199,7 @@ public class ChangePackageGenerator {
   /**
    * Entry point. Detect what files were modified and put them in a ZIP.
    * 
-   * @param rootDir The location of the directory we want to see what files were changed.
+   * @param rootDir Parent file of the DITA map
    * @param packageLocation The location of the generated ZIP file.
    * @param modifiedResources The list with all the modified files.
    * @param isFromTest True if this method is called by a JUnit test class.
@@ -226,7 +223,6 @@ public class ChangePackageGenerator {
      * 2. ZIP the "destinationDir" at "packageLocation".
      * 3. Delete the "destinationDir".
      */
-    
     PackResult result = new PackResult();
 
     int nrModFiles = 0;
@@ -235,6 +231,14 @@ public class ChangePackageGenerator {
     if (!modifiedResources.isEmpty()) {
         final File tempDir = new File(rootDir, "toArchive");
 
+        String[] elements = new String[totalModifiedfiles];
+        for (int i = 0; i < totalModifiedfiles; i++) {
+          ResourceInfo res = modifiedResources.get(i);
+          URL url = new URL(rootDir.toURI().toURL(), res.getRelativePath());
+          elements[i] = url.toExternalForm();
+        }
+        String commonPath = PathUtil.commonPath(elements);
+        
         //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
         //files in the right directory
         //Then we compress the tempDir and delete it.
@@ -249,15 +253,13 @@ public class ChangePackageGenerator {
             if(indexOf != -1){
               relativePath = relativePath.substring(0, indexOf);
             }
-
-            // TODO #9 It asumes that the map is in the root directory which might not always be true.
-            // TODO Pass a RelativePathResolver which will know the root directory and the map location and will be able to resolve.
-            File dest = new File(tempDir, relativePath);
+            
+            
+            URL url = new URL(rootDir.toURI().toURL(), relativePath);
+            String replaceAll = url.toExternalForm().replaceAll(commonPath, "");
+            
+            File dest = new File(tempDir, replaceAll);
             dest.getParentFile().mkdirs();
-
-            // TODO #9 It asumes that the map is in the root directory which might not always be true.
-            // TODO Pass a RelativePathResolver which will know the root directory and the map location and will be able to resolve.
-
             File sourceFile = new File(rootDir.getPath() + File.separator + relativePath);
             try {
               FileUtils.copyFile(sourceFile, dest);
@@ -293,7 +295,6 @@ public class ChangePackageGenerator {
               fireChangeEvent(event);
             }
           });
-
           archiveBuilder.zipDirectory(tempDir, packageLocation, isFromTest);
         } finally {
           FileUtils.deleteDirectory(tempDir);
@@ -366,8 +367,10 @@ public class ChangePackageGenerator {
    * @param progress A ProgressChangeEvent object.
    */
   private void fireChangeEvent(ProgressChangeEvent progress) {
-    for (ProgressChangeListener progressChangeListener : listeners) {
-      progressChangeListener.change(progress);
+    if (listeners != null) {
+      for (ProgressChangeListener progressChangeListener : listeners) {
+        progressChangeListener.change(progress);
+      } 
     }
   }
   /**
@@ -385,9 +388,11 @@ public class ChangePackageGenerator {
    */
   private boolean isCanceled() {
     boolean result = false;
-    for (ProgressChangeListener progressChangeListener : listeners) {
-      if (progressChangeListener.isCanceled()) {
-        result =  true;
+    if (listeners != null) {
+      for (ProgressChangeListener progressChangeListener : listeners) {
+        if (progressChangeListener.isCanceled()) {
+          result =  true;
+        }
       }
     }
     return result;

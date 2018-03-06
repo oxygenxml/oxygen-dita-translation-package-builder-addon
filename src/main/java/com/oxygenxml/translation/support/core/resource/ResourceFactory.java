@@ -58,4 +58,9 @@ public class ResourceFactory {
     
     return builder.wrap(new ReferencedResource(map, true));
   }
+  
+  public void setDetectionTypeForTestes(DetectionType detectionType) {
+    this.detectionType = detectionType;
+  }
+  
 }

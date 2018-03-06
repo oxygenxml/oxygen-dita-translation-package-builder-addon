@@ -13,6 +13,6 @@ public class SAXParserCreator implements ParserCreator {
    * @see com.oxygenxml.translation.support.util.ParserCreator#createXMLReader()
    */
   public XMLReader createXMLReader(){
-    return ro.sync.xml.parser.ParserCreator.newXRNoValid();
+    return ro.sync.xml.parser.ParserCreator.newXRNoValidFakeResolver();
   }
 }

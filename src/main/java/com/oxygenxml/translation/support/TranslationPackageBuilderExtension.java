@@ -1,35 +1,5 @@
                                                                                                                                                                                                                                                                                                                                                         package com.oxygenxml.translation.support;
 
-import java.awt.Desktop;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import javax.xml.bind.JAXBException;
-
-import org.apache.log4j.Logger;
-
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ProjectConstants;
@@ -44,7 +14,32 @@ import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
 import com.oxygenxml.translation.ui.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.ui.worker.UnzipWorker;
 import com.oxygenxml.translation.ui.worker.ZipWorker;
-
+import java.awt.Desktop;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.Future;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.xml.bind.JAXBException;
+import org.apache.log4j.Logger;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -89,7 +84,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM1));
 
         // Action 2: Create Changed Files Package
-        JMenuItem menuItemPakage = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM2));
+        JMenuItem menuItemPakage = new JMenuItem(resourceBundle.getMessage(Tags.CREATE_MODIFIED_FILES_PACKAGE));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);
         menuItemPakage.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM2));
 
@@ -452,8 +447,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * @param packAll  True if the user wants to pack the entire directory.
    * @param modifiedResources All the modified files.
    * @param shouldCreateReport  True if the user wants to create a report.
+   * 
+   * @return The worker that generates the archive with modified files.
    */
-  private void createPackage(final JFrame frame, 
+    public static Future<?> createPackage(final JFrame frame, 
       final URL rootMap, 
       File chosenDir,
       final PluginResourceBundle resourceBundle,
@@ -531,16 +528,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       }
     });
     zipTask.execute();
-  }
-
-  public File locateFile(URL url) {
-    String result = null;
-    try {
-      result = URLDecoder.decode(url.toString(), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      logger.error(e, e);
-    }
-    return new File(result).getParentFile();
+    
+    return zipTask;
   }
 
   

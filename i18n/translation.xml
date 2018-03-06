@@ -39,13 +39,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="jmenu_item2">
-        <comment>JMenu pack modified files action.</comment>
+    <key value="create_modified_files_package">
+        <comment>Contextual menu action Create Modified Files Package</comment>
         <val lang="en_US">Create Modified Files Package</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Create Modified Files Package</val>
+        <val lang="fr_FR">Create Modified Files Package</val>
+        <val lang="ja_JP">Create Modified Files Package</val>
+        <val lang="nl_NL">Create Modified Files Package</val>
     </key>
     <key value="jmenu_tooltip_item2">
         <comment>JMenu pack modified files tooltip.</comment>
