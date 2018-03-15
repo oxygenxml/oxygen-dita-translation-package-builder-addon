@@ -1,5 +1,7 @@
 package com.oxygenxml.translation.ui;
 
+import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -20,7 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -36,13 +38,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-
-import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
-
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -52,7 +49,7 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * 
  * @author Bivolan Dalina
  */
-public class PreviewDialog extends OKCancelDialog {
+public class PreviewDialog extends OKCancelDialog { //NOSONAR
   /**
    *  Resource bundle.
    */
@@ -111,7 +108,7 @@ public class PreviewDialog extends OKCancelDialog {
    */
   public PreviewDialog(
       final Frame parentFrame, 
-      final ArrayList<String> filePaths, 
+      final List<String> filePaths, 
       final File filesOnDiskDir, 
       final File translatedFilesDir) {
     super(parentFrame, messages.getMessage(Tags.PREVIEW), false);
@@ -142,6 +139,7 @@ public class PreviewDialog extends OKCancelDialog {
     resourcesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
     resourcesTable.addMouseListener(new MouseAdapter() {
+      @Override
       public void mouseClicked(MouseEvent event) {
         // Show a DIFF if the user double clicks on a file.
         if (event.getClickCount() == 2) {
@@ -216,7 +214,7 @@ public class PreviewDialog extends OKCancelDialog {
 
     selectAll.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        if(conflictFlag == false){
+        if(!conflictFlag){
           // Select all table entries if the "Select all" checkbox is selected
           if (e.getStateChange() == ItemEvent.SELECTED) {
             for(int i = 0; i < tableModel.getRowCount(); i++){
@@ -320,7 +318,7 @@ public class PreviewDialog extends OKCancelDialog {
    * @param selectedFiles  A list with all the selected files from the tree view option.
    * @throws IOException  Problems reading the file.
    */
-  private void deleteUnselectedFileFromDir(File dirPath, ArrayList<File> selectedFiles) throws IOException{
+  private void deleteUnselectedFileFromDir(File dirPath, List<File> selectedFiles) throws IOException{
     File[] everythingInThisDir = dirPath.listFiles();
     if (everythingInThisDir != null){
       // for every file in the current directory
@@ -369,12 +367,12 @@ public class PreviewDialog extends OKCancelDialog {
    * @param child A file from the directory that contains the files shown in the tree view option.
    * @return True if "child" isn't among the selected files.
    */
-  private boolean shouldDelete(ArrayList<File> selectedFiles, File child) {
+  private boolean shouldDelete(List<File> selectedFiles, File child) {
     boolean shouldDelete = !selectedFiles.contains(child);
     if (shouldDelete && child.isDirectory()) {
       // Check in the selected files for its descendents.
       for (Iterator<File> iterator = selectedFiles.iterator(); iterator.hasNext();) {
-        File file = (File) iterator.next();
+        File file = iterator.next();
 
         boolean isDescendant = file.getAbsolutePath().startsWith(child.getAbsolutePath());
         if (isDescendant) {
@@ -400,11 +398,11 @@ public class PreviewDialog extends OKCancelDialog {
 
     final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
     // List of selected files from the tree view
-    ArrayList<File> selectedTreeFiles = new ArrayList<File>();
+    List<File> selectedTreeFiles = new ArrayList<File>();
     // List of selected files from the list view
-    ArrayList<File> selectedListFiles = new ArrayList<File>();
+    List<File> selectedListFiles = new ArrayList<File>();
     // List of unselected files from list view
-    ArrayList<File> unSelectedListFiles = new ArrayList<File>();
+    List<File> unSelectedListFiles = new ArrayList<File>();
 
     if(switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)){
       //Get all the selected paths
@@ -414,18 +412,18 @@ public class PreviewDialog extends OKCancelDialog {
         //Build the relative path 
         Object[] obj = treePath.getPath();
         int length = obj.length;
-        String relativePath = ""; 
+        StringBuilder relativePath = new StringBuilder(); 
         if(length >= 2){
-          relativePath = relativePath + obj[1].toString();
+          relativePath.append(obj[1].toString());
           for (int i = 2; i < length-1; i++) {
-            relativePath = relativePath + "/" + obj[i].toString();
+            relativePath.append('/').append(obj[i].toString());
           }
         }
 
         if (logger.isDebugEnabled()) {
-          logger.debug(new File(translatedFiles.getPath(), relativePath));
+          logger.debug(new File(translatedFiles.getPath(), relativePath.toString()));
         }
-        File selectedFile = new File(translatedFiles.getPath(), relativePath);
+        File selectedFile = new File(translatedFiles.getPath(), relativePath.toString());
         selectedTreeFiles.add(selectedFile);
       }
       if(!selectedTreeFiles.isEmpty() && !selectedTreeFiles.get(0).equals(new File(translatedFiles.getPath()))){
@@ -479,6 +477,7 @@ public class PreviewDialog extends OKCancelDialog {
           messages.getMessage(Tags.APPLYING_SELECTED_FILES));
       // This listener notifies the user about how the operation ended.
       copyDirTask.addProgressListener(new ProgressChangeAdapter() {
+        @Override
         public void done() {
           pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
           try {
@@ -488,6 +487,7 @@ public class PreviewDialog extends OKCancelDialog {
           }
         }
         // Show an error message and delete the translatedFiles directory when the watched operation has failed.
+        @Override
         public void operationFailed(Exception ex) {
           logger.error(ex, ex);
           if(!(ex instanceof StoppedByUserException)){
@@ -549,7 +549,7 @@ public class PreviewDialog extends OKCancelDialog {
    * @param pluginWorkspace  Entry point for accessing the DITA Maps area.
    */
   private void createTreeView(
-      final ArrayList<String> filePaths, 
+      final List<String> filePaths, 
       final File filesOnDiskDir,
       final File translatedFilesDir, 
       final StandalonePluginWorkspace pluginWorkspace) {
@@ -573,6 +573,7 @@ public class PreviewDialog extends OKCancelDialog {
     tree.getCheckBoxTreeSelectionModel().addSelectionPath(new TreePath(root.getPath()));
 
     tree.addMouseListener(new MouseAdapter() {
+      @Override
       public void mouseClicked(MouseEvent me) {
         if(tree.getLastSelectedPathComponent() != null){
           //Double click only on leafs to see the DIFF.
@@ -582,19 +583,19 @@ public class PreviewDialog extends OKCancelDialog {
             //Build the selected path
             Object[] selectedPath = tree.getSelectionPath().getPath();
             int length = selectedPath.length;
-            String relativePath = "";
+            StringBuilder relativePath = new StringBuilder();
             for (int i = 1; i < length-1; i++) {
-              relativePath = relativePath + "/" + selectedPath[i].toString();
+              relativePath.append('/').append(selectedPath[i].toString());
             }
-            relativePath = relativePath + "/" + selectedPath[length-1];
+            relativePath.append('/').append(selectedPath[length-1]);
 
             if (logger.isDebugEnabled()) {
               logger.debug(tree.getSelectionPath());
-              logger.debug(new File(filesOnDiskDir, relativePath));
+              logger.debug(new File(filesOnDiskDir, relativePath.toString()));
             }
 
-            File localFile = new File(filesOnDiskDir, relativePath);
-            File translatedFile = new File(translatedFilesDir, relativePath);
+            File localFile = new File(filesOnDiskDir, relativePath.toString());
+            File translatedFile = new File(translatedFilesDir, relativePath.toString());
 
             showDiff(pluginWorkspace, localFile, translatedFile);
           }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources date="2018-03-06T15:33:41.619+02:00">
+    <info-resource>
+        <md5>94feb3ef75e94259a215bf2640b24a06</md5>
+        <relativePath>THE_ROOT.ditamap</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>167baf3ae12083f20732963517bc34a6</md5>
+        <relativePath>../refMap.ditamap</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>50839bfcfe78a6d509aa9b715bc4e45b</md5>
+        <relativePath>../from_ref/a.dita</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>7e84b1096fade4d985f47e62b48464d1</md5>
+        <relativePath>from_root/topic1.dita</relativePath>
+    </info-resource>
+</resources>

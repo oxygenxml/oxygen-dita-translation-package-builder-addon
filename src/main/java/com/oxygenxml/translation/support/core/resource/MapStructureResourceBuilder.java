@@ -32,10 +32,12 @@ import ro.sync.util.URLUtil;
  * the given resource. 
  */
 public class MapStructureResourceBuilder implements IResourceBuilder {
+  
   /**
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(MapStructureResourceBuilder.class.getName());
+  
   /**
    * An implementation that detects the resources referred inside the content of
    * the given resource.
@@ -117,7 +119,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
 
       return children != null ? children.iterator() : null;
     }
-    
+
     /**
      * @return <code>true</code> if the file exists on the disk.
      */
@@ -150,7 +152,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      */
     private Set<ReferencedResource> gatherReferences()
         throws ParserConfigurationException, SAXException, IOException {
-      
+
       URL toParse = URLUtil.correct(resource.getLocation());
       InputSource is = new InputSource(toParse.toExternalForm());
       XMLReader xmlReader = parserCreator.createXMLReader();
@@ -178,8 +180,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @param resource The resource to wrap and parse for children.
      * @param relativePath A path from the root resource to the current one. 
      * @param parserCreator Creates a parser.
-     * @param recursivityCheck A set to collect all the parsed resources. 
-     * Used to avoid infinite recursion.
+     * @param recursivityCheck A set to collect all the parsed resources. Used to avoid infinite recursion.
      */
     private RootMapResource(
         ReferencedResource resource, 

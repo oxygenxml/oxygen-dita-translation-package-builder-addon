@@ -1,26 +1,23 @@
 package com.oxygenxml.translation.support.core;
 
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.ReferencedResource;
+import com.oxygenxml.translation.support.core.resource.SaxContentHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.log4j.Logger;
-
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
-import com.oxygenxml.translation.support.core.resource.ReferencedResource;
-import com.oxygenxml.translation.support.core.resource.SaxContentHandler;
-
 import junit.framework.TestCase;
+import org.mockito.Mockito;
 import ro.sync.ecss.css.csstopdf.facade.CatalogResolverFacade;
-import ro.sync.exml.options.Options;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 import ro.sync.util.URLUtil;
 
 /**
@@ -30,15 +27,19 @@ import ro.sync.util.URLUtil;
  */
 public class AttributesCollectorUsingSaxTest extends TestCase{
   
-  /**
-   * Logger for logging.
-   */
-  private static final Logger logger = Logger.getLogger(AttributesCollectorUsingSaxTest.class.getName());
+  StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+  PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
+  UtilAccess utilMock = Mockito.mock(UtilAccess.class);
   
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     initializeCatalogs();
+    
+    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
+    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
+    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);
   }
   
   private static final String CONFIG_FOLDER = "config";
@@ -74,8 +75,9 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
 
     File ditaFile = new File(rootDir,"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD FILE", ditaFile.exists());
-    URL url = URLUtil.correct(ditaFile);
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
     
+    URL url = URLUtil.correct(ditaFile);
     SAXParserFactory factory = SAXParserFactory.newInstance();
     // Ignore the DTD declaration
     factory.setValidating(false);
@@ -107,6 +109,8 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
   
     File ditaFile = new File(rootDir,"topics/add-terms-list.dita");
     assertTrue("UNABLE TO LOAD FILE", ditaFile.exists());
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    
     URL url = URLUtil.correct(ditaFile);
     SAXParserFactory factory = SAXParserFactory.newInstance();
     // Ignore the DTD declaration
@@ -118,10 +122,6 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     parser.parse(ditaFile, handler);
     List<ReferencedResource> referredFiles = new ArrayList<ReferencedResource>();
     referredFiles.addAll(handler.getDitaMapHrefs());
-    
-    for (ReferencedResource referencedResource : referredFiles) {
-      System.out.println(referencedResource);
-    }
     
     assertEquals("Four files should have been referred.", 4, referredFiles.size());
     assertTrue(referredFiles.toString().contains("issue-9/topics/dictionaries-preferences-page.dita"));
@@ -143,11 +143,13 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     
     File ditaFile = new File(TestUtil.getPath("issue-9"),"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    
     URL url = URLUtil.correct(ditaFile);
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
@@ -168,11 +170,13 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     // Discovered while working on issue 15.
     File ditaFile = new File(TestUtil.getPath("issue-15"),"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    
     URL url = URLUtil.correct(ditaFile);
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
     
@@ -196,11 +200,13 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     // Discovered while working on issue 15.
     File ditaFile = new File(TestUtil.getPath("issue-15_1"),"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    
     URL url = URLUtil.correct(ditaFile);
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
@@ -221,8 +227,9 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
   public void testSaxParserConref() throws Exception {
     File ditaFile = new File(TestUtil.getPath("issue-15_1/topics"),"topic2.dita");
     assertTrue("UNABLE TO LOAD FILE", ditaFile.exists());
-    URL url = URLUtil.correct(ditaFile);
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
     
+    URL url = URLUtil.correct(ditaFile);
     SAXParserFactory factory = SAXParserFactory.newInstance();
     // Ignore the DTD declaration
     factory.setValidating(false);
@@ -256,13 +263,13 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     // Discovered while working on issue 15.
     File ditaFile = new File(TestUtil.getPath("issue-18"), "rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    
     URL url = URLUtil.correct(ditaFile);
-    
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
-    
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
     
@@ -284,11 +291,13 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     // Discovered while working on issue 15.
     File ditaFile = new File(TestUtil.getPath("issue-not-parse-image-sax"), "rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    
     URL url = URLUtil.correct(ditaFile);
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, true);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));

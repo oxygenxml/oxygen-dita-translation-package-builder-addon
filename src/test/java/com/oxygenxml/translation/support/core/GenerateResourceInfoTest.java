@@ -1,5 +1,8 @@
 package com.oxygenxml.translation.support.core;
 
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.ui.StoppedByUserException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,13 +11,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
  * Tests for generating the milestone required information based on the file system. 
@@ -29,7 +27,7 @@ public class GenerateResourceInfoTest {
 
     Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-    new ChangePackageGenerator().computeResourceInfo(
+    new ChangePackageGenerator(null).computeResourceInfo(
         new FileSystemResourceBuilder().wrapDirectory(dirPath), list, visited);
 
     Assert.assertEquals(
@@ -50,7 +48,7 @@ public class GenerateResourceInfoTest {
 
     Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
-    new ChangePackageGenerator().computeResourceInfo(
+    new ChangePackageGenerator(null).computeResourceInfo(
         new FileSystemResourceBuilder().wrapDirectory(dirPath), list, visited);
 
     String expectedResult = 
@@ -69,7 +67,7 @@ public class GenerateResourceInfoTest {
   public void testGenerateResourceInfo() throws Exception {
     File rootDir = TestUtil.getPath("generateMilestone-Test");
     
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     Set<URL> visited = new HashSet<URL>();
     ArrayList<ResourceInfo> milestoneInfo = new ArrayList<ResourceInfo>();
     packageBuilder.computeResourceInfo(

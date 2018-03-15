@@ -1,22 +1,18 @@
 package com.oxygenxml.translation.support.util;
 
+import com.oxygenxml.translation.support.storage.ComboHistory;
+import com.oxygenxml.translation.support.storage.ComboItem;
+import com.oxygenxml.translation.ui.StoppedByUserException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
 import org.apache.log4j.Logger;
-
-import com.oxygenxml.translation.support.storage.ComboHistory;
-import com.oxygenxml.translation.support.storage.ComboItem;
-import com.oxygenxml.translation.ui.StoppedByUserException;
-
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
@@ -55,8 +51,8 @@ public class HistoryUtils {
    * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
    * @throws IOException  Problems reading the file/directory.
    */
-  public static ArrayList<ComboItem> loadSelectedPaths() {
-    ArrayList<ComboItem> entries = null;
+  public static List<ComboItem> loadSelectedPaths() {
+    List<ComboItem> entries = null;
     JAXBContext context;
     try {
       context = JAXBContext.newInstance(ComboHistory.class);
@@ -74,8 +70,7 @@ public class HistoryUtils {
   }
   
   /**
-   *  Save and persist the chosen paths in the Oxygen preferences user-defined keys and values.
-   * 
+   * Save and persist the chosen paths in the Oxygen preferences user-defined keys and values.
    * @param info   An object of type ComboHistory, this object will be serialized.
    * 
    * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
@@ -83,7 +78,7 @@ public class HistoryUtils {
    * @throws StoppedByUserException  The user pressed the cancel button.
    */
   public static void storeSelectedPaths(ComboHistory info) {
-    
+
     StringWriter sw = new StringWriter();
     JAXBContext context = null;
     try {

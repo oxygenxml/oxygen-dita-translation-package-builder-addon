@@ -2,7 +2,7 @@ package com.oxygenxml.translation.ui.worker;
 
 import java.net.URL;
 import java.util.ArrayList;
-
+import java.util.List;
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
 import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
@@ -19,11 +19,12 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker {
   /**
    * The list with all the modified resources.
    */
-  private ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+  private List<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+  
   /**
-   * True if the method : generateModifiedResources(rootDir); is called by this worker.
+   * The common ancestor of all the DITA resources referred in the DITA map tree.
    */
-  private boolean isFromWorker = false;
+  private String commonPath;
 
   /**
    * Constructor.
@@ -38,11 +39,10 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker {
    */
   @Override
   protected Void doInBackground() throws Exception {
-    isFromWorker = true;
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
     modifiedResources = packageBuilder.collectModifiedResources(
-        ResourceFactory.getInstance().getResource(rootMap), 
-        isFromWorker);
+        ResourceFactory.getInstance().getResource(rootMap));
+    commonPath = packageBuilder.getCommonPath();
     
     return null;
   }
@@ -50,7 +50,14 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker {
   /**
    * @return The resources that had modifications.
    */
-  public ArrayList<ResourceInfo> getModifiedResources() {
+  public List<ResourceInfo> getModifiedResources() {
     return modifiedResources;
+  }
+  
+  /**
+   * @return The common ancestor of all the DITA resources referred in the DITA map tree or <code>null</code>.
+   */
+  public String getCommonPath() {
+    return commonPath;
   }
 }

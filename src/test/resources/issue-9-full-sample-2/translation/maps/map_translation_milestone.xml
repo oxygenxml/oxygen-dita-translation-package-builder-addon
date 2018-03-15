@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources date="2018-03-07T11:40:40.823+02:00">
+    <info-resource>
+        <md5>42f541a9bac1000a94b3e43d85c1ac6e</md5>
+        <relativePath>map.ditamap</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>28a24f1158b770ccdbe03f41ddf4b068</md5>
+        <relativePath>../topics/t2.dita</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>46c31ed001f73d686d40ed21fc92291b</md5>
+        <relativePath>../topics/t1.dita</relativePath>
+    </info-resource>
+</resources>

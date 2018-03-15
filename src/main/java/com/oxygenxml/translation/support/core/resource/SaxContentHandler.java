@@ -77,11 +77,12 @@ public class SaxContentHandler extends DefaultHandler {
   }
   
   @Override
-  public void startElement(String namespace, String localName, String qName, Attributes attributes) throws SAXException {
-    
+  public void startElement(String namespace, String localName, String qName, Attributes attributes) /*NOSONAR*/
+      throws SAXException {
+
     URL location = null;
     boolean isDITA = false;
-    
+
     if (attributes.getValue(CONREF) != null) {
       location = makeAbsoluteURL(attributes, CONREF);
       isDITA = true;
@@ -126,12 +127,12 @@ public class SaxContentHandler extends DefaultHandler {
         }
       }
     }
-    
+
     if (location != null) {
       ReferencedResource referencedResource = new ReferencedResource(location, isDITA);
       ditamapHrefs.add(referencedResource);
     }
-    
+
   }
   
   /**
@@ -144,7 +145,7 @@ public class SaxContentHandler extends DefaultHandler {
    */
   private URL makeAbsoluteURL(Attributes attributes, String attributeName) {
     String href = attributes.getValue(attributeName);
-    int indexOf = href.indexOf("#");
+    int indexOf = href.indexOf('#');
     // An anchor exist..somewhere in the relative path.
     if(indexOf != -1){
       // The anchor should be dropped here....

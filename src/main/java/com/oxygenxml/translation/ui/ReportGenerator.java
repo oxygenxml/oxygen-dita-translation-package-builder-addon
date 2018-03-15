@@ -1,13 +1,13 @@
 package com.oxygenxml.translation.ui;
 
+import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
+import com.oxygenxml.translation.support.storage.InfoResources;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.apache.log4j.Logger;
-
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -16,13 +16,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-
-import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
-import com.oxygenxml.translation.support.storage.InfoResources;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
+import org.apache.log4j.Logger;
 /**
  * Creates a .xhtml report file, a list with all the modified resources.
  * 
@@ -30,10 +26,12 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
  *
  */
 public class ReportGenerator {
+  
   /**
    * Stylesheet to transform the xml report to xhtml document.
    */
   private static final String REPORT_TRANSFORMATION_XSL = "xsl/report_transformation.xsl";
+  
   /**
    *  Logger for logging.
    */
@@ -45,7 +43,7 @@ public class ReportGenerator {
    * @param modifiedResources A list with the modified resources.
    * @param report The report file.
    */
-  public ReportGenerator(File ditaMap, ArrayList<ResourceInfo> modifiedResources, File report){
+  public ReportGenerator(File ditaMap, List<ResourceInfo> modifiedResources, File report){
     generateReport(ditaMap, modifiedResources, report);
   }
   
@@ -58,10 +56,9 @@ public class ReportGenerator {
    * @return The "modified_resources_report.xml" file.
    * 
    * @throws JAXBException   Problems with JAXB, serialization/deserialization of a file.
-   * @throws FileNotFoundException  The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.
    */ 
-  private File storeReportFile(InfoResources info, File rootDir) throws JAXBException, FileNotFoundException{
+  private File storeReportFile(InfoResources info, File rootDir) throws JAXBException{
 
     File reportFile = new File(rootDir + File.separator + "report.xml");
     JAXBContext context = JAXBContext.newInstance(InfoResources.class);  
@@ -80,10 +77,10 @@ public class ReportGenerator {
    * @param report  Where the generated report will be saved.
    * @throws TransformerFactoryConfigurationError A problem with configuration with the Transformer Factories exists.
    */
-  private void generateReport(final File ditaMap, final ArrayList<ResourceInfo> modifiedResources, final File report)
+  private void generateReport(final File ditaMap, final List<ResourceInfo> modifiedResources, final File report)
       throws TransformerFactoryConfigurationError {
     final File rootDir = ditaMap.getParentFile();
-    ArrayList<ResourceInfo> relativePaths = new ArrayList<ResourceInfo>();
+    List<ResourceInfo> relativePaths = new ArrayList<ResourceInfo>();
     for (int i = 0; i < modifiedResources.size(); i++) {
       relativePaths.add(new ResourceInfo(modifiedResources.get(i).getRelativePath()));
     }
@@ -92,8 +89,6 @@ public class ReportGenerator {
     File xmlReport = null;
     try {
       xmlReport = storeReportFile(resources, rootDir);
-    } catch (FileNotFoundException e2) {
-      logger.error(e2, e2);
     } catch (JAXBException e2) {
       logger.error(e2, e2);
     }
@@ -111,12 +106,18 @@ public class ReportGenerator {
       
       String mapTitle = FilenameUtils.removeExtension(ditaMap.getName());
       if (logger.isDebugEnabled()) {
-        logger.debug("ROOT MAP IS " + mapTitle != null ? mapTitle : "DITAMap");
+        logger.debug("ROOT MAP IS " + (mapTitle != null ? mapTitle : "DITAMap"));
       }
       transformer.setParameter("mapTitle", mapTitle != null ? mapTitle : "DITAMap");
       
       outputStream = new FileOutputStream(report.getAbsolutePath());
-      StreamSource xmlSource = new StreamSource(xmlReport.getAbsolutePath());
+      String absolutePath = null;
+      if (xmlReport != null) {
+        absolutePath = xmlReport.getAbsolutePath();
+      } else {
+        
+      }
+      StreamSource xmlSource = new StreamSource(absolutePath);
       StreamResult outputTarget = new StreamResult(outputStream);
       transformer.transform(xmlSource, outputTarget);
       
@@ -137,7 +138,7 @@ public class ReportGenerator {
         FileUtils.forceDelete(xmlReport);
       }
     } catch (IOException e2) {  
-      e2.printStackTrace();
+      logger.error(e2, e2);
     }
   }
 }

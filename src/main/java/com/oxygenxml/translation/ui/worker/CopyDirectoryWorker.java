@@ -9,7 +9,6 @@ import com.oxygenxml.translation.ui.StoppedByUserException;
  *  Creates an AbstractWorker for copying the  files from a source directory to a destination directory.
  *  
  * @author Bivolan Dalina
- *
  */
 public class CopyDirectoryWorker extends AbstractWorker {
   /**
@@ -32,7 +31,7 @@ public class CopyDirectoryWorker extends AbstractWorker {
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException {
     ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
-    archiveBuilder.copyDirectory(temDir, rootDir, new int[] {0}, false);
+    archiveBuilder.copyDirectory(temDir, rootDir, 0, false);
 
     return null;
   }

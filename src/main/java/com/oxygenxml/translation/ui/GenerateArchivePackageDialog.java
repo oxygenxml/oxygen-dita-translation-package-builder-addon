@@ -1,5 +1,12 @@
 package com.oxygenxml.translation.ui;
 
+import com.oxygenxml.translation.support.storage.ComboHistory;
+import com.oxygenxml.translation.support.storage.ComboItem;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.FontProperties;
+import com.oxygenxml.translation.support.util.HistoryUtils;
+import com.oxygenxml.translation.support.util.ProjectConstants;
+import com.oxygenxml.translation.support.util.UndoRedoUtils;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,15 +20,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.font.TextAttribute;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
-
+import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -33,16 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
-
 import org.apache.log4j.Logger;
-
-import com.oxygenxml.translation.support.storage.ComboHistory;
-import com.oxygenxml.translation.support.storage.ComboItem;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.support.util.HistoryUtils;
-import com.oxygenxml.translation.support.util.ProjectConstants;
-import com.oxygenxml.translation.support.util.UndoRedoUtils;
-
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -52,11 +48,13 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarToggleButton;
 /**
  * The dialog shown when the archive is prepared.
  */
-public class GenerateArchivePackageDialog extends OKCancelDialog {
+public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
+  
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(GenerateArchivePackageDialog.class); 
+  private static Logger logger = Logger.getLogger(GenerateArchivePackageDialog.class);
+  
   /**
    *  Resource bundle.
    */
@@ -66,38 +64,37 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * The location chosen by the user for the archive.
    */
   private File chosenZip = null;
+  
   /**
    * DITA Map file.
    */
   private File rootMapFile;
+  
   /**
    * The location of the generated report.
    */
   private File reportFile;
+  
   /**
    * The list with all the modified resources.
    */
-  private ArrayList<ResourceInfo> modifiedResources;
+  private List<ResourceInfo> modifiedResources; /*NOSONAR*/
+  
   /**
    *  Where the package location is displayed.
    */
   private JComboBox<String> archiveLocationCombobox = new JComboBox<String>();
+  
   /**
    * A list that contains all the chosen package locations.
    */
-  private ArrayList<ComboItem> comboItems = new ArrayList<ComboItem>();
+  private List<ComboItem> comboItems = new ArrayList<ComboItem>(); /*NOSONAR*/
+  
   /**
    * The selected path, the one that appears in the comboBox.
    */
   private String currentPath;
-  /**
-   * The default location of the package.
-   */
-  private File defaultPackageLocation;
-  /**
-   * The chosen location from the file chooser.
-   */
-  private File chosenZipFromChooser;
+  
   /**
    * Information message where the information regarding the modified files will be presented.
    */
@@ -111,6 +108,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * Where the information about XHTML report are presented.
    */
   private JLabel textInfo = new JLabel();
+  
   /**
    * Archive location field.
    */
@@ -128,7 +126,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   /**
    * Mouse Listener
    */
-  private MouseListener mouseListener = new MouseAdapter() {
+  private MouseListener mouseListener = new MouseAdapter() /*NOSONAR*/ {
     @Override
     public void mouseEntered(MouseEvent e) {
       moreDetailsLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -143,10 +141,12 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
       }
     }
   };
+  
   /**
    * A ReportDialog instance.
    */
   private static GenerateArchivePackageDialog instance;
+  
   /**
    * Creates a dialog where the user can choose the location of the modified resources archive
    *  and generate or not a report.
@@ -173,7 +173,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     moreDetailsLabel.addMouseListener(mouseListener);
     
     // Add into the comboBox the chosen paths stored in the optionsFile.
-    ArrayList<ComboItem> savedPaths = HistoryUtils.loadSelectedPaths();
+    List<ComboItem> savedPaths = HistoryUtils.loadSelectedPaths();
     if (savedPaths != null) {
       for (ComboItem resource : savedPaths) {
         archiveLocationCombobox.addItem(resource.getPath());
@@ -288,7 +288,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    */
   private String showArchiveSaveLocationChooser() {
     //Get the location from the file chooser.
-    chosenZipFromChooser = PluginWorkspaceProvider.getPluginWorkspace().chooseFile(
+    File chosenZipFromChooser = PluginWorkspaceProvider.getPluginWorkspace().chooseFile(
         messages.getMessage(Tags.PACKAGE_LOCATION),
         new String[] {"zip"},
         messages.getMessage(Tags.ZIP_FILES), 
@@ -321,7 +321,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
    * @param modifiedRes An array with the modified resources.
    * @param rootMap     A reference to the dita map file.
    */
-  public void showDialog(ArrayList<ResourceInfo> modifiedRes, File rootMap) {
+  public void showDialog(List<ResourceInfo> modifiedRes, File rootMap) {
     // Assign to field.
     this.modifiedResources = modifiedRes;
     this.rootMapFile = rootMap;
@@ -346,7 +346,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   /**
    * Configure the text area which presents the informations about modified files.
    */
-  @SuppressWarnings("unchecked")
   private void initModifiedFilesInfo() {
     StringBuilder text = new StringBuilder();
     text.append("(").append(modifiedResources.size()).append(")");
@@ -362,9 +361,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     moreDetailsLabel.setToolTipText("Click to see the list of files which will be archived.");
     
     Font font = moreDetailsLabel.getFont();
-    Map attributes = font.getAttributes();
-    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
-    moreDetailsLabel.setFont(font.deriveFont(attributes));
+    moreDetailsLabel.setFont(font.deriveFont(FontProperties.UNDERLINED_TEXT_ATTRIBUTES_MAP));
   }
   
   /**
@@ -393,9 +390,8 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
   }
   
   private void initArchiveLocation() {
-    
     // The default location of the package.
-    defaultPackageLocation = new File(rootMapFile.getParent(), ProjectConstants.getZipFileName(rootMapFile));
+    File defaultPackageLocation = new File(rootMapFile.getParent(), ProjectConstants.getZipFileName(rootMapFile));
     currentPath = defaultPackageLocation.getPath();
     archiveLocationCombobox.setEditable(true);
     archiveLocationCombobox.setMaximumRowCount(4);
@@ -440,7 +436,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog {
     // If it's not, add it.
     if(!isInModel){
       archiveLocationCombobox.addItem(currentPath);
-      ArrayList<ComboItem> loadedPaths = HistoryUtils.loadSelectedPaths();
+      List<ComboItem> loadedPaths = HistoryUtils.loadSelectedPaths();
       if (loadedPaths != null) {
         comboItems.addAll(loadedPaths);
       }

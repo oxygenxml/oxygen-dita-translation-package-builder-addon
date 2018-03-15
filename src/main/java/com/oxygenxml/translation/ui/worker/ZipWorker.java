@@ -1,29 +1,25 @@
 package com.oxygenxml.translation.ui.worker;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
+import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.MessagePresenter;
+import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.StoppedByUserException;
-import com.oxygenxml.translation.ui.Tags;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import ro.sync.document.DocumentPositionedInfo;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Creates an AbstractWorker for packing a directory.
- * 
  * @author Bivolan Dalina
  */
 public class ZipWorker extends AbstractWorker {
@@ -46,15 +42,34 @@ public class ZipWorker extends AbstractWorker {
   /**
    * The list containing all the modified files.
    */
-  private ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+  private List<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
   
-  public ZipWorker(File rootDir, File chosenDir, boolean packAll, ArrayList<ResourceInfo> modifiedResources) {
-    this.rootDir = rootDir;
+  /**
+   * Current DITA map.
+   */
+  private URL rootMap;
+  
+  /**
+   * XXX
+   * @param rootMap
+   * @param chosenDir
+   * @param packAll
+   * @param modifiedResources
+   */
+  public ZipWorker(URL rootMap, File chosenDir, boolean packAll, List<ResourceInfo> modifiedResources) {
+    this.rootMap = rootMap;
+    this.rootDir = MilestoneUtil.getFile(rootMap).getParentFile();
     this.packAll = packAll;
     this.zipDir = chosenDir;
     this.modifiedResources = modifiedResources;
   }
   
+  /**
+   * XXX
+   * @param rootDir
+   * @param chosenDir
+   * @param packAll
+   */
   public ZipWorker(File rootDir, File chosenDir, boolean packAll) {
     this.rootDir = rootDir;
     this.zipDir = chosenDir;
@@ -64,43 +79,37 @@ public class ZipWorker extends AbstractWorker {
   /**
    * Main task. Executed in background thread.
    * 
-   * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
    * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
    * @throws StoppedByUserException  The user pressed the Cancel button.
    * @throws  IOException Problems reading the file.
    * @throws NoChangedFilesException No file was changed since the last generation of a milestone file.
    */
   @Override
-  public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, JAXBException, NoChangedFilesException {
+  public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, NoChangedFilesException {
     if(packAll){
       ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
-
-      archiveBuilder.zipDirectory(rootDir, zipDir, false);
+      archiveBuilder.zipDirectory(rootDir, zipDir);
     } else{
       ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-
+      String calculateTopLocation = PathUtil.calculateTopLocation(rootMap, packageBuilder);
       modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
           rootDir,
           zipDir, 
           modifiedResources, 
-          false);
+          false, 
+          calculateTopLocation);
 
       List<String> filesNotCopied = packageBuilder.getFilesNotCopied();
 
       if (!filesNotCopied.isEmpty()) {
+        // Avoid errors duplication.
+        MessagePresenter.clearResultsPanel();
         for (String relPath : filesNotCopied) {
-          StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace) PluginWorkspaceProvider.getPluginWorkspace();
-          if (pluginWorkspace != null) {
-            pluginWorkspace.getResultsManager().
-            addResult(
-                pluginWorkspace.getResourceBundle().getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME), 
-                new DocumentPositionedInfo(
-                    DocumentPositionedInfo.SEVERITY_INFO, 
-                    "File not copied: " + relPath), 
-                ResultType.GENERIC, 
-                true, 
-                false);
-          }
+          String systemId = new URL(rootMap, relPath).toExternalForm();
+          MessagePresenter.showInResultsPanel(DocumentPositionedInfo.SEVERITY_INFO, 
+              "Unable to copy: " + relPath, 
+              systemId, 
+              ResultType.GENERIC);
         }
       }
     }

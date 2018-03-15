@@ -30,6 +30,7 @@ public class UndoRedoUtils {
    * Private constructor to avoid instantiation.
    */
   private UndoRedoUtils() {
+    // Nothing
   }
   
   /**

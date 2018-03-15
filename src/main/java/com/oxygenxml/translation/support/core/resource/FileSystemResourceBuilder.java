@@ -1,7 +1,9 @@
 package com.oxygenxml.translation.support.core.resource;
 
+import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,13 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
-import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
-import com.oxygenxml.translation.support.core.MilestoneUtil;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -31,7 +27,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
   /**
    * An implementation over a local File. 
    */
-  private static abstract class AbstractFileResource implements IResource {
+  private abstract static class AbstractFileResource implements IResource {
     /**
      * The wrapped file.
      */
@@ -112,6 +108,22 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
       // It's a folder. Do not add it.
       return null;
     }
+    
+    /**
+     * Creates a resource over the given file.
+     * 
+     * @param file File to wrap as a resource.
+     * @param relativePath Path relative to the root resource.
+     * 
+     * @return An {@link IResource} wrapper over the given file.
+     */
+    private static IResource wrap(File file, String relativePath) {
+      if (file.isDirectory()) {
+        return new DirResource(file, relativePath);
+      } else {
+        return new FileResource(file, relativePath);
+      }
+    }
   }
   
   /**
@@ -160,7 +172,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
     /**
      * @see com.oxygenxml.translation.support.core.resource.IResource#getResourceInfo()
      */
-    public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+    public ResourceInfo getResourceInfo() throws NoSuchAlgorithmException, IOException {
       return new ResourceInfo(MilestoneUtil.generateMD5(file), relativePath);
     }
 
@@ -173,22 +185,6 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
         logger.warn(e, e);
       }
       return url;
-    }
-  }
-
-  /**
-   * Creates a resource over the given file.
-   * 
-   * @param file File to wrap as a resource.
-   * @param relativePath Path relative to the root resource.
-   * 
-   * @return An {@link IResource} wrapper over the given file.
-   */
-  private static IResource wrap(File file, String relativePath) {
-    if (file.isDirectory()) {
-      return new DirResource(file, relativePath);
-    } else {
-      return new FileResource(file, relativePath);
     }
   }
 
@@ -223,9 +219,8 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
    * 
    * @param locateFile
    * @return
-   * @throws IOException
    */
-  public IRootResource wrapDirectory(File locateFile) throws IOException {
+  public IRootResource wrapDirectory(File locateFile) {
     return new RootDirResource(locateFile);
   }
 }

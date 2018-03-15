@@ -5,8 +5,8 @@ import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.MessagePresenter;
 import com.oxygenxml.translation.support.util.PathUtil;
-import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
@@ -29,7 +29,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
-import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -40,7 +39,6 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * 1. generateChangeMilestone   - iterates over a directory, computes MD5s and writes them in a marker file.
  * 2. collectModifiedResources  - iterates over a directory, computes MD5s and compares them with the ones from the milestone. 
  * 3. generateChangedFilesPackage - puts the modified files in ZIP
- * 
  */
 public class ChangePackageGenerator {
   /**
@@ -58,16 +56,20 @@ public class ChangePackageGenerator {
   private List<String> filesNotCopied = new ArrayList<String>();
   
   /**
+   * The common ancestor of all the DITA resources referred in the DITA map tree. 
+   * Either the DITA map folder or an ancestor of it.
+   */
+  private String commonPath;
+  
+  /**
    * Constructor.
    */
   public ChangePackageGenerator(List<ProgressChangeListener> listeners) {
     this.listeners = listeners; 
   }
-  
-  public ChangePackageGenerator() {}
 
   /**
-   * Iterates over the descendents of the given files and computes a hash and a relative path.
+   * Iterates over the descendants of the given files and computes a hash and a relative path.
    * 
    * The computed relative paths are relative to the entry point. For example:
    * Entry point: c:testIteration
@@ -84,8 +86,8 @@ public class ChangePackageGenerator {
    * @throws IOException Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  void computeResourceInfo(IResource resource, List<ResourceInfo> list, Set<URL> visited) 
-      throws NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException {
+  public void computeResourceInfo(IResource resource, List<ResourceInfo> list, Set<URL> visited) 
+      throws NoSuchAlgorithmException, IOException, StoppedByUserException {
     
     Iterator<IResource> referredResources = resource.iterator();
 
@@ -97,78 +99,80 @@ public class ChangePackageGenerator {
         
         IResource iResource = referredResources.next();
         URL currentUrl = iResource.getCurrentUrl();
-        if (currentUrl != null && !visited.contains(currentUrl)) {
-          visited.add(currentUrl);
-          if ("file".equals(currentUrl.getProtocol())) {
-            // #15 Pack just the local files into the achive. 
-            try {
-              // Collect the milestone related info.
-              ResourceInfo resourceInfo = iResource.getResourceInfo();
-              if (resourceInfo != null) {
-                list.add(resourceInfo);
-              }
-            } catch (IOException e) {
-              DocumentPositionedInfo dpi = new DocumentPositionedInfo(
-                  DocumentPositionedInfo.SEVERITY_WARN, 
-                  e.getMessage(), 
-                  resource.getCurrentUrl().toExternalForm());
-
-              PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-              if (pluginWorkspace != null) {
-                pluginWorkspace.getResultsManager().
-                addResult("Translation Package Builder", 
-                    dpi, 
-                    ResultType.PROBLEM, 
-                    true, 
-                    false);
-              }
-            }
-          }
-        }
-        
+        computeInternal(resource, list, visited, iResource, currentUrl);
         // Go deep.
         computeResourceInfo(iResource, list, visited);
+      }
+    }
+  }
+  
+  /**
+   * 
+   * @param resource
+   * @param list
+   * @param visited
+   * @param iResource
+   * @param currentUrl
+   * @throws NoSuchAlgorithmException
+   */
+  private void computeInternal(IResource resource, List<ResourceInfo> list, Set<URL> visited, IResource iResource,
+      URL currentUrl) throws NoSuchAlgorithmException {
+    if (currentUrl != null && !visited.contains(currentUrl)) {
+      visited.add(currentUrl);
+      if ("file".equals(currentUrl.getProtocol())) {
+        // #15 Pack just the local files into the achive. 
+        try {
+          // Collect the milestone related info.
+          ResourceInfo resourceInfo = iResource.getResourceInfo();
+          if (resourceInfo != null) {
+            list.add(resourceInfo);
+          }
+        } catch (IOException e) {
+          MessagePresenter.showInResultsPanel(DocumentPositionedInfo.SEVERITY_WARN, 
+              e.getMessage(), 
+              resource.getCurrentUrl().toExternalForm(), 
+              ResultType.PROBLEM);
+        }
       }
     }
   }
 
   /**
    * Computes what resources were changed since the last created milestone.
-   * 
-   * @param isFromWorker True if the method is called by the GenerateModifiedResourcesWorker.
    *  
-   * @return	A list of objects ResourceInfo which contains a MD5 and a relative path for
-   * every file that was changed/every modification you made inside the rootDir. An empty list if nothing changed.
+   * @return A list of modified resources.
    * 
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws NoSuchAlgorithmException	The MD5 algorithm is not available.
-   * @throws FileNotFoundException	The file/directory doesn't exist.
    * @throws IOException	Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public ArrayList<ResourceInfo> collectModifiedResources(
-      IRootResource resource, 
-      boolean isFromWorker) throws JAXBException, NoSuchAlgorithmException, FileNotFoundException, IOException, StoppedByUserException{
-    /**
+  public List<ResourceInfo> collectModifiedResources(IRootResource resource) 
+      throws JAXBException, NoSuchAlgorithmException, IOException, StoppedByUserException{
+    /*
      * 1. Loads the milestone XML from rootDIr using JAXB
      * 2. Calls generateCurrentMD5() to get the current MD5s
      * 3. Compares the current file MD5 with the old ones and collects the changed resources.
-     **/
-    if(logger.isDebugEnabled()){
-      logger.debug("Cames from modifiedResourcesWorker?-->" + isFromWorker);
-    }
+     */
     // Store state.
     Set<ResourceInfo> resources = new HashSet<ResourceInfo>(MilestoneUtil.loadMilestoneFile(resource));
     
     //Current states.
-    ArrayList<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
+    List<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
     
     // Add the root map.
     ResourceInfo rootResource = resource.getResourceInfo();
     if (rootResource != null) {
       currentStates.add(rootResource);
     }
-    computeResourceInfo(resource, currentStates, new HashSet<URL>());
+    
+    Set<URL> visited = new HashSet<URL>(); //NOSONAR
+    computeResourceInfo(resource, currentStates, visited);
+    if (resource.getCurrentUrl() != null) {
+      visited.add(resource.getCurrentUrl());
+    }
+    
+    commonPath = PathUtil.commonPath(visited);
     
     // A list to hold the modified resources.
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
@@ -180,43 +184,42 @@ public class ChangePackageGenerator {
         modifiedResources.add(newInfo);
       }
       
-      if(isFromWorker){
-        PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-        counter++;
-        if(isCanceled()){
-          throw new StoppedByUserException();
-        }
-        ProgressChangeEvent progress = new ProgressChangeEvent(counter, 
-            resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE1) + 
-            counter + 
-            resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE2), 
-            currentStates.size());
-        fireChangeEvent(progress);
+      PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+      counter++;
+      if(isCanceled()){
+        throw new StoppedByUserException();
       }
+      ProgressChangeEvent progress = new ProgressChangeEvent(counter, 
+          resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE1) + 
+          counter + 
+          resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE2), 
+          currentStates.size());
+      fireChangeEvent(progress);
     }
+    
     return modifiedResources;
   }
   /**
    * Entry point. Detect what files were modified and put them in a ZIP.
    * 
-   * @param rootDir Parent file of the DITA map
+   * @param rootDir Folder of the DITA map.
    * @param packageLocation The location of the generated ZIP file.
    * @param modifiedResources The list with all the modified files.
    * @param isFromTest True if this method is called by a JUnit test class.
+   * @param topLocationInFileSystem The common ancestor of all the DITA resources referred in the DITA map tree. Either the DITA map folder or an ancestor of it.
    * 
    * @return How many files were modified.
    * 
-   * @throws NoSuchAlgorithmException  The MD5 algorithm is not available.
-   * @throws JAXBException  Problems with JAXB, serialization/deserialization of a file.
    * @throws IOException  Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the Cancel button.
-   * @throws NoChangedFilesException  No file was changed since the last generation of a milestone file.
    */
   public PackResult generateChangedFilesPackage(
+      // TODO Adrian Pass just one Interator<URL> instead of "rootDir" and "modifiedResources"
       File rootDir,
       File packageLocation,
-      ArrayList<ResourceInfo> modifiedResources,
-      boolean isFromTest) throws NoSuchAlgorithmException, JAXBException, IOException, StoppedByUserException, NoChangedFilesException  {
+      List<ResourceInfo> modifiedResources,
+      boolean isFromTest,
+      String topLocationInFileSystem) throws IOException, StoppedByUserException  {
 
     /**
      * 1. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
@@ -230,15 +233,6 @@ public class ChangePackageGenerator {
     // If there are modified resources
     if (!modifiedResources.isEmpty()) {
         final File tempDir = new File(rootDir, "toArchive");
-
-        String[] elements = new String[totalModifiedfiles];
-        for (int i = 0; i < totalModifiedfiles; i++) {
-          ResourceInfo res = modifiedResources.get(i);
-          URL url = new URL(rootDir.toURI().toURL(), res.getRelativePath());
-          elements[i] = url.toExternalForm();
-        }
-        String commonPath = PathUtil.commonPath(elements);
-        
         //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
         //files in the right directory
         //Then we compress the tempDir and delete it.
@@ -249,20 +243,21 @@ public class ChangePackageGenerator {
              * #15 - the relative paths can be path/to.file.dita#ID
              * We have to remove the anchors to allow file copy.
              */
-            int indexOf = relativePath.indexOf("#");
+            int indexOf = relativePath.indexOf('#');
             if(indexOf != -1){
               relativePath = relativePath.substring(0, indexOf);
             }
             
-            
             URL url = new URL(rootDir.toURI().toURL(), relativePath);
-            String replaceAll = url.toExternalForm().replaceAll(commonPath, "");
             
-            File dest = new File(tempDir, replaceAll);
+            // TODO Adrian Make it relative to the TOP dir.
+            String relativeLocationToRootDir = url.toExternalForm().replaceAll(topLocationInFileSystem, "");
+            
+            File dest = new File(tempDir, relativeLocationToRootDir);
             dest.getParentFile().mkdirs();
-            File sourceFile = new File(rootDir.getPath() + File.separator + relativePath);
+            
             try {
-              FileUtils.copyFile(sourceFile, dest);
+              FileUtils.copyURLToFile(url, dest);
             } catch (IOException e) {
               filesNotCopied.add(relativePath);
             }
@@ -270,43 +265,39 @@ public class ChangePackageGenerator {
             if(isCanceled()){
               throw new StoppedByUserException();
             }
-            if(!isFromTest){
-              PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-              nrModFiles++;
-              ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*totalModifiedfiles);
-              fireChangeEvent(progress);
-            }
+            
+            PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+            nrModFiles++;
+            ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*totalModifiedfiles);
+            fireChangeEvent(progress);
+            
           }
 
           result.setModifiedFilesNumber(nrModFiles);
 
-          ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+          ArchiveBuilder archiveBuilder = new ArchiveBuilder(null);
           archiveBuilder.addListener(new ProgressChangeAdapter() {
+            @Override
             public boolean isCanceled() {
               return ChangePackageGenerator.this.isCanceled();
             }
-
+            
+            @Override
             public void done() {
               fireDoneEvent();
             }
-
+            
+            @Override
             public void change(ProgressChangeEvent progress) {
               ProgressChangeEvent event = new ProgressChangeEvent(progress.getCounter() + totalModifiedfiles, progress.getMessage(), 2*totalModifiedfiles);
               fireChangeEvent(event);
             }
           });
-          archiveBuilder.zipDirectory(tempDir, packageLocation, isFromTest);
+          archiveBuilder.zipDirectory(tempDir, packageLocation);
         } finally {
           FileUtils.deleteDirectory(tempDir);
         }
-    } /*else {
-      // Present the date when the milestore was created.
-      File milestoneFile = new File(rootDir,  MILESTONE_FILE_NAME);
-
-      // Trow a customn exception.
-      NoChangedFilesException t = new NoChangedFilesException("There are no changed files since the milestone created on: " + new Date(milestoneFile.lastModified()));
-      throw t;
-    }*/
+    }
 
     return result;
   }
@@ -314,9 +305,6 @@ public class ChangePackageGenerator {
   /**
    * Entry point. Compute a hash for each file in the given directory and store this information
    * inside the directory (as a "special file"). 
-   * 
-   * 
-   * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @return	The "special file"(translation_builder_milestone.xml).
    * 
@@ -326,10 +314,9 @@ public class ChangePackageGenerator {
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws StoppedByUserException The user pressed the "Cancel" button.
    */
-  public File generateChangeMilestone(
-      IRootResource resource, 
-      boolean isFromTest) throws NoSuchAlgorithmException, FileNotFoundException, IOException, JAXBException, StoppedByUserException {
-    ArrayList<ResourceInfo> list = new ArrayList<ResourceInfo>();
+  public File generateChangeMilestone(IRootResource resource) 
+      throws NoSuchAlgorithmException, IOException, JAXBException, StoppedByUserException {
+    List<ResourceInfo> list = new ArrayList<ResourceInfo>();
     
     // Add the root map
     ResourceInfo rootResourceInfo = resource.getResourceInfo();
@@ -352,18 +339,16 @@ public class ChangePackageGenerator {
     if(isCanceled()){
       throw new StoppedByUserException();
     }
-    if (!isFromTest) {
-      PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-      ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
-      fireChangeEvent(progress);
-    }
+    
+    PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+    ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
+    fireChangeEvent(progress);
 
     return milestoneFile;
   }
 
   /**
    * Notifies all listeners to update the progress of the task.
-   * 
    * @param progress A ProgressChangeEvent object.
    */
   private void fireChangeEvent(ProgressChangeEvent progress) {
@@ -373,12 +358,15 @@ public class ChangePackageGenerator {
       } 
     }
   }
+  
   /**
    * Notifies all listeners that the task has finished.
    */
   private void fireDoneEvent() {
-    for (ProgressChangeListener progressChangeListener : listeners) {
-      progressChangeListener.done();
+    if (listeners != null) {
+      for (ProgressChangeListener progressChangeListener : listeners) {
+        progressChangeListener.done();
+      }
     }
   }
   /**
@@ -399,10 +387,17 @@ public class ChangePackageGenerator {
   }
   
   /**
+   * @return The common ancestor of all the DITA resources referred in the DITA map tree or <code>null</code>.
+   */
+  public String getCommonPath() {
+    return commonPath;
+  }
+  
+  /**
    * @return The list of resource that were unable to copy.
    */
   public List<String> getFilesNotCopied() {
     return filesNotCopied;
   }
-
+ 
 }

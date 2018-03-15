@@ -1,30 +1,26 @@
 package com.oxygenxml.translation.support.util;
 
 
+import com.oxygenxml.translation.ui.ProgressChangeAdapter;
+import com.oxygenxml.translation.ui.ProgressChangeEvent;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
+import com.oxygenxml.translation.ui.Tags;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.log4j.Logger;
-
-import com.oxygenxml.translation.ui.ProgressChangeAdapter;
-import com.oxygenxml.translation.ui.ProgressChangeEvent;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
-import com.oxygenxml.translation.ui.StoppedByUserException;
-import com.oxygenxml.translation.ui.Tags;
-
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.io.FileSystemUtil;
 
 /**
  * 
@@ -34,20 +30,23 @@ import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
  * - copyDirectory - this method copies the content of a source directory into a destination directory.
  */
 public final class ArchiveBuilder {
-  /**
-   * Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(ArchiveBuilder.class); 
+  
   /**
    * A list of ProgressChangeListener listeners.
    */
-  private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
-
-  public ArchiveBuilder(List<ProgressChangeListener> listeners) {
-    this.listeners = listeners;
-  }
+  private List<ProgressChangeListener> listeners;
   
-  public ArchiveBuilder() {
+  /**
+   * Constructor.
+   * 
+   * @param listeners A list of listeners. Not <code>null</code>.  
+   */
+  public ArchiveBuilder(List<ProgressChangeListener> listeners) {
+    if (listeners == null) {
+      this.listeners = new ArrayList<ProgressChangeListener>();
+    } else {
+      this.listeners = listeners;
+    }
   }
 
   /**
@@ -60,21 +59,21 @@ public final class ArchiveBuilder {
    * @throws IOException  Problems reading the file.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public void zipDirectory(File dir, File zipFile, boolean isFromTest) throws IOException, StoppedByUserException {
-    try{
-      zipFile.getParentFile().mkdirs();
+  public void zipDirectory(File dir, File zipFile) throws IOException, StoppedByUserException {
+    zipFile.getParentFile().mkdirs();
 
-      FileOutputStream fout = null;
-      ZipOutputStream zout = null;
-      try {
-        fout = new FileOutputStream(zipFile);
-        zout = new ZipOutputStream(fout);
-        zipSubDirectory("", dir, zout, new int[] {0}, isFromTest);
-      } finally{
+    FileOutputStream fout = null;
+    ZipOutputStream zout = null;
+    try {
+      fout = new FileOutputStream(zipFile);
+      zout = new ZipOutputStream(fout);
+      zipSubDirectory("", dir, zout, 0);
+    } finally{
+      if (zout != null) {
         zout.close();
+      } else if(fout != null) {
+        fout.close();
       }
-    } catch (Exception ex){
-      logger.debug(ex, ex);
     }
   }
 
@@ -90,132 +89,164 @@ public final class ArchiveBuilder {
    * @throws IOException  Problems reading the files.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int[] resourceCounter, boolean isFromTest) throws IOException, StoppedByUserException {
-    try{
-      byte[] buffer = new byte[4096];
-      File[] files = dir.listFiles();
-      if (files != null) {
-        for (File file : files) {
-          if (file.isDirectory()) {
-            String path = basePath + file.getName() + "/";
-            zout.putNextEntry(new ZipEntry(path));
-
-            if(isCanceled()){
-              throw new StoppedByUserException();
-            }
-
-            zipSubDirectory(path, file, zout, resourceCounter, isFromTest);
-            zout.closeEntry();
-          } else {
-            FileInputStream fin = null;
-            try{
-              fin = new FileInputStream(file);
-              zout.putNextEntry(new ZipEntry(basePath + file.getName()));
-              int length;
-              while ((length = fin.read(buffer)) > 0) {
-                zout.write(buffer, 0, length);
-              }
-              if(isCanceled()){
-                throw new StoppedByUserException();
-              }
-              if(!isFromTest){
-                PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-                resourceCounter[0]++;
-                ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter[0], resourceCounter[0] + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
-                fireChangeEvent(progress);
-              }
-
-            } finally{
-              zout.closeEntry();
-              fin.close();
-            }
-          }
+  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int resourceCounter) throws IOException, StoppedByUserException {
+    byte[] buffer = new byte[4096];
+    File[] files = dir.listFiles();
+    if (files != null) {
+      for (File file : files) {
+        if (file.isDirectory()) {
+          zipFolderInternal(basePath, zout, resourceCounter, file);
+        } else {
+          zipFileInternal(basePath, zout, resourceCounter, buffer, file);
         }
       }
-    } catch (Exception ex){
-      logger.debug(ex, ex);
+    }
+  }
+  
+  /**
+   * ZIP a folder internal.
+   */
+  private void zipFolderInternal(String basePath, ZipOutputStream zout, int resourceCounter, File file)
+      throws IOException, StoppedByUserException {
+    String path = basePath + file.getName() + '/';
+    zout.putNextEntry(new ZipEntry(path));
+    if(isCanceled()){
+      throw new StoppedByUserException();
+    }
+    zipSubDirectory(path, file, zout, resourceCounter);
+    zout.closeEntry();
+  }
+  
+  /**
+   * ZIP a file internal.
+   */
+  private void zipFileInternal(String basePath, ZipOutputStream zout, int resourceCounter, 
+      byte[] buffer, File file) throws IOException, StoppedByUserException {
+    FileInputStream fin = null;
+    
+    try{
+      fin = new FileInputStream(file);
+      zout.putNextEntry(new ZipEntry(basePath + file.getName()));
+      int length;
+      while ((length = fin.read(buffer)) > 0) {
+        zout.write(buffer, 0, length);
+      }
+      
+      if(isCanceled()){
+        throw new StoppedByUserException();
+      }
+      
+      PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+      resourceCounter++;
+      ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter, 
+          resourceCounter + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
+      fireChangeEvent(progress);
+
+    } finally {
+      try {
+        zout.closeEntry();
+      } catch (Exception ee) {
+        // Nothing
+      }
+      if (fin != null) {
+        try {
+          fin.close();
+        } catch (Exception e) {
+          // Nothing
+        }
+      }
     }
   }
 
 
 
   /**
-   * Unzips an archive into a given directory.
+   * UnZips an archive into a given directory.
    *    
    * @param packageLocation  The location of the package.
    * @param destDir Where to extract the package content.
-   * @param isFromTest True if this method is called by a JUnit test class.
    * 
    * @return A list with the relative path of every extracted file.
    * 
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public ArrayList<String> unzipDirectory(File packageLocation, File destDir, boolean isFromTest) throws StoppedByUserException {
+  public List<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException {
 
-    ArrayList<String> nameList = new ArrayList<String>();
+    List<String> nameList = new ArrayList<String>();
     int counter = 0;
-
     try {
       // Open the zip file
       ZipFile zipFile = new ZipFile(packageLocation);
       Enumeration<?> enu = zipFile.entries();
-      try{
+      try {
         while (enu.hasMoreElements()) {
           ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-
           String name = zipEntry.getName();
-
           //We create the directories 
           File file = new File(destDir, name);
-
           if (name.endsWith("/")) {
             file.mkdirs();
             continue;
           }
 
-          File parent = file.getParentFile();
-          if (parent != null) {
-            parent.mkdirs();
-          }
-
-          //  Extract the file
-          InputStream is = null;
-          FileOutputStream fos = null;
-          try{
-            is = zipFile.getInputStream(zipEntry);                	
-            fos = new FileOutputStream(file);
-            byte[] bytes = new byte[1024];
-            int length;
-            while ((length = is.read(bytes)) >= 0) {
-              fos.write(bytes, 0, length);
-            }
-          }finally{
-            is.close();
-            fos.close();
-          }
+          unzipInternal(zipEntry, zipFile, file);
 
           nameList.add(name);
 
           if(isCanceled()){
             throw new StoppedByUserException();
           }
-          if(!isFromTest){
-            PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-            counter++;
-            ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
-            fireChangeEvent(progress);
-          }
+
+          PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+          counter++;
+          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
+          fireChangeEvent(progress);
 
         }
-      }finally{
+      } finally {
         zipFile.close();
       }
+      
     } catch (IOException e) {
       fireOperationFailed(e);
     }
 
     return nameList;
   }
+  
+  /**
+   * Copy the input stream of the selected zip entry to disk.
+   * 
+   * @param zipEntry Current ZIP entry.
+   * @param zipFile  The ZIP file (source).
+   * @param file     target file.
+   *  
+   * @throws IOException  If unZipping fails.
+   */
+  private void unzipInternal(ZipEntry zipEntry, ZipFile zipFile, File file) throws IOException {
+
+    File parent = file.getParentFile();
+    if (parent != null) {
+      parent.mkdirs();
+    }
+
+    //  Extract the file
+    InputStream is = null;
+    try {
+      is = zipFile.getInputStream(zipEntry);                  
+      FileOutputStream fos = new FileOutputStream(file);
+      FileSystemUtil.copyInputStreamToOutputStream(is, fos, true);
+    } finally {
+      try {
+        if (is != null) {
+          is.close();
+        }
+      } catch (IOException e) {
+        //Do nothing.
+      }
+    }
+  }
+
   /**
    *  Copies all the files from a source directory to a destination directory.
    * 
@@ -227,7 +258,7 @@ public final class ArchiveBuilder {
    * @throws IOException Problems reading the files.
    * @throws StoppedByUserException  The user pressed the Cancel button.
    */
-  public void copyDirectory(File sourceLocation , File targetLocation, int[] counter, boolean isFromTest) throws IOException, StoppedByUserException {
+  public void copyDirectory(File sourceLocation , File targetLocation, int counter, boolean isFromTest) throws IOException, StoppedByUserException {
 
     if (sourceLocation.isDirectory()) {
       if (!targetLocation.exists()) {
@@ -242,35 +273,17 @@ public final class ArchiveBuilder {
           throw new StoppedByUserException();
         }
       }
-    }
-    else {
-
-      InputStream in = null;
-      OutputStream out = null;
-
-      // Copy the bits from instream to outstream
-      try{
-        in = new FileInputStream(sourceLocation);
-        out = new FileOutputStream(targetLocation);
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-          out.write(buf, 0, len);
-        }
-        counter[0]++;
-      }
-      finally{
-        in.close();
-        out.close();
-      }
+    } else {
+      FileSystemUtil.copyFile(sourceLocation, targetLocation, true);
+      counter++;
       if(isCanceled()){
         throw new StoppedByUserException();
       }
-      if(!isFromTest){
-        PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-        ProgressChangeEvent progress = new ProgressChangeEvent(counter[0], counter[0] + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
-        fireChangeEvent(progress);
-      }
+      
+      PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+      ProgressChangeEvent progress = new ProgressChangeEvent(counter, 
+          String.valueOf(counter) + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
+      fireChangeEvent(progress);
 
     }
   }
@@ -309,7 +322,10 @@ public final class ArchiveBuilder {
       progressChangeListener.operationFailed(ex);
     }
   }
-
+  
+  /**
+   * Sets the progress listeners.
+   */
   public void addListener(ProgressChangeAdapter progressChangeAdapter) {
     if (listeners == null) {
       listeners = new ArrayList<ProgressChangeListener>();

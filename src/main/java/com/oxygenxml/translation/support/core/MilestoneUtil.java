@@ -28,6 +28,14 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class MilestoneUtil {
+  
+  /**
+   * Private constructor.
+   */
+  private MilestoneUtil() {
+    // Avoid instantiation.
+  }
+  
   /**
    *  Logger for logging.
    */
@@ -36,9 +44,9 @@ public class MilestoneUtil {
   /**
    * Predefined suffix of each generated milestone.
    */
-  public final static String MILESTONE_FILE_NAME = "_translation_milestone.xml";
+  public static final String MILESTONE_FILE_NAME = "_translation_milestone.xml";
 
-  /**s
+  /**
    * Reads a file and generates an MD5 from its content.
    * 
    * @param file The file to read.
@@ -49,7 +57,7 @@ public class MilestoneUtil {
    * @throws FileNotFoundException The file doesn't exist.
    * @throws IOException Problems reading the file.
    */
-  public static String generateMD5(File file) throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+  public static String generateMD5(File file) throws NoSuchAlgorithmException, IOException {
     return generateMD5(new java.io.FileInputStream(file));
   }
   
@@ -64,14 +72,12 @@ public class MilestoneUtil {
    * @throws FileNotFoundException The file doesn't exist.
    * @throws IOException Problems reading the file.
    */
-  public static String generateMD5(URL resource) 
-      throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+  public static String generateMD5(URL resource) throws NoSuchAlgorithmException, IOException {
     return generateMD5(resource.openStream());
   }
   
   /**
    * Reads a file and generates an MD5 from its content.
-   * 
    * @param resource The resource to read.
    * 
    * @return An unique MD5 hash.
@@ -80,7 +86,7 @@ public class MilestoneUtil {
    * @throws FileNotFoundException The file doesn't exist.
    * @throws IOException Problems reading the file.
    */
-  public static String generateMD5(InputStream stream) throws NoSuchAlgorithmException, FileNotFoundException, IOException {
+  public static String generateMD5(InputStream stream) throws NoSuchAlgorithmException, IOException {
     MessageDigest md = MessageDigest.getInstance("MD5");
   
     byte[] dataBytes = new byte[8 * 1024];
@@ -138,7 +144,7 @@ public class MilestoneUtil {
    * @throws FileNotFoundException  The file doesn't exist.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public static void storeMilestoneFile(InfoResources info, File milestoneFile) throws JAXBException, FileNotFoundException, StoppedByUserException{
+  public static void storeMilestoneFile(InfoResources info, File milestoneFile) throws JAXBException{
     JAXBContext context = JAXBContext.newInstance(InfoResources.class);  
 
     Marshaller marshaller = context.createMarshaller();  
@@ -146,19 +152,25 @@ public class MilestoneUtil {
 
     marshaller.marshal(info, milestoneFile);        
   }
+  
+  /**
+   * Returns a string representation of the argument as a bytes array. 
+   * 
+   * @param bytes A bytes array.
+   * @return      Returns a string representation of the argument as a bytes array.
+   */
+  public static String toHexString(byte[] bytes) {
+    StringBuilder hexString = new StringBuilder();
 
-  private static String toHexString(byte[] bytes) {
-      StringBuilder hexString = new StringBuilder();
-  
-      for (int i = 0; i < bytes.length; i++) {
-          String hex = Integer.toHexString(0xFF & bytes[i]);
-          if (hex.length() == 1) {
-              hexString.append('0');
-          }
-          hexString.append(hex);
+    for (int i = 0; i < bytes.length; i++) {
+      String hex = Integer.toHexString(0xFF & bytes[i]);
+      if (hex.length() == 1) {
+        hexString.append('0');
       }
-  
-      return hexString.toString();
+      hexString.append(hex);
+    }
+
+    return hexString.toString();
   }
   
   
@@ -180,9 +192,7 @@ public class MilestoneUtil {
     }
 
     JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
-
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
-
     InfoResources resources = (InfoResources) jaxbUnmarshaller.unmarshal(milestoneFile);    
 
     return resources.getMilestoneCreation();

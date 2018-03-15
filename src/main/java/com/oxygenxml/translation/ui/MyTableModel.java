@@ -1,7 +1,7 @@
 package com.oxygenxml.translation.ui;
 
 import java.util.ArrayList;
-
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
 /**
  *  A custom Table Model.
@@ -14,21 +14,26 @@ public class MyTableModel extends AbstractTableModel{
   /**
    * The list with all the table content.
    */
-  private ArrayList<CheckboxTableItem> loadPaths;
+  private transient List<CheckboxTableItem> loadPaths;
+  
   /**
    * The list with all the columns names.
    */
-  ArrayList<String> colNames = new ArrayList<String>();
+  private transient List<String> colNames = new ArrayList<String>();
   
-  public ArrayList<CheckboxTableItem> getLoadPaths() {
+  public List<CheckboxTableItem> getLoadPaths() {
     return loadPaths;
   }
 
-  public void setLoadPaths(ArrayList<CheckboxTableItem> loadPaths) {
+  public void setLoadPaths(List<CheckboxTableItem> loadPaths) {
     this.loadPaths = loadPaths;
   }
   
-  public MyTableModel(ArrayList<CheckboxTableItem> loadPaths) {
+  /**
+   * Constructor.
+   * @param loadPaths
+   */
+  public MyTableModel(List<CheckboxTableItem> loadPaths) {
     this.loadPaths = loadPaths;
   
     colNames.add("File status");
@@ -118,16 +123,13 @@ public class MyTableModel extends AbstractTableModel{
   @Override
   public Class<?> getColumnClass(int columnIndex) {
       Class<?> type = String.class;
-      switch (columnIndex) {
-          case 0:
-              type = Boolean.class;
-              break;
-          case 1:
-              type = String.class;
-              break;
-      }
+      
+      if(columnIndex == 0) {
+        type = Boolean.class;
+      } 
       return type;
   }
+  
   /**
    *  Checks if all the checkboxes in the table are selected.
    *  

@@ -1,21 +1,18 @@
 package com.oxygenxml.translation.support.core;
 
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.ui.StoppedByUserException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.JAXBException;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 
 /**
  * Tests for detecting the modified files with respect to a saved milestone. 
@@ -39,8 +36,7 @@ public class ModifiedFilesDetectionTest {
 		    TestUtil.dump(actualResourcesFromMilestone));
 		
 		// Test how the change files are detected.
-    ArrayList<ResourceInfo> actualResult = new ChangePackageGenerator().collectModifiedResources(
-            rootResource, false);
+    List<ResourceInfo> actualResult = new ChangePackageGenerator(null).collectModifiedResources(rootResource);
     
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
     expectedResult.add(new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt"));

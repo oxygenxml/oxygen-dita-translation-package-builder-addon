@@ -1,34 +1,37 @@
 package com.oxygenxml.translation.ui.worker;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
-
 import org.apache.log4j.Logger;
-
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 
 /**
  * Creates an Abstract SwingWorker.
- * 
  * @author Bivolan Dalina
- *
  */
 public abstract class AbstractWorker extends SwingWorker<Void, Void> {
   /**
    *  A listener for notifying the changes.
    */
-  protected ArrayList<ProgressChangeListener> listeners;
+  protected List<ProgressChangeListener> listeners;
   /**
    * Logger for logging.
    */
   private static Logger logger = Logger.getLogger(AbstractWorker.class); 
   
+  /**
+   * Constructor. Creates an empty list with listeners.
+   */
   public AbstractWorker() {
     this.listeners = new ArrayList<ProgressChangeListener>();
   }
   
+  /**
+   * Adds a listener in the listeners list.
+   */
   public void addProgressListener(ProgressChangeListener l) {
     listeners.add(l);
   }

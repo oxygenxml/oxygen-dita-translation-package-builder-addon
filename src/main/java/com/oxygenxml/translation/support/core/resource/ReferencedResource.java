@@ -31,14 +31,14 @@ public class ReferencedResource {
       return false;
     }
     ReferencedResource res = (ReferencedResource)obj;
-    return this.location.equals(res.getLocation()) && 
+    return this.location.equals(res.getLocation()) && //NOSONAR
         // DITA res (parsable XML resource)
         this.isDITAResource == res.isDITAResource();
   }
   
   @Override
   public int hashCode() {
-    return this.location.hashCode() + 42;
+    return this.location.hashCode() + 42; //NOSONAR
   }
 
   /**

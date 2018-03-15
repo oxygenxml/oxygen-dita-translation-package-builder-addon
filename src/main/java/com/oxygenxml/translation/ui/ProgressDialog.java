@@ -22,13 +22,12 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * Creates a dialog to show the progress of a time consuming task.
  * 
  * @author Bivolan Dalina
- *
  */
-public class ProgressDialog extends OKCancelDialog implements ProgressChangeListener {
+public class ProgressDialog extends OKCancelDialog /*NOSONAR*/ implements ProgressChangeListener {
   /**
    *  Resource bundle.
    */
-  private final static PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+  private static final PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
   /**
    *  A swing progress bar.
    */

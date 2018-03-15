@@ -2,6 +2,7 @@
 
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.support.util.ProjectConstants;
 import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
@@ -25,7 +26,11 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.Future;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -252,7 +257,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // The parent directory of the current ditamap.
         File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
         final File rootDir = fileOnDisk.getParentFile();
-        logger.debug("The root dir is : " + rootDir.getAbsolutePath());
+        final File unzipLocation = PathUtil.calculateTopLocationFile(editorLocation);
+        
         final File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION3_CHOOSE_FILE_TITLE), new String[] {"zip"},  null);
 
         // DIFF FLOW
@@ -292,7 +298,10 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               unzipTask.addProgressListener(new ProgressChangeAdapter() {
                 @Override
                 public void done() { 
-                  new PreviewDialog(frame, unzipTask.getUnpackedFiles(), rootDir, tempDir);
+                  
+                  new PreviewDialog(frame, unzipTask.getUnpackedFiles(), 
+                      unzipLocation == null ? rootDir : unzipLocation, 
+                      tempDir);
                 }
                 @Override
                 public void operationFailed(Exception ex) {
@@ -307,7 +316,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           // If the user doesn't want a preview and pressed "Apply All"
           else if (buttonId == 1){
             //Unpack the chosen archive over the root directory of the DITA map.
-            overrideTranslatedFiles(pluginWorkspaceAccess, frame, rootDir, chosenDir); 
+            overrideTranslatedFiles(pluginWorkspaceAccess, frame, 
+                unzipLocation == null ? rootDir : unzipLocation, 
+                chosenDir); 
           }
         }
       }
@@ -320,8 +331,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * @param list  The relative paths of the unzipped files.
    * @throws IOException  Problems reading the files.
    */
-  private void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
-      ArrayList<String> list) throws IOException {
+  private static void showReport(final StandalonePluginWorkspace pluginWorkspaceAccess,
+      List<String> list) throws IOException {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
 
     // Present a log with the overridden files.
@@ -387,25 +398,52 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * 
    * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
    * @param frame  The parent frame component used by the Progress Dialog.
-   * @param rootDir Where to unzip the archive.
-   * @param chosenDir The location of the chosen package.
+   * @param unzippingLocation Where to unzip the archive.
+   * @param archiveLocation Archive location
    */
-  public void overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess, final JFrame frame,
-      final File rootDir, final File chosenDir) {
+  public static Future<?> overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess, final JFrame frame,
+      File unzippingLocation, final File archiveLocation) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+    
+    UnzipWorker unzipTask = null;
+    if(archiveLocation != null) {  
+      List<String> zipContent = new ArrayList<String>();
+      ZipFile zipFile = null;
+      try {
+        zipFile = new ZipFile(archiveLocation);
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while(entries.hasMoreElements()){
+          ZipEntry entry = entries.nextElement();
+          boolean directory = entry.isDirectory();
+          if (directory) {
+            File file = new File(entry.getName());
+            // Add first level directories.
+            if (file.getParent() == null) {
+              String name = entry.getName();
+              if (name.endsWith("/") || name.endsWith("//")) {
+                name = name.replaceAll("/", "");
+              }
+              zipContent.add(name);
+            }
+          }
+        }
+        zipFile.close();
+      } catch (IOException e1) {
+        logger.error(e1, e1);
+      }
 
-    if(chosenDir != null) {        
       try { 
         // Unzip the chosen package over the parent  directory of the current ditamap on thread.
-        final UnzipWorker unzipTask = new UnzipWorker(chosenDir, rootDir);
+        unzipTask = new UnzipWorker(archiveLocation, unzippingLocation);
         // Install the progress tracker.
         ProgressDialog.install(unzipTask, frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
         // This listener notifies the user about how the operation ended.
+        final UnzipWorker[] taks = new UnzipWorker[] {unzipTask};
         unzipTask.addProgressListener(new ProgressChangeAdapter() {
           @Override
           public void done() {
             try {
-              showReport(pluginWorkspaceAccess, unzipTask.getUnpackedFiles());
+              showReport(pluginWorkspaceAccess, taks[0].getUnpackedFiles());
             } catch (Exception e) {
               if (logger.isDebugEnabled()) {
                 logger.debug(e, e);
@@ -425,7 +463,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           }
         });
         unzipTask.execute();
-
+        
+        
       } catch (Exception e) {
         // Preset error to user.
         pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
@@ -434,6 +473,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         }
       }
     }
+    return unzipTask;
   }
   /**
    *  
@@ -456,9 +496,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final PluginResourceBundle resourceBundle,
       final StandalonePluginWorkspace pluginWorkspace,
       final boolean packAll,
-      final ArrayList<ResourceInfo> modifiedResources,
+      final List<ResourceInfo> modifiedResources,
       final boolean shouldCreateReport){
-
+      
     // 1. Start the processing. (the ZIP Worker)
     // 2. Show the dialog. 
     // 3. The ZIP worker notifies the dialog.
@@ -477,7 +517,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       if (logger.isDebugEnabled()) {
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE3));
       }
-      zipTask = new ZipWorker(rootMapDir, chosenDir, packAll, modifiedResources);
+      zipTask = new ZipWorker(rootMap, chosenDir, packAll, modifiedResources);
     }
     // Install the progress tracker.
     ProgressDialog.install(
@@ -586,8 +626,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final URL rootMap) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     // Find the number of modified resources on thread.
-    final GenerateModifiedResourcesWorker modifiedResourcesWorker = 
-        new GenerateModifiedResourcesWorker(rootMap);
+    final GenerateModifiedResourcesWorker modifiedResourcesWorker = new GenerateModifiedResourcesWorker(rootMap);
     // Install the progress tracker.
     ProgressDialog.install(
         modifiedResourcesWorker, 

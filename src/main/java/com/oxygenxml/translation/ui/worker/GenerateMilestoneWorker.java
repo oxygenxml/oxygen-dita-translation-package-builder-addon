@@ -8,7 +8,6 @@ import com.oxygenxml.translation.support.core.resource.ResourceFactory;
  * Creates an AbstractWorker for generating the milestone file.
  * 
  * @author Bivolan Dalina
- *
  */
 public class GenerateMilestoneWorker extends AbstractWorker{
   /**
@@ -16,18 +15,22 @@ public class GenerateMilestoneWorker extends AbstractWorker{
    */
   private URL rootMap;
   
+  /**
+   * Constructor.
+   * 
+   * @param rootMap System ID of the DITA map.
+   */
   public GenerateMilestoneWorker(URL rootMap) {
     this.rootMap = rootMap;
   }
+  
   /**
    * Main task. Executed in background thread.
    */
   @Override
   protected Void doInBackground() throws Exception {
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-    packageBuilder.generateChangeMilestone(
-        ResourceFactory.getInstance().getResource(rootMap), 
-        false);
+    packageBuilder.generateChangeMilestone(ResourceFactory.getInstance().getResource(rootMap));
     
     return null;
   }

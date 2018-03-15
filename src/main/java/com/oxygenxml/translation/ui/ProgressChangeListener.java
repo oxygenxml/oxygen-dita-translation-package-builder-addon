@@ -4,7 +4,6 @@ package com.oxygenxml.translation.ui;
  * A custom listener.
  * 
  * @author Bivolan Dalina
- *
  */
 public interface ProgressChangeListener {
   /**

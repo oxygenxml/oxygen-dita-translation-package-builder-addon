@@ -1,10 +1,8 @@
 package com.oxygenxml.translation.support.storage;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -30,6 +28,8 @@ public class InfoResources {
    */
   @XmlAttribute(name = "rootFolder")
   private File rootFolder;
+  
+  
   public File getRootFolder() {
     return rootFolder;
   }
@@ -60,14 +60,14 @@ public class InfoResources {
 		this.list = list;
 	}
 	
-	public InfoResources(ArrayList<ResourceInfo> list, Date milestoneCreation) {
+	public InfoResources(List<ResourceInfo> list, Date milestoneCreation) {
     this.list = list;
     this.milestoneCreation = milestoneCreation;
   }
 	
 	public InfoResources(){	}
 	
-	public InfoResources(ArrayList<ResourceInfo> list) {
+	public InfoResources(List<ResourceInfo> list) {
 		this.list = list;
 	}
 		

@@ -15,6 +15,13 @@ import org.apache.commons.io.FilenameUtils;
 public class ProjectConstants {
   
   /**
+   * Private constructor.
+   */
+  private ProjectConstants() {
+    // Nothing
+  }
+  
+  /**
    * DITA file extension: dita.
    */
   public static final String DITA_EXTENSION = "dita";
@@ -28,7 +35,6 @@ public class ProjectConstants {
    * XML file extension: xml.
    */
   public static final String XML_EXTENSION = "xml";
-  
   
   /**
    * Predefined name suffix of the file that stores the relative path for modified files.

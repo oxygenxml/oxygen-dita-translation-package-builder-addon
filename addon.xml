@@ -8,7 +8,7 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
         id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
         <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/${project.version}/${project.build.finalName}-plugin.jar"/>
         <xt:version>${project.version}</xt:version>
-        <xt:oxy_version>18.1+</xt:oxy_version>
+        <xt:oxy_version>19.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft SRL</xt:author>
         <xt:name>DITA Translation Package Builder</xt:name>

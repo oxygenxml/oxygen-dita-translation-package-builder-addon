@@ -61,9 +61,7 @@ public class ZipTest extends TestCase{
     resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
     
     IRootResource resource = resourceFactory.getResource(rootMapURL);
-    final ArrayList<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(
-        resource, 
-        true);
+    final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
     
     Future<?> future = TranslationPackageBuilderExtension.createPackage(
         null, 
@@ -105,6 +103,81 @@ public class ZipTest extends TestCase{
         + "root/THE_ROOT.ditamap, "   /*the root map*/
         + "root/from_root/, "         /*sub-folder*/
         + "root/from_root/topic1.dita"/*a file referred in the root map*/
+        + "]",
+        zipContent.toString());
+  }
+
+  /**
+   * <p><b>Description:</b> The root map might not be in the top folder.</p>
+   * <p><b>Bug ID:</b> EXM-41055</p>
+   *
+   * @author adrian_sorop
+   * @throws Exception
+   */
+  public void testZipWorker_2() throws Exception {
+    
+    File rootDir = TestUtil.getPath("issue-9-full-sample-2");
+    File rootMap = new File(rootDir, "translation/maps/map.ditamap");
+    File rootParentFile = rootMap.getParentFile();
+    
+    final URL rootMapURL = rootMap.toURI().toURL();
+    
+    final File saveLocation = new File(rootParentFile, "archive.zip");
+    
+    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+    
+    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
+    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
+    
+    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
+    
+    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
+    
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
+    ResourceFactory resourceFactory = ResourceFactory.getInstance();
+    resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
+    
+    IRootResource resource = resourceFactory.getResource(rootMapURL);
+    List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
+    
+    Future<?> future = TranslationPackageBuilderExtension.createPackage(
+        null, 
+        rootMapURL, 
+        saveLocation, 
+        resourceBundleMock, 
+        saPluginWorkspaceMock, 
+        false, 
+        modifiedResources, 
+        false);
+    
+    // Wait for completion.
+    future.get();
+    
+    URL archive = getClass().getClassLoader().getResource("issue-9-full-sample-2/translation/maps/archive.zip");
+    File file = new File(archive.getPath());
+    assertTrue("Unable to generate archive: " + file.getAbsolutePath(), file.exists());
+    
+    List<String> zipContent = new ArrayList<String>();
+    ZipFile zipFile = new ZipFile(file);
+    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+  
+    while(entries.hasMoreElements()){
+      ZipEntry entry = entries.nextElement();
+      zipContent.add(entry.getName());
+    }
+    zipFile.close();
+    
+    Collections.sort(zipContent);
+    
+    // Assert the content of the archive.
+    assertEquals(
+        "["
+        + "topics/, "
+        + "topics/t1.dita, "
+        + "topics/t2.dita"
         + "]",
         zipContent.toString());
   }
