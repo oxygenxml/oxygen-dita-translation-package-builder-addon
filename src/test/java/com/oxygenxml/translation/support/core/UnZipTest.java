@@ -29,6 +29,7 @@ public class UnZipTest extends TestCase{
     
     File rootDir = TestUtil.getPath("issue-9-full-unzip");
     File rootMap = new File(rootDir, "root/THE_ROOT.ditamap");
+    URL url = rootMap.toURI().toURL();
     
     final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
     PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
@@ -38,15 +39,11 @@ public class UnZipTest extends TestCase{
     Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
     
     UtilAccess utilMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
-    
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootDir);
     Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
  
     File archiveLocation = new File(rootDir, "root/THE_ROOT_translation_package.zip");
-    
-    URL url = rootMap.toURI().toURL();
     File unzippingLocation = PathUtil.calculateTopLocationFile(url);
-    
     assertTrue("", unzippingLocation.getAbsolutePath().endsWith("issue-9-full-unzip"));
     
     Future<?> future = TranslationPackageBuilderExtension.overrideTranslatedFiles(
