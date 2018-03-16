@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 /**
  * Utility class.
@@ -104,7 +106,10 @@ public class PathUtil {
     try {
       URL url = calculateTopLocationURL(rootMapUrl);
       if (url != null) {
-        toReturn = new File(url.getFile());
+        PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+        if (pluginWorkspace != null) {
+          toReturn = pluginWorkspace.getUtilAccess().locateFile(url);
+        }
       }
     } catch (Exception e) {
       logger.error(e, e);

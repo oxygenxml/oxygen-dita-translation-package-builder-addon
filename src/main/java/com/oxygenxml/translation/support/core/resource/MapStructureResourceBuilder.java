@@ -107,6 +107,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
             children = new LinkedList<IResource>();
             for (ReferencedResource child : currentHrefs) {
               String childRelativePath = URLUtil.makeRelative(rootMap, child.getLocation());
+              childRelativePath = URLUtil.decodeURIComponent(childRelativePath);
               // The path is relative to root map.
               SaxResource res = new SaxResource(
                   child,
@@ -151,8 +152,12 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
       ResourceInfo resourceInfo = new ResourceInfo(MilestoneUtil.generateMD5(resource.getLocation()), relativePath);
       if (relativePath.isEmpty()) {
         // It's the root map
-        String name = new File(resource.getLocation().getFile()).getName();
-        resourceInfo.setRelativePath(name);
+        PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+        if (pluginWorkspace != null) {
+          File file = pluginWorkspace.getUtilAccess().locateFile(resource.getLocation());
+          String name = file.getName();
+          resourceInfo.setRelativePath(name);
+        }
       }
 
       return resourceInfo;

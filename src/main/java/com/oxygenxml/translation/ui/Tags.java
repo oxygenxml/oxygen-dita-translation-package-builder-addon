@@ -77,7 +77,6 @@ public interface Tags {
   public final String ACTION3_CHOOSE_FILE_TITLE = "action3_chooseFile_title";
   public final String ACTION3_CONFIRM_DIALOG_TITLE = "action3_confirmDialog_title";
   public final String ACTION3_CONFIRM_DIALOG_MESSAGE = "action3_confirmDialog_message";
-  public final String ACTION3_CONFIRM_DIALOG_BUTTON1 = "action3_confirmDialog_button1";
   public final String ACTION3_CONFIRM_DIALOG_BUTTON2 = "action3_confirmDialog_button2";
   public final String ACTION3_CONFIRM_DIALOG_BUTTON3 = "action3_confirmDialog_button3";
   public final String ACTION3_TEMPDIR_NAME = "action3_tempDir_name";

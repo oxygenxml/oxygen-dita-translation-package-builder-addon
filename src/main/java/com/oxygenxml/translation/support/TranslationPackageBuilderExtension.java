@@ -271,7 +271,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           int buttonId = pluginWorkspaceAccess.showConfirmDialog(
               resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_TITLE), 
               resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_MESSAGE),
-              new String[] {resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON1), resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON2), resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON3)},
+              new String[] {resourceBundle.getMessage(Tags.PREVIEW), resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON2), resourceBundle.getMessage(Tags.ACTION3_CONFIRM_DIALOG_BUTTON3)},
               new int[] {0, 1, 2});
           // If user wants a preview
           if(buttonId == 0){

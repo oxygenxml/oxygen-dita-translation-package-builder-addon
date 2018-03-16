@@ -248,13 +248,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action3_confirmDialog_button1">
+    <key value="preview">
         <comment>Apply Package confirm dialog "Preview" button.</comment>
         <val lang="en_US">Preview</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Preview</val>
+        <val lang="fr_FR">Preview</val>
+        <val lang="ja_JP">Preview</val>
+        <val lang="nl_NL">Preview</val>
     </key>
     <key value="action3_confirmDialog_button2">
         <comment>Apply Package confirm dialog "Apply All" button.</comment>
@@ -283,14 +283,6 @@
     <key value="action3_progresDialog_title">
         <comment>Progress dialog title in apply package.</comment>
         <val lang="en_US">Unzipping package</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="preview">
-        <comment>Preview dialog title in apply package.</comment>
-        <val lang="en_US">Preview</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>
