@@ -7,7 +7,6 @@ import com.oxygenxml.translation.support.util.ParserCreator;
 import com.oxygenxml.translation.support.util.SAXParserCreator;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
@@ -23,9 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.util.UtilAccess;
 import ro.sync.util.URLUtil;
-import sun.awt.SunHints.LCDContrastKey;
 
 /**
  * An implementation that detects the resources referred inside the content of
