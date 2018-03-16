@@ -18,8 +18,8 @@ public class FontProperties {
    * A map holding the necessary text attributes to render underlined text.
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static final Map<? extends Attribute, ?> UNDERLINED_TEXT_ATTRIBUTES_MAP = new HashMap() {
-    {
+  public static final Map<? extends Attribute, ?> UNDERLINED_TEXT_ATTRIBUTES_MAP = new HashMap() { /*NOSONAR*/
+    {/*NOSONAR*/
       // Enable the underline font attribute
       put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
     }

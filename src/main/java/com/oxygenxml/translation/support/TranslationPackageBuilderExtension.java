@@ -427,9 +427,16 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             }
           }
         }
-        zipFile.close();
       } catch (IOException e1) {
         logger.error(e1, e1);
+      } finally {
+        if (zipFile != null) {
+          try {
+            zipFile.close();
+          } catch (IOException e) {
+            // Nothing
+          }
+        }
       }
 
       try { 
