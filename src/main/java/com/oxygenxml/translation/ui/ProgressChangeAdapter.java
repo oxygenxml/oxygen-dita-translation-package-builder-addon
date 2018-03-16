@@ -1,9 +1,6 @@
 package com.oxygenxml.translation.ui;
 /**
  * An adapter class for the custom ProgressChangeListener.
- * 
- * @author Bivolan Dalina
- *
  */
 public class ProgressChangeAdapter implements ProgressChangeListener {
   /**
@@ -11,7 +8,9 @@ public class ProgressChangeAdapter implements ProgressChangeListener {
    * 
    * @param progress An object of type ProgressChangeEvent.
    */
-  public void change(ProgressChangeEvent progress) {  }
+  public void change(ProgressChangeEvent progress) {
+    // dummy implementation
+  }
   /**
    * The user canceled the dialog.
    * 
@@ -23,12 +22,16 @@ public class ProgressChangeAdapter implements ProgressChangeListener {
   /**
    *  Executed after the task is completed. It's used to perform different operations like closing the ProgressDialog.
    */
-  public void done() {  }
+  public void done() {
+    // dummy implementation
+  }
   /**
    * The watched operation has failed.
    * 
    * @param ex The exception that stopped the operation.
    */
-  public void operationFailed(Exception ex) {  }
+  public void operationFailed(Exception ex) {
+    // dummy implementation
+  }
 
 }
