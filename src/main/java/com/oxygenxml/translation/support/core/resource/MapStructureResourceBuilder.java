@@ -1,5 +1,10 @@
 package com.oxygenxml.translation.support.core.resource;
 
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.OxygenParserCreator;
+import com.oxygenxml.translation.support.util.ParserCreator;
+import com.oxygenxml.translation.support.util.SAXParserCreator;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -9,20 +14,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-
-import com.oxygenxml.translation.support.core.MilestoneUtil;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.support.util.OxygenParserCreator;
-import com.oxygenxml.translation.support.util.ParserCreator;
-import com.oxygenxml.translation.support.util.SAXParserCreator;
-
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.util.URLUtil;
@@ -92,6 +88,14 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      */
     public Iterator<IResource> iterator() {
       List<IResource> children = null;
+      
+      if (logger.isDebugEnabled()) {
+        logger.debug("current resource: " + resource);
+        logger.debug("contains??" + visitedURLs.contains(resource));
+        logger.debug("exists: " + resourceExists());
+        logger.debug("is DITA: " + resource.isDITAResource());
+      }
+
       // DITA resource 
       if (resource != null && !visitedURLs.contains(resource) && 
           resource.isDITAResource() && resourceExists()){
@@ -113,7 +117,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
             }
           }
         } catch (Exception e) {
-          logger.warn(e, e);
+          logger.error(e, e);
         } 
       }
 
@@ -124,7 +128,8 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
      * @return <code>true</code> if the file exists on the disk.
      */
     private boolean resourceExists() {
-      return new File(resource.getLocation().getFile()).exists();
+      URL location = resource.getLocation();
+      return URLUtil.existsLocalFile(location.toExternalForm());
     }
 
     /**
