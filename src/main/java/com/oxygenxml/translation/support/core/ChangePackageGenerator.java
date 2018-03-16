@@ -32,6 +32,7 @@ import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.util.URLUtil;
 
 /**
  * What this class does:
@@ -248,10 +249,10 @@ public class ChangePackageGenerator {
               relativePath = relativePath.substring(0, indexOf);
             }
             
-            URL url = new URL(rootDir.toURI().toURL(), relativePath);
-            
             // TODO Adrian Make it relative to the TOP dir.
-            String relativeLocationToRootDir = url.toExternalForm().replaceAll(topLocationInFileSystem, "");
+            URL url = new URL(rootDir.toURI().toURL(), relativePath);
+            String externalForm = URLUtil.decodeURIComponent(url.toExternalForm());
+            String relativeLocationToRootDir = externalForm.replaceAll(topLocationInFileSystem, "");
             
             File dest = new File(tempDir, relativeLocationToRootDir);
             dest.getParentFile().mkdirs();

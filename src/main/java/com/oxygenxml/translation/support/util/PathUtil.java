@@ -14,6 +14,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.util.URLUtil;
 
 /**
  * Utility class.
@@ -88,7 +89,7 @@ public class PathUtil {
     int i = 0;
     for (Iterator<URL> iterator = paths.iterator(); iterator.hasNext();) {
       URL url = iterator.next();
-      array[i] = url.toExternalForm();
+      array[i] = URLUtil.decodeURIComponent(url.toExternalForm());
       i++;
     }
     return commonPath(array);
