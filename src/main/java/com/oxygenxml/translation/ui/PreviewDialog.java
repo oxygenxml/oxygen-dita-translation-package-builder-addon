@@ -44,6 +44,8 @@ import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.ui.hidpi.RetinaDetector;
+import ro.sync.util.URLUtil;
 /**
  *  The dialog that shows a preview before applying a package.
  * 
@@ -125,16 +127,28 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
 
     ArrayList<CheckboxTableItem> loadPaths = new ArrayList<CheckboxTableItem>();
     for (String data : filePaths) {
+      data = URLUtil.decodeURIComponent(data);
       loadPaths.add(new CheckboxTableItem(Boolean.TRUE , data));
     }
     tableModel = new MyTableModel(loadPaths);
 
     switchViewButton = new JButton(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
-
-    resourcesTable = new JTable(tableModel);   
+    
+    try {
+      Class<?> tableClass = getClass().getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
+      resourcesTable = (JTable) tableClass.newInstance();
+    } catch (Exception e) {
+      logger.debug(e, e);
+    }
+    
+    if (resourcesTable == null) {
+      resourcesTable = new JTable();  
+    }
+    resourcesTable.setModel(tableModel);
     resourcesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);     
     resourcesTable.setTableHeader(null);
     resourcesTable.setShowGrid(false);
+    // TODO setMaxWidth(calculateMaxLength)
     resourcesTable.getColumnModel().getColumn(0).setMaxWidth(40);
     resourcesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
@@ -262,6 +276,8 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     // Fetch the root node
     DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
 
+    
+    
     // Split the string around the delimiter
     String [] strings = data.split("/");
 
@@ -276,6 +292,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
 
       // Index less than 0, this is a new node not currently present on the tree
       if (index < 0) {
+        s = URLUtil.decodeURIComponent(s);
         // Add the new node
         DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(s);
         node.insert(newChild, node.getChildCount());
@@ -554,7 +571,9 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
       final File translatedFilesDir, 
       final StandalonePluginWorkspace pluginWorkspace) {
     // Lazy create the tree view.
-    root = new DefaultMutableTreeNode(filesOnDiskDir.getName());
+    String file = filesOnDiskDir.getName();
+    file = URLUtil.decodeURIComponent(file);
+    root = new DefaultMutableTreeNode(file);
 
     // The default tree model of the CheckBoxTree.
     DefaultTreeModel treeModel = new DefaultTreeModel(root);
@@ -568,7 +587,12 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     tree.setShowsRootHandles(true);
     tree.setRootVisible(true);
-    tree.setRowHeight(20);
+    
+    int rowHeight = 20;
+    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+      rowHeight *= RetinaDetector.getInstance().getScalingFactor();
+    }
+    tree.setRowHeight(rowHeight);
     tree.setSelectionRow(0); 
     tree.getCheckBoxTreeSelectionModel().addSelectionPath(new TreePath(root.getPath()));
 
