@@ -182,5 +182,73 @@ public class ZipTest extends TestCase{
         zipContent.toString());
   }
 
+  /**
+   * <p><b>Description:</b> Zip entries's names should contain white spaces.</p>
+   * <p><b>Bug ID:</b> EXM-41259</p>
+   *
+   * @author adrian_sorop
+   * @throws Exception
+   */
+  public void testZipWorker3() throws Exception {
+    
+    File rootDir = TestUtil.getPath("issue-9-1-file");
+    File rootMap = new File(rootDir, "translation/ma ps/map.ditamap");
+    File rootParentFile = rootMap.getParentFile();
+    
+    final URL rootMapURL = rootMap.toURI().toURL();
+    final File saveLocation = new File(rootParentFile, "archive.zip");
+    
+    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+    
+    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
+    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
+    
+    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
+    
+    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
+    
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
+    ResourceFactory resourceFactory = ResourceFactory.getInstance();
+    resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
+    
+    IRootResource resource = resourceFactory.getResource(rootMapURL);
+    final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
+    
+    Future<?> future = TranslationPackageBuilderExtension.createPackage(
+        null, 
+        rootMapURL, 
+        saveLocation, 
+        resourceBundleMock, 
+        saPluginWorkspaceMock, 
+        false, 
+        modifiedResources, 
+        false);
+    
+    // Wait for completion.
+    future.get();
+    
+    URL archive = getClass().getClassLoader().getResource("issue-9-1-file/translation/ma ps/archive.zip");
+    File file = new File(archive.toURI());
+    assertTrue("Unable to generate archive: " + file.getAbsolutePath(), file.exists());
+    
+    List<ZipEntry> zipContent = new ArrayList<ZipEntry>();
+    ZipFile zipFile = new ZipFile(file);
+    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+  
+    while(entries.hasMoreElements()){
+      ZipEntry entry = entries.nextElement();
+      zipContent.add(entry);
+    }
+    zipFile.close();
+    
+    // Assert the content of the archive.
+    assertEquals(
+        "[to pics/, to pics/white space.dita]",
+        zipContent.toString());
+  }
+
   
 }
