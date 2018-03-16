@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class ReportGenerator {
   
   /**
-   * Stylesheet to transform the xml report to xhtml document.
+   * Style sheet to transform the xml report to xhtml document.
    */
   private static final String REPORT_TRANSFORMATION_XSL = "xsl/report_transformation.xsl";
   
@@ -114,9 +114,8 @@ public class ReportGenerator {
       String absolutePath = null;
       if (xmlReport != null) {
         absolutePath = xmlReport.getAbsolutePath();
-      } else {
-        
       }
+      
       StreamSource xmlSource = new StreamSource(absolutePath);
       StreamResult outputTarget = new StreamResult(outputStream);
       transformer.transform(xmlSource, outputTarget);
