@@ -1,7 +1,5 @@
 package com.oxygenxml.translation.ui;
 
-import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -23,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -38,8 +37,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+
+import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
+
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -279,22 +283,22 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     
     
     // Split the string around the delimiter
-    String [] strings = data.split("/");
+    String [] dataStrings = data.split("/");
 
     // Create a node object to use for traversing down the tree as it 
     // is being created
     DefaultMutableTreeNode node = root;
     // Iterate of the string array
-    for (String s: strings) {
+    for (String stringForNode : dataStrings) {
       // Look for the index of a node at the current level that
       // has a value equal to the current string
-      int index = childIndex(node, s);
+      int index = childIndex(node, stringForNode);
 
       // Index less than 0, this is a new node not currently present on the tree
       if (index < 0) {
-        s = URLUtil.decodeURIComponent(s);
+        stringForNode = URLUtil.decodeURIComponent(stringForNode);
         // Add the new node
-        DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(s);
+        DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(stringForNode);
         node.insert(newChild, node.getChildCount());
         node = newChild;
       }
