@@ -105,7 +105,7 @@ public class PathUtil {
   public static File calculateTopLocationFile(URL rootMapUrl) {
     File toReturn = null;
     try {
-      URL url = calculateTopLocationURL(rootMapUrl);
+      URL url = calculateTopLocationURL(rootMapUrl, null);
       if (url != null) {
         PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
         if (pluginWorkspace != null) {
@@ -121,12 +121,15 @@ public class PathUtil {
   /**
    * XXX
    * @param rootMapUrl
+   * @param packageBuilder can be <code>null</code>. 
    * @return
    */
-  public static URL calculateTopLocationURL(URL rootMapUrl) {
+  public static URL calculateTopLocationURL(URL rootMapUrl, ChangePackageGenerator packageBuilder) {
     URL location = null;
     try {
-      ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
+      if (packageBuilder == null) {
+        packageBuilder = new ChangePackageGenerator(null);
+      }
       String path = calculateTopLocation(rootMapUrl, packageBuilder);
       location = new URL(path);
     } catch (Exception e) {

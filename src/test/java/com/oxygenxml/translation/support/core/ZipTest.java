@@ -189,7 +189,7 @@ public class ZipTest extends TestCase{
    * @author adrian_sorop
    * @throws Exception
    */
-  public void testZipWorker3() throws Exception {
+  public void testZipWorker_3() throws Exception {
     
     File rootDir = TestUtil.getPath("issue-9-1-file");
     File rootMap = new File(rootDir, "translation/ma ps/map.ditamap");
@@ -248,6 +248,74 @@ public class ZipTest extends TestCase{
     assertEquals(
         "[to pics/, to pics/white space.dita]",
         zipContent.toString());
+  }
+
+  /**
+   * <p><b>Description:</b> Pack all in "Create Modified Files Package".</p>
+   *
+   * @throws Exception
+   */
+  public void testZipWorker_4() throws Exception {
+
+    File rootDir = TestUtil.getPath("issue-9-pack-all/translation");
+    File rootMap = new File(rootDir, "ma ps/map.ditamap");
+
+    final URL rootMapURL = rootMap.toURI().toURL();
+    final File saveLocation = new File(rootDir.getParentFile(), "archive.zip");
+
+    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+
+    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
+    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
+
+    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
+    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootDir);
+    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
+
+    Future<?> future = TranslationPackageBuilderExtension.createPackage(
+        null, 
+        rootMapURL, 
+        saveLocation, 
+        resourceBundleMock, 
+        saPluginWorkspaceMock,
+        // Pack all
+        true, 
+        null, 
+        false);
+
+    // Wait to complete
+    future.get();
+
+
+    assertTrue(saveLocation.exists());
+
+    URL archive = getClass().getClassLoader().getResource("issue-9-pack-all/archive.zip");
+    File file = new File(archive.toURI());
+    assertTrue("Unable to generate archive: " + file.getAbsolutePath(), file.exists());
+
+    List<String> zipContent = new ArrayList<String>();
+    ZipFile zipFile = new ZipFile(file);
+    Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+    while(entries.hasMoreElements()){
+      ZipEntry entry = entries.nextElement();
+      zipContent.add(entry.getName());
+    }
+    zipFile.close();
+
+    Collections.sort(zipContent);
+
+    // Assert the content of the archive.
+    assertEquals(
+        "["
+            + "ma ps/, "
+            + "ma ps/map.ditamap, "
+            + "to pics/, "
+            + "to pics/white space.dita"
+        + "]",
+         zipContent.toString());
   }
 
   

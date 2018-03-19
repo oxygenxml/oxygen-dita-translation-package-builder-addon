@@ -5,8 +5,8 @@ import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.support.util.MessagePresenter;
 import com.oxygenxml.translation.support.util.PathUtil;
+import com.oxygenxml.translation.support.util.ResultsManagerUtil;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -42,10 +41,7 @@ import ro.sync.util.URLUtil;
  * 3. generateChangedFilesPackage - puts the modified files in ZIP
  */
 public class ChangePackageGenerator {
-  /**
-   *  Logger for logging.
-   */
-  private static Logger logger = Logger.getLogger(ChangePackageGenerator.class); 
+  
   /**
    *  A list of custom listeners.
    */
@@ -129,7 +125,7 @@ public class ChangePackageGenerator {
             list.add(resourceInfo);
           }
         } catch (IOException e) {
-          MessagePresenter.showInResultsPanel(DocumentPositionedInfo.SEVERITY_WARN, 
+          ResultsManagerUtil.showInResultsPanel(DocumentPositionedInfo.SEVERITY_WARN, 
               e.getMessage(), 
               resource.getCurrentUrl().toExternalForm(), 
               ResultType.PROBLEM);
@@ -206,7 +202,6 @@ public class ChangePackageGenerator {
    * @param rootDir Folder of the DITA map.
    * @param packageLocation The location of the generated ZIP file.
    * @param modifiedResources The list with all the modified files.
-   * @param isFromTest True if this method is called by a JUnit test class.
    * @param topLocationInFileSystem The common ancestor of all the DITA resources referred in the DITA map tree. Either the DITA map folder or an ancestor of it.
    * 
    * @return How many files were modified.
@@ -219,8 +214,7 @@ public class ChangePackageGenerator {
       File rootDir,
       File packageLocation,
       List<ResourceInfo> modifiedResources,
-      boolean isFromTest,
-      String topLocationInFileSystem) throws IOException, StoppedByUserException  {
+      URL topLocationInFileSystem) throws IOException, StoppedByUserException  {
 
     /**
      * 1. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
@@ -249,12 +243,16 @@ public class ChangePackageGenerator {
               relativePath = relativePath.substring(0, indexOf);
             }
             
-            // TODO Adrian Make it relative to the TOP dir.
             URL url = new URL(rootDir.toURI().toURL(), relativePath);
-            String externalForm = URLUtil.decodeURIComponent(url.toExternalForm());
-            String relativeLocationToRootDir = externalForm.replaceAll(topLocationInFileSystem, "");
+            String relative = URLUtil.makeRelative(topLocationInFileSystem, url);
             
-            File dest = new File(tempDir, relativeLocationToRootDir);
+            // fallback
+            if (relative.startsWith("..")) {
+              String externalForm = URLUtil.decodeURIComponent(url.toExternalForm());
+              relative = externalForm.replaceAll(topLocationInFileSystem.toExternalForm(), "");
+            }
+            
+            File dest = new File(tempDir, relative);
             dest.getParentFile().mkdirs();
             
             try {
@@ -328,7 +326,7 @@ public class ChangePackageGenerator {
     computeResourceInfo(resource, list, new HashSet<URL>());
     File milestoneFile = resource.getMilestoneFile();
     /**
-     * TODO Adrian check functionality of the date and time of the milestone creation.
+     * XXX check functionality of the date and time of the milestone creation.
      */
     long lastModified = milestoneFile.lastModified();
     if (lastModified == 0) {

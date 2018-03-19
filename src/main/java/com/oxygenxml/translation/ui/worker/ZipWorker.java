@@ -4,8 +4,8 @@ import com.oxygenxml.translation.support.core.ChangePackageGenerator;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.support.util.MessagePresenter;
 import com.oxygenxml.translation.support.util.PathUtil;
+import com.oxygenxml.translation.support.util.ResultsManagerUtil;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.StoppedByUserException;
@@ -16,29 +16,32 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import ro.sync.document.DocumentPositionedInfo;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Creates an AbstractWorker for packing a directory.
  * @author Bivolan Dalina
  */
 public class ZipWorker extends AbstractWorker {
-  /**
-   *  The file we want to zip.
-   */
-  private File rootDir;
+  
   /**
    *  Where to put the created package.
    */
-  private File zipDir;
+  private File zipDestinationDir;
+  
   /**
    * An object that holds the number of modified files.
    */
   private PackResult modifiedFilesNumber;
+  
   /**
    * True if the user wants to pack the entire directory.
    */
   private boolean packAll;
+  
   /**
    * The list containing all the modified files.
    */
@@ -50,29 +53,28 @@ public class ZipWorker extends AbstractWorker {
   private URL rootMap;
   
   /**
-   * XXX
-   * @param rootMap
-   * @param chosenDir
-   * @param packAll
-   * @param modifiedResources
+   * Generates an archive only with the modified files.
+   * 
+   * @param rootMap           System ID of map opened in DMM.
+   * @param archiveLocation   Where to save the zip file.
+   * @param modifiedResources The list containing all the modified files.
    */
-  public ZipWorker(URL rootMap, File chosenDir, boolean packAll, List<ResourceInfo> modifiedResources) {
+  public ZipWorker(URL rootMap, File archiveLocation, List<ResourceInfo> modifiedResources) {
     this.rootMap = rootMap;
-    this.rootDir = MilestoneUtil.getFile(rootMap).getParentFile();
-    this.packAll = packAll;
-    this.zipDir = chosenDir;
+    this.zipDestinationDir = archiveLocation;
     this.modifiedResources = modifiedResources;
   }
   
   /**
-   * XXX
-   * @param rootDir
-   * @param chosenDir
-   * @param packAll
+   * Generates an archive and adds all the files, modified or not.
+   * 
+   * @param rootMap           System ID of map opened in DMM.
+   * @param archiveLocation   Where to save the zip file.
+   * @param packAll           <code>true</code> to add all files.
    */
-  public ZipWorker(File rootDir, File chosenDir, boolean packAll) {
-    this.rootDir = rootDir;
-    this.zipDir = chosenDir;
+  public ZipWorker(URL rootMap, File archiveLocation, boolean packAll) {
+    this.rootMap = rootMap;
+    this.zipDestinationDir = archiveLocation;
     this.packAll = packAll;
   }
 
@@ -86,27 +88,35 @@ public class ZipWorker extends AbstractWorker {
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, NoChangedFilesException {
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
+    URL topLocationURL = PathUtil.calculateTopLocationURL(rootMap, packageBuilder);
+    // Clear previous reported errors.
+    ResultsManagerUtil.clearResultsPanel();
     if(packAll){
       ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
-      archiveBuilder.zipDirectory(rootDir, zipDir);
-    } else{
-      ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-      String calculateTopLocation = PathUtil.calculateTopLocation(rootMap, packageBuilder);
+      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+      if (pluginWorkspace != null) {
+        UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
+        if (utilAccess != null) {
+          File locateFile = utilAccess.locateFile(topLocationURL);
+          archiveBuilder.zipDirectory(locateFile, zipDestinationDir);
+        }
+      }
+    } else {
+      File rootDir = MilestoneUtil.getFile(rootMap).getParentFile();
       modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
           rootDir,
-          zipDir, 
+          zipDestinationDir, 
           modifiedResources, 
-          false, 
-          calculateTopLocation);
+          topLocationURL);
 
       List<String> filesNotCopied = packageBuilder.getFilesNotCopied();
-
       if (!filesNotCopied.isEmpty()) {
         // Avoid errors duplication.
-        MessagePresenter.clearResultsPanel();
+        ResultsManagerUtil.clearResultsPanel();
         for (String relPath : filesNotCopied) {
           String systemId = new URL(rootMap, relPath).toExternalForm();
-          MessagePresenter.showInResultsPanel(DocumentPositionedInfo.SEVERITY_INFO, 
+          ResultsManagerUtil.showInResultsPanel(DocumentPositionedInfo.SEVERITY_INFO, 
               "Unable to copy: " + relPath, 
               systemId, 
               ResultType.GENERIC);

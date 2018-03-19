@@ -175,7 +175,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         URL editorLocation = editor.getEditorLocation();
         // 1. Extract the parent directory of the current map. This is the rootDir
         File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(editorLocation);
-        
         if (logger.isDebugEnabled()) {
           logger.debug("The current ditaMAP is : " + fileOnDisk.getAbsolutePath());
         }
@@ -201,7 +200,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
             //Generate the first milestone.
             if(buttonId == JOptionPane.YES_OPTION){
               generateMilestone(pluginWorkspaceAccess, editorLocation, milestoneFile, frame, false);
-            } else if(buttonId == JOptionPane.NO_OPTION){     
+            } else if(buttonId == JOptionPane.UNDEFINED_CONDITION){     
               //If the user wants to pack the entire directory show a file chooser and create package.
               File chosenDirectory = pluginWorkspaceAccess.chooseFile(
                   resourceBundle.getMessage(Tags.PACKAGE_LOCATION),
@@ -211,7 +210,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               if(chosenDirectory != null){
                 createPackage(frame, editorLocation, chosenDirectory, resourceBundle, pluginWorkspaceAccess, true, null, false);
               }             
-            }else{
+            } else {
+              // JOptionPane.NO_OPTION
               return;
             }
           } else {  
@@ -504,7 +504,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       final StandalonePluginWorkspace pluginWorkspace,
       final boolean packAll,
       final List<ResourceInfo> modifiedResources,
-      final boolean shouldCreateReport){
+      final boolean shouldCreateReport) {
       
     // 1. Start the processing. (the ZIP Worker)
     // 2. Show the dialog. 
@@ -513,18 +513,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
     if(logger.isDebugEnabled()){
       logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE1) + packAll);
     }
-
     final File rootMapDir = MilestoneUtil.getFile(rootMap).getParentFile();
     if(packAll){
       if(logger.isDebugEnabled()){
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE2));
       }
-      zipTask = new ZipWorker(rootMapDir, chosenDir, packAll);
+      zipTask = new ZipWorker(rootMap, chosenDir, packAll);
     } else { 
       if (logger.isDebugEnabled()) {
         logger.debug(resourceBundle.getMessage(Tags.CREATE_PACKAGE_LOGGER_MESSAGE3));
       }
-      zipTask = new ZipWorker(rootMap, chosenDir, packAll, modifiedResources);
+      zipTask = new ZipWorker(rootMap, chosenDir, modifiedResources);
     }
     // Install the progress tracker.
     ProgressDialog.install(

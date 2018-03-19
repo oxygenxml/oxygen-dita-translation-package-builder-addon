@@ -8,12 +8,17 @@ import ro.sync.exml.workspace.api.results.ResultsManager;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
-public class MessagePresenter {
+/**
+ * Utility class used to present errors to user.
+ * 
+ * @author adrian_sorop
+ */
+public class ResultsManagerUtil {
   
   /**
    * Private constructor.
    */
-  private MessagePresenter() {
+  private ResultsManagerUtil() {
     // Nothing
   }
   
@@ -35,13 +40,15 @@ public class MessagePresenter {
     DocumentPositionedInfo dpi = new DocumentPositionedInfo(severity, message, systemId);
     StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {
-      pluginWorkspace.getResultsManager().
-      addResult(
-          pluginWorkspace.getResourceBundle().getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME), 
-          dpi, 
-          resultType, 
-          true, 
-          false);
+      ResultsManager resultsManager = pluginWorkspace.getResultsManager();
+      if (resultsManager != null) {
+        resultsManager.addResult(
+            pluginWorkspace.getResourceBundle().getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME), 
+            dpi, 
+            resultType, 
+            true, 
+            false);
+      }
     }
   }
   
@@ -52,11 +59,13 @@ public class MessagePresenter {
     StandalonePluginWorkspace pluginWorkspace = (StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {
       ResultsManager resultsManager = pluginWorkspace.getResultsManager();
-      String tabName = pluginWorkspace.getResourceBundle().getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME);
-      List<DocumentPositionedInfo> allResults = resultsManager.getAllResults(tabName);
-      if (allResults != null && !allResults.isEmpty()) {
-        for (DocumentPositionedInfo dpi : allResults) {
-          resultsManager.removeResult(tabName, dpi);
+      if (resultsManager != null) {
+        String tabName = pluginWorkspace.getResourceBundle().getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME);
+        List<DocumentPositionedInfo> allResults = resultsManager.getAllResults(tabName);
+        if (allResults != null && !allResults.isEmpty()) {
+          for (DocumentPositionedInfo dpi : allResults) {
+            resultsManager.removeResult(tabName, dpi);
+          }
         }
       }
     }
