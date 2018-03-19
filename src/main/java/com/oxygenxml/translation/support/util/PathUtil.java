@@ -89,10 +89,12 @@ public class PathUtil {
     int i = 0;
     for (Iterator<URL> iterator = paths.iterator(); iterator.hasNext();) {
       URL url = iterator.next();
-      array[i] = URLUtil.decodeURIComponent(url.toExternalForm());
+      array[i] = url.toExternalForm();
       i++;
     }
-    return commonPath(array);
+    
+    // Avoid specific URL related escaping sequences.
+    return URLUtil.decodeURIComponent(commonPath(array));
   }
   
   /**
