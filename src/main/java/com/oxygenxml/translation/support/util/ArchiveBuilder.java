@@ -1,11 +1,6 @@
 package com.oxygenxml.translation.support.util;
 
 
-import com.oxygenxml.translation.ui.ProgressChangeAdapter;
-import com.oxygenxml.translation.ui.ProgressChangeEvent;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
-import com.oxygenxml.translation.ui.StoppedByUserException;
-import com.oxygenxml.translation.ui.Tags;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,11 +12,17 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import com.oxygenxml.translation.ui.ProgressChangeAdapter;
+import com.oxygenxml.translation.ui.ProgressChangeEvent;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+import com.oxygenxml.translation.ui.StoppedByUserException;
+import com.oxygenxml.translation.ui.Tags;
+
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.io.FileSystemUtil;
-import ro.sync.util.URLUtil;
 
 /**
  * 
@@ -184,7 +185,7 @@ public final class ArchiveBuilder {
           ZipEntry zipEntry = (ZipEntry) enu.nextElement();
           String name = zipEntry.getName();
           //We create the directories 
-          File file = new File(URLUtil.getCanonicalFile(destDir), name);
+          File file = new File(destDir, name);
           if (name.endsWith("/")) {
             file.mkdirs();
             continue;
