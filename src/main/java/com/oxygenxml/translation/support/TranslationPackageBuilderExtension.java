@@ -410,6 +410,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       List<String> zipContent = new ArrayList<String>();
       ZipFile zipFile = null;
       try {
+        // TODO Adrian This code alters the package. Why???
+        // Probably for something that goes on inside UnzipWorker
         zipFile = new ZipFile(archiveLocation);
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while(entries.hasMoreElements()){
@@ -455,11 +457,6 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               if (logger.isDebugEnabled()) {
                 logger.debug(e, e);
               }
-
-              if(!(e instanceof StoppedByUserException)){
-                pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
-              }
-              return;                  
             }
           }
           @Override

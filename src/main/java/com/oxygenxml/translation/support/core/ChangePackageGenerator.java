@@ -244,10 +244,12 @@ public class ChangePackageGenerator {
             }
             
             URL url = new URL(rootDir.toURI().toURL(), relativePath);
+            // TODO Adrian A test to put the map in the package. The Map dir has spaces in it.
             String relative = URLUtil.makeRelative(topLocationInFileSystem, url);
+            relative = URLUtil.decodeURIComponent(relative);
             
             // fallback
-            if (relative.startsWith("..")) {
+            if (relative.startsWith("../")) {
               String externalForm = URLUtil.decodeURIComponent(url.toExternalForm());
               relative = externalForm.replaceAll(topLocationInFileSystem.toExternalForm(), "");
             }
