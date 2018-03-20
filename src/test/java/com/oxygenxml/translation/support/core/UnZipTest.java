@@ -48,7 +48,6 @@ public class UnZipTest extends TestCase{
     
     Future<?> future = TranslationPackageBuilderExtension.overrideTranslatedFiles(
         saPluginWorkspaceMock, 
-        null, 
         unzippingLocation, 
         archiveLocation);
     
@@ -56,6 +55,7 @@ public class UnZipTest extends TestCase{
     future.get();
     
     // TODO Adrian Add some asserts.
+    // Check files if they are modified after unzipping.
   }
 
   
