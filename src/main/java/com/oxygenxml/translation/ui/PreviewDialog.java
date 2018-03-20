@@ -575,9 +575,9 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
       final File translatedFilesDir, 
       final StandalonePluginWorkspace pluginWorkspace) {
     // Lazy create the tree view.
-    String file = filesOnDiskDir.getName();
-    file = URLUtil.decodeURIComponent(file);
-    root = new DefaultMutableTreeNode(file);
+    String filepath = filesOnDiskDir.getName();
+    filepath = URLUtil.decodeURIComponent(filepath);
+    root = new DefaultMutableTreeNode(filepath);
 
     // The default tree model of the CheckBoxTree.
     DefaultTreeModel treeModel = new DefaultTreeModel(root);
