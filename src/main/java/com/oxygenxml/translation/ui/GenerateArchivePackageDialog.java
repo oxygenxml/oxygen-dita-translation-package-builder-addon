@@ -407,6 +407,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
   @Override
   protected void doOK() {
     // The selected path from the comboBox.
+    // TODO Adrian Check that we have a file specified.
     currentPath = ((JTextComponent) archiveLocationCombobox.getEditor().getEditorComponent()).getText();
     
     chosenZip = new File(currentPath);

@@ -1,6 +1,6 @@
 package com.oxygenxml.translation.support.core;
 
-import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
+import com.oxygenxml.translation.support.util.ApplyPackageUtil;
 import com.oxygenxml.translation.support.util.PathUtil;
 import java.io.File;
 import java.net.URL;
@@ -46,7 +46,7 @@ public class UnZipTest extends TestCase{
     File unzippingLocation = PathUtil.calculateTopLocationFile(url);
     assertTrue("", unzippingLocation.getAbsolutePath().endsWith("issue-9-full-unzip"));
     
-    Future<?> future = TranslationPackageBuilderExtension.overrideTranslatedFiles(
+    Future<?> future = ApplyPackageUtil.overrideTranslatedFiles(
         saPluginWorkspaceMock, 
         unzippingLocation, 
         archiveLocation);

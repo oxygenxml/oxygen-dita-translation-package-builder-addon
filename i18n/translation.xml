@@ -87,13 +87,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action1_errorMessage">
+    <key value="milestone_creation_failed_because">
         <comment>Error message in generate milestone.</comment>
         <val lang="en_US">Milestone creation failed because of: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Milestone creation failed because of: </val>
+        <val lang="fr_FR">Milestone creation failed because of: </val>
+        <val lang="ja_JP">Milestone creation failed because of: </val>
+        <val lang="nl_NL">Milestone creation failed because of: </val>
     </key>
     <key value="Package_location">
         <comment>Title of dialog.</comment>
@@ -164,23 +164,14 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action2_packEntireDir_message">
+    <key value="directory_was_packed">
         <comment>Message dialog content in pack modified files.</comment>
         <val lang="en_US">The directory was packed.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">The directory was packed.</val>
+        <val lang="fr_FR">The directory was packed.</val>
+        <val lang="ja_JP">The directory was packed.</val>
+        <val lang="nl_NL">The directory was packed.</val>
     </key>
-    <key value="action2_packEntireDir_title">
-        <comment>Message dialog title in pack modified files.</comment>
-        <val lang="en_US">All files packed</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    
     <key value="Report_number_of_modified_files">
         <comment>When the modified files archive is generated, it shows how many files were added.</comment>
         <val lang="en_US">A package containing {0} file(s) was created.</val>
@@ -188,16 +179,6 @@
         <val lang="fr_FR">A package containing {0} file(s) was created.</val>
         <val lang="ja_JP">A package containing {0} file(s) was created.</val>
         <val lang="nl_NL">A package containing {0} file(s) was created.</val>
-    </key>
-    
-    
-    <key value="action2_packOnlyModified_title">
-        <comment>Message dialog title in pack modified files.</comment>
-        <val lang="en_US">Modified files packed</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="action2_infoMessage_exceptions">
         <comment>Information message in pack modified files.</comment>
@@ -232,21 +213,21 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action3_confirmDialog_title">
+    <key value="preview_changes">
         <comment>Apply Package confirm dialog title.</comment>
-        <val lang="en_US">Preview changes</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="en_US">Preview Changes</val>
+        <val lang="de_DE">Preview Changes</val>
+        <val lang="fr_FR">Preview Changes</val>
+        <val lang="ja_JP">Preview Changes</val>
+        <val lang="nl_NL">Preview Changes</val>
     </key>
-    <key value="action3_confirmDialog_message">
+    <key value="preview_changes_user_question">
         <comment>Apply Package confirm dialog message.</comment>
-        <val lang="en_US">Do you want you to preview all the changes that will be made before applying them? </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="en_US">Do you want you to preview all the changes that will be made before applying them?</val>
+        <val lang="de_DE">Do you want you to preview all the changes that will be made before applying them?</val>
+        <val lang="fr_FR">Do you want you to preview all the changes that will be made before applying them?</val>
+        <val lang="ja_JP">Do you want you to preview all the changes that will be made before applying them?</val>
+        <val lang="nl_NL">Do you want you to preview all the changes that will be made before applying them?</val>
     </key>
     <key value="preview">
         <comment>Apply Package confirm dialog "Preview" button.</comment>
@@ -256,21 +237,21 @@
         <val lang="ja_JP">Preview</val>
         <val lang="nl_NL">Preview</val>
     </key>
-    <key value="action3_confirmDialog_button2">
+    <key value="apply_all">
         <comment>Apply Package confirm dialog "Apply All" button.</comment>
         <val lang="en_US">Apply All</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Apply All</val>
+        <val lang="fr_FR">Apply All</val>
+        <val lang="ja_JP">Apply All</val>
+        <val lang="nl_NL"></val>
     </key>
-    <key value="action3_confirmDialog_button3">
+    <key value="cancel">
         <comment>Apply Package confirm dialog "Cancel" button.</comment>
         <val lang="en_US">Cancel</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Cancel</val>
+        <val lang="fr_FR">Cancel</val>
+        <val lang="ja_JP">Cancel</val>
+        <val lang="nl_NL">Cancel</val>
     </key>
     <key value="action3_tempDir_name">
         <comment>Apply Package name of the temporary directory.</comment>
@@ -288,13 +269,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action3_errorMessage">
+    <key value="failed_to_apply_package">
         <comment>Error message content title in apply package.</comment>
         <val lang="en_US">Failed to apply package because of: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Failed to apply package because of: </val>
+        <val lang="fr_FR">Failed to apply package because of: </val>
+        <val lang="ja_JP">Failed to apply package because of: </val>
+        <val lang="nl_NL">Failed to apply package because of: </val>
     </key>
     <key value="showReport_label">
         <comment>The label from showReport dialog.</comment>
@@ -522,44 +503,4 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="createPackage_logger_message1">
-		<comment> Create package method, logger message.</comment>
-		<val lang="en_US">Pack entire directory? : </val>
-		<val lang="de_DE">de_DE_translation</val>
-		<val lang="fr_FR">fr_FR_translation</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">nl_NL_translation</val>
-	</key>
-	<key value="createPackage_logger_message2">
-		<comment> Create package method, logger message.</comment>
-		<val lang="en_US">Zipping entire directory.</val>
-		<val lang="de_DE">de_DE_translation</val>
-		<val lang="fr_FR">fr_FR_translation</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">nl_NL_translation</val>
-	</key>
-	<key value="createPackage_logger_message3">
-		<comment> Create package method, logger message.</comment>
-		<val lang="en_US">Zip only modified files</val>
-		<val lang="de_DE">de_DE_translation</val>
-		<val lang="fr_FR">fr_FR_translation</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">nl_NL_translation</val>
-	</key>
-	<key value="createPackage_logger_message4">
-		<comment> Create package method, logger message.</comment>
-		<val lang="en_US">Should create report?</val>
-		<val lang="de_DE">de_DE_translation</val>
-		<val lang="fr_FR">fr_FR_translation</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">nl_NL_translation</val>
-	</key>
-	<key value="createPackage_logger_message5">
-		<comment> Create package method, logger message.</comment>
-		<val lang="en_US">Founded modified files: </val>
-		<val lang="de_DE">de_DE_translation</val>
-		<val lang="fr_FR">fr_FR_translation</val>
-		<val lang="ja_JP">ja_JP_translation</val>
-		<val lang="nl_NL">nl_NL_translation</val>
-	</key>
 </translation>

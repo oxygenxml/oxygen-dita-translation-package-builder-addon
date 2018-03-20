@@ -5,6 +5,7 @@ import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -162,5 +163,27 @@ public class PathUtil {
       logger.error(e, e);
     }
     return path;
+  }
+  
+  /**
+   * Creates a temporary folder in the OS's temporary files system.
+   * 
+   * @return  The temporary folder or <code>null</code>.
+   */
+  public static File createTempDirectory() {
+    try {
+      final File temp = File.createTempFile("D_T_B_temp", Long.toString(System.nanoTime()));
+      if(!(temp.delete()))    {
+        throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+      }
+      if(!(temp.mkdir())) {
+        throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+      }
+      return (temp);
+    } catch (Exception e) {
+      logger.error(e, e);
+    }
+    
+    return null;
   }
 }

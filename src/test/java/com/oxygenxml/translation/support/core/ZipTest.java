@@ -1,10 +1,10 @@
 package com.oxygenxml.translation.support.core;
 
-import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
 import com.oxygenxml.translation.support.core.resource.DetectionType;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -63,11 +63,9 @@ public class ZipTest extends TestCase{
     IRootResource resource = resourceFactory.getResource(rootMapURL);
     final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
     
-    Future<?> future = TranslationPackageBuilderExtension.createPackage(
-        null, 
+    Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
         saveLocation, 
-        resourceBundleMock, 
         saPluginWorkspaceMock, 
         false, 
         modifiedResources, 
@@ -143,11 +141,9 @@ public class ZipTest extends TestCase{
     IRootResource resource = resourceFactory.getResource(rootMapURL);
     List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
     
-    Future<?> future = TranslationPackageBuilderExtension.createPackage(
-        null, 
+    Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
         saveLocation, 
-        resourceBundleMock, 
         saPluginWorkspaceMock, 
         false, 
         modifiedResources, 
@@ -217,11 +213,9 @@ public class ZipTest extends TestCase{
     IRootResource resource = resourceFactory.getResource(rootMapURL);
     final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
     
-    Future<?> future = TranslationPackageBuilderExtension.createPackage(
-        null, 
+    Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
         saveLocation, 
-        resourceBundleMock, 
         saPluginWorkspaceMock, 
         false, 
         modifiedResources, 
@@ -274,11 +268,9 @@ public class ZipTest extends TestCase{
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootDir);
     Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
 
-    Future<?> future = TranslationPackageBuilderExtension.createPackage(
-        null, 
+    Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
         saveLocation, 
-        resourceBundleMock, 
         saPluginWorkspaceMock,
         // Pack all
         true, 

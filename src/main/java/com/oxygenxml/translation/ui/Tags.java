@@ -20,7 +20,11 @@ public interface Tags {
   public final String JMENU_TOOLTIP_ITEM3 ="jmenu_tooltip_item3";
   
   public final String ACTION1_INFO_MESSAGE = "action1_infoMessage";
-  public final String ACTION1_ERROR_MESSAGE = "action1_errorMessage";
+  
+  /**
+   * en: Milestone creation failed because of:
+   */
+  public final String MILESTONE_CREATION_FAILED_BECAUSE = "milestone_creation_failed_because";
   
   /**
    * Title of progress dialog shown when a milestone is generating.
@@ -60,25 +64,43 @@ public interface Tags {
   public final String NO_BUTTON = "no_button";
   
   public final String ACTION2_PROGRESS_DIALOG_TITLE = "action2_progresDialog_title";
-  public final String ACTION2_PACK_DIR_MESSAGE = "action2_packEntireDir_message";
-  public final String ACTION2_PACK_DIR_TITLE = "action2_packEntireDir_title";
+  
+  /**
+   * en: The directory was packed.
+   */
+  public final String DIRECTORY_WAS_PACKED = "directory_was_packed";
   
   /**
    * en: A package containing {0} file(s) was created.
    */
   public final String REPORT_NUMBER_OF_MODIFIED_FILES = "Report_number_of_modified_files";
   
-  public final String ACTION2_PACK_MODIFIED_TITLE = "action2_packOnlyModified_title";
   public final String ACTION2_INFO_MESSAGE_EXCEPTION = "action2_infoMessage_exceptions";
   public final String ACTION2_NO_CHANGED_FILES_EXCEPTION = "action2_NoChangedFiles_exception";
   public final String ACTION2_ERROR_MESSAGE = "action2_error_message";
   public final String ACTION2_PACK_MODIFIED_PROGRESS_TITLE = "action2_packOnlyModified_progress_title";
   
   public final String ACTION3_CHOOSE_FILE_TITLE = "action3_chooseFile_title";
-  public final String ACTION3_CONFIRM_DIALOG_TITLE = "action3_confirmDialog_title";
-  public final String ACTION3_CONFIRM_DIALOG_MESSAGE = "action3_confirmDialog_message";
-  public final String ACTION3_CONFIRM_DIALOG_BUTTON2 = "action3_confirmDialog_button2";
-  public final String ACTION3_CONFIRM_DIALOG_BUTTON3 = "action3_confirmDialog_button3";
+  /**
+   * en: Preview Changes
+   */
+  public final String PREVIEW_CHANGES = "preview_changes";
+  
+  /**
+   * en: Do you want you to preview all the changes that will be made before applying them?
+   */
+  public final String PREVIEW_CHANGES_USER_QUESTION = "preview_changes_user_question";
+  
+  /**
+   * en: Apply All
+   */
+  public final String APPLY_ALL = "apply_all";
+  
+  /**
+   * en: Cancel
+   */
+  public final String CANCEL = "cancel";
+  
   public final String ACTION3_TEMPDIR_NAME = "action3_tempDir_name";
   public final String ACTION3_PROGRESS_DIALOG_TITLE = "action3_progresDialog_title";
   /**
@@ -86,7 +108,10 @@ public interface Tags {
    */
   public final String PREVIEW = "preview";
   
-  public final String ACTION3_ERROR_MESSAGE = "action3_errorMessage";
+  /**
+   * en: Failed to apply package because of: 
+   */
+  public final String FAILED_TO_APPLY_PACKAGE = "failed_to_apply_package";
   
   public final String SHOW_REPORT_LABEL = "showReport_label";
   public final String SHOW_REPORT_TITLE = "showReport_dialog_title";
@@ -145,12 +170,6 @@ public interface Tags {
   public final String REPORT_DIALOG_LOGGER_MESSAGE = "reportDialog_logger_message1";
   public final String REPORT_DIALOG_FILE_DESCRIPTOR = "reportDialog_fileDescriptor";
   public final String REPORT_DIALOG_CHECKBOX_TEXT = "reportDialog_checkbox_text";
-  
-  public final String CREATE_PACKAGE_LOGGER_MESSAGE1 = "createPackage_logger_message1";
-  public final String CREATE_PACKAGE_LOGGER_MESSAGE2 = "createPackage_logger_message2";
-  public final String CREATE_PACKAGE_LOGGER_MESSAGE3 = "createPackage_logger_message3";
-  public final String CREATE_PACKAGE_LOGGER_MESSAGE4 = "createPackage_logger_message4";
-  public final String CREATE_PACKAGE_LOGGER_MESSAGE5 = "createPackage_logger_message5";
   
   /**
    * Save
