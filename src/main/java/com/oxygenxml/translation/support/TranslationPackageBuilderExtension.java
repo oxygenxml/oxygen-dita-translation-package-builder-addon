@@ -24,13 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -287,7 +283,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
               if (logger.isDebugEnabled()) {
                 logger.debug(tempDir.getAbsolutePath());
               }
-              // Unzip the chosen package into a temprary directory on thread.
+              // Unzip the chosen package into a temporary directory on thread.
               final UnzipWorker unzipTask = new UnzipWorker(chosenDir, tempDir);
               // Install the progress tracker.
               ProgressDialog.install(
@@ -316,7 +312,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           // If the user doesn't want a preview and pressed "Apply All"
           else if (buttonId == 1){
             //Unpack the chosen archive over the root directory of the DITA map.
-            overrideTranslatedFiles(pluginWorkspaceAccess, frame, 
+            overrideTranslatedFiles(pluginWorkspaceAccess,
                 unzipLocation == null ? rootDir : unzipLocation, 
                 chosenDir); 
           }
@@ -397,78 +393,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    * Overrides the files contained in a chosen archive.
    * 
    * @param pluginWorkspaceAccess  Entry point for accessing the DITA Maps area.
-   * @param frame  The parent frame component used by the Progress Dialog.
    * @param unzippingLocation Where to unzip the archive.
    * @param archiveLocation Archive location
    */
-  public static Future<?> overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess, final JFrame frame,
+  public static UnzipWorker overrideTranslatedFiles(final StandalonePluginWorkspace pluginWorkspaceAccess,
       File unzippingLocation, final File archiveLocation) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     
     UnzipWorker unzipTask = null;
     if(archiveLocation != null) {  
-      List<String> zipContent = new ArrayList<String>();
-      ZipFile zipFile = null;
-      try {
-        // TODO Adrian This code alters the package. Why???
-        // Probably for something that goes on inside UnzipWorker
-        zipFile = new ZipFile(archiveLocation);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while(entries.hasMoreElements()){
-          ZipEntry entry = entries.nextElement();
-          boolean directory = entry.isDirectory();
-          if (directory) {
-            File file = new File(entry.getName());
-            // Add first level directories.
-            if (file.getParent() == null) {
-              String name = entry.getName();
-              if (name.endsWith("/") || name.endsWith("//")) {
-                name = name.replaceAll("/", "");
-              }
-              zipContent.add(name);
-            }
-          }
-        }
-      } catch (IOException e1) {
-        logger.error(e1, e1);
-      } finally {
-        if (zipFile != null) {
-          try {
-            zipFile.close();
-          } catch (IOException e) {
-            // Nothing
-          }
-        }
-      }
-
       try { 
-        // Unzip the chosen package over the parent  directory of the current ditamap on thread.
-        unzipTask = new UnzipWorker(archiveLocation, unzippingLocation);
-        // Install the progress tracker.
-        ProgressDialog.install(unzipTask, frame , resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
-        // This listener notifies the user about how the operation ended.
-        final UnzipWorker[] taks = new UnzipWorker[] {unzipTask};
-        unzipTask.addProgressListener(new ProgressChangeAdapter() {
-          @Override
-          public void done() {
-            try {
-              showReport(pluginWorkspaceAccess, taks[0].getUnpackedFiles());
-            } catch (Exception e) {
-              if (logger.isDebugEnabled()) {
-                logger.debug(e, e);
-              }
-            }
-          }
-          @Override
-          public void operationFailed(Exception ex) {
-            if(!(ex instanceof StoppedByUserException)){
-              pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + ex.getMessage());
-            }
-          }
-        });
-        unzipTask.execute();
-        
-        
+        unzipTask = unZippit(pluginWorkspaceAccess, unzippingLocation, archiveLocation);
       } catch (Exception e) {
         // Preset error to user.
         pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + e.getMessage());
@@ -477,6 +412,48 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         }
       }
     }
+    return unzipTask;
+  }
+  
+  /**
+   * Execute the UnZipping process.
+   * 
+   * @param pluginWorkspaceAccess   Current plugin workspace.
+   * @param unzippingLocation       Where to unzip files.
+   * @param archiveLocation         Archive location.
+   * 
+   * @return  The unZipping swing worker.
+   */
+  private static UnzipWorker unZippit(final StandalonePluginWorkspace pluginWorkspaceAccess,
+      File unzippingLocation, final File archiveLocation) {
+    // Unzip the chosen package over the parent  directory of the current ditamap on thread.
+    UnzipWorker unzipTask = new UnzipWorker(archiveLocation, unzippingLocation);
+    // Install the progress tracker.
+    JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
+    final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+    ProgressDialog.install(unzipTask, parentFrame, resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
+    
+    // This listener notifies the user about how the operation ended.
+    final UnzipWorker[] taks = new UnzipWorker[] {unzipTask};
+    unzipTask.addProgressListener(new ProgressChangeAdapter() {
+      @Override
+      public void done() {
+        try {
+          showReport(pluginWorkspaceAccess, taks[0].getUnpackedFiles());
+        } catch (Exception e) {
+          if (logger.isDebugEnabled()) {
+            logger.debug(e, e);
+          }
+        }
+      }
+      @Override
+      public void operationFailed(Exception ex) {
+        if(!(ex instanceof StoppedByUserException)){
+          pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION3_ERROR_MESSAGE) + ex.getMessage());
+        }
+      }
+    });
+    unzipTask.execute();
     return unzipTask;
   }
   /**
