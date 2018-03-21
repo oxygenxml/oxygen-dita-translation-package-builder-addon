@@ -1,10 +1,12 @@
 package com.oxygenxml.translation.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -21,7 +23,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -29,12 +32,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -582,7 +588,10 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     // The default tree model of the CheckBoxTree.
     DefaultTreeModel treeModel = new DefaultTreeModel(root);
     tree = new CheckBoxTree(treeModel); 
-
+    
+    // Make tree icons retina aware.
+    CheckboxTreeUtil.installIcons((DefaultTreeCellRenderer) tree.getActualCellRenderer());
+    
     for (String data : filePaths) {
       buildTreeFromString(treeModel, data);
     }
@@ -631,4 +640,5 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
       }
     });
   }
+
 }
