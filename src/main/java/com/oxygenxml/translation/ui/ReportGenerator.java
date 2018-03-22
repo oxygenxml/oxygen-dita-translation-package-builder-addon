@@ -1,5 +1,6 @@
 package com.oxygenxml.translation.ui;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.TranslationPackageBuilderPlugin;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;

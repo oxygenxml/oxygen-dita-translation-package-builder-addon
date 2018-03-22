@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 
 import ro.sync.exml.workspace.api.PluginResourceBundle;

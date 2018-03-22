@@ -2,9 +2,8 @@ package com.oxygenxml.translation.ui.worker;
 
 import java.io.File;
 import java.io.IOException;
-
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 /**
  *  Creates an AbstractWorker for copying the  files from a source directory to a destination directory.
  *  

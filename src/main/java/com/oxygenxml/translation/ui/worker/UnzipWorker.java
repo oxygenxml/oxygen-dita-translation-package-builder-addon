@@ -1,7 +1,7 @@
 package com.oxygenxml.translation.ui.worker;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

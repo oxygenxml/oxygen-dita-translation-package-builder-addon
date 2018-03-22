@@ -18,12 +18,10 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.ui.StoppedByUserException;
-
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 

@@ -1,5 +1,6 @@
 package com.oxygenxml.translation.support.util;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.CustomDialogResults;
@@ -7,7 +8,6 @@ import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.ui.worker.ZipWorker;

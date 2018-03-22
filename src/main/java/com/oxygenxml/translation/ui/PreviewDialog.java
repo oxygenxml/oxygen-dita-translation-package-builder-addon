@@ -1,6 +1,8 @@
 package com.oxygenxml.translation.ui;
 
 import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.exceptions.NothingSelectedException;
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -8,20 +10,12 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,22 +24,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.ui.hidpi.RetinaDetector;
 import ro.sync.util.URLUtil;
 /**
  *  The dialog that shows a preview before applying a package.
@@ -53,47 +42,53 @@ import ro.sync.util.URLUtil;
  * @author Bivolan Dalina
  */
 public class PreviewDialog extends OKCancelDialog { //NOSONAR
+  
+  /**
+   * Plugin workspace
+   */
+  static final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
+  
   /**
    *  Resource bundle.
    */
-  private static final PluginResourceBundle messages = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+  private static final PluginResourceBundle messages = pluginWorkspace.getResourceBundle();
+  
   /**
    * Logger for logging.
    */
   private static final Logger logger = Logger.getLogger(PreviewDialog.class.getName());
 
   /**
-   *  The table that displays the relative paths of the translated files.
-   */
-  private JTable resourcesTable;
-  /**
-   *  Solves conflict between TableModelListener and ItemListener.
-   */
-  private boolean conflictFlag = false;
-  /**
    *  The root node of the tree.
    */
   private DefaultMutableTreeNode root = null;
+  
   /**
    *  The tree that displays the translated files in a set of hierarchical data.
    */
   private CheckBoxTree tree;
+  
   /**
    *  The button that allows you to switch between the list view and the tree view.
    */
   private JButton switchViewButton;
+  
   /**
    *  The location of the archive we want to apply over the current ditamap.
    */
-  private File translatedFiles;
+  private File translatedFileDir;
+  
   /**
    *  The custom table model.
    */
-  private MyTableModel tableModel;
+  private ResourcesTableModel tableModel;
+  
   /**
-   *  The current ditamap parent file.
+   *  The common ancestor of all the DITA resources referred in the DITA map tree. 
+   *  Either the DITA map folder or an ancestor of it.
    */
-  private File filesOnDisk;
+  private File topLocation;
+  
   /**
    *  True if the list view preview is displayed. 
    */
@@ -106,158 +101,42 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
    * @param parentFrame   The parent frame of the dialog.
    * @param title   The title of the dialog.
    * @param filePaths    The relative paths of all the unpacked files.
-   * @param filesOnDiskDir   Where to copy the unpacked files.
+   * @param topLocationDir   Where to copy the unpacked files.
    * @param translatedFilesDir  Where to extract the archive. These files will be copied in rootDir.
    */
   public PreviewDialog(
       final Frame parentFrame, 
       final List<String> filePaths, 
-      final File filesOnDiskDir, 
+      final File topLocationDir, 
       final File translatedFilesDir) {
     super(parentFrame, messages.getMessage(Tags.PREVIEW), false);
-    this.filesOnDisk = filesOnDiskDir;
-    this.translatedFiles = translatedFilesDir;
+    setModal(false);
+    
+    this.topLocation = topLocationDir;
+    this.translatedFileDir = translatedFilesDir;
 
-    final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
-
+    switchViewButton = new JButton(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
     getOkButton().setText(messages.getMessage(Tags.APPLY_BUTTON));
     // 1. Start the processing. (the CopyDirectoryWorker)
     // 2. Show the dialog. 
     // 3. The CopyDirectoryWorker notifies the dialog.
 
-
-    ArrayList<CheckboxTableItem> loadPaths = new ArrayList<CheckboxTableItem>();
-    for (String data : filePaths) {
-      data = URLUtil.decodeURIComponent(data);
-      loadPaths.add(new CheckboxTableItem(Boolean.TRUE , data));
-    }
-    tableModel = new MyTableModel(loadPaths);
-
-    switchViewButton = new JButton(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
+    tableModel = CheckboxTableUtil.createTableModel(filePaths);
+    final JTable resourcesTable = CheckboxTableUtil.createResourcesTable(tableModel);
+    CheckboxTableUtil.installDiffOnMouseClick(resourcesTable, topLocation, translatedFileDir);
     
-    try {
-      Class<?> tableClass = getClass().getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
-      resourcesTable = (JTable) tableClass.newInstance();
-    } catch (Exception e) {
-      logger.debug(e, e);
-    }
-    
-    if (resourcesTable == null) {
-      resourcesTable = new JTable();  
-    }
-    resourcesTable.setModel(tableModel);
-    resourcesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);     
-    resourcesTable.setTableHeader(null);
-    resourcesTable.setShowGrid(false);
-    // TODO setMaxWidth(calculateMaxLength)
-    resourcesTable.getColumnModel().getColumn(0).setMaxWidth(40);
-    resourcesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-
-    resourcesTable.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent event) {
-        // Show a DIFF if the user double clicks on a file.
-        if (event.getClickCount() == 2) {
-          int selectedColumn = resourcesTable.getSelectedColumn();
-          int selectedRow = resourcesTable.getSelectedRow();
-
-          Rectangle goodCell = resourcesTable.getCellRect(selectedRow, 1, true);
-          // show DIFF only if the user double clicks on the second column cells
-          if (goodCell.contains(event.getPoint())) {
-            String selectedPath = resourcesTable.getModel().getValueAt(selectedRow, selectedColumn).toString();
-
-            if (logger.isDebugEnabled()) {
-              logger.debug(selectedPath);
-            }
-
-            File localFile = new File(filesOnDiskDir, selectedPath);
-            File translatedFile = new File(translatedFilesDir, selectedPath);
-            showDiff(pluginWorkspace, localFile, translatedFile);
-          }
-        }
-      }
-    });
-
-    final JScrollPane scrollPane = new JScrollPane();
-    scrollPane.setViewportView(resourcesTable);
-    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setPreferredSize(new Dimension(500, 200));
-
+    final JScrollPane modifiedResourcesPanel = createModifiedResourcesPanel(resourcesTable);
     final JCheckBox selectAll = new JCheckBox(messages.getMessage(Tags.PREVIEW_DIALOG_CHECKBOX));
-    final JPanel panel = new JPanel(new GridBagLayout());
-    // Switch the users view on switchViewButton click
-    switchViewButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        isListViewShowing = !isListViewShowing;
-
-        if (isListViewShowing) { 
-          scrollPane.setViewportView(resourcesTable);
-          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
-          selectAll.setVisible(true);
-        } else {
-          if(root == null) {
-            createTreeView(filePaths, filesOnDiskDir, translatedFilesDir, pluginWorkspace);
-          }
-
-          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_LIST_VIEW));
-          scrollPane.setViewportView(tree);
-          selectAll.setVisible(false);
-        }
-      }
-    });
-
-    resourcesTable.getModel().addTableModelListener(new TableModelListener() {
-      public void tableChanged(TableModelEvent e) {
-        conflictFlag = true;
-        int row = e.getFirstRow();
-        int column = e.getColumn();
-        if (column == 0) {
-          MyTableModel model = (MyTableModel)e.getSource();
-          Boolean checked = (Boolean) model.getValueAt(row, column);
-          if (!checked) {
-            selectAll.setSelected(false);
-          } else {
-            selectAll.setSelected(model.isEverythingSelected());
-          }
-        }
-        conflictFlag = false;
-      }
-    });
-
+    
     // By default all entries are selected.
-    selectAll.setSelected(true);  
+    selectAll.setSelected(true); 
+    
+    toggleTableTreeView(filePaths, resourcesTable, modifiedResourcesPanel, selectAll);
+    
+    installTableItemSelectionModelListener(resourcesTable, selectAll);
 
-    selectAll.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if(!conflictFlag){
-          // Select all table entries if the "Select all" checkbox is selected
-          if (e.getStateChange() == ItemEvent.SELECTED) {
-            for(int i = 0; i < tableModel.getRowCount(); i++){
-              tableModel.setValueAt(Boolean.TRUE, i, 0);
-            }
-            resourcesTable.repaint();
-          } else {
-            // otherwise deselect them.
-            for(int i = 0; i < tableModel.getRowCount(); i++){
-              tableModel.setValueAt(Boolean.FALSE, i, 0);
-            }
-            resourcesTable.repaint();
-          }
-        }
-      }
-    });
-
-    JTextArea infoText = new JTextArea();
-    infoText.setText("Double click on an Oxygen supported file to see the differences.");
-    infoText.setLineWrap(true);
-    infoText.setWrapStyleWord(true);
-
-    Insets insets = new Insets(2, 2, 2, 2);
-    panel.add(selectAll, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
-    panel.add(infoText, new GridBagConstraints(0, 1, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
-    panel.add(scrollPane, new GridBagConstraints(0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 1, 1));
-    panel.add(switchViewButton, new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
-
+    
+    final JPanel panel = createPanel(modifiedResourcesPanel, selectAll, switchViewButton);
     getContentPane().add(panel, BorderLayout.CENTER);
 
     setMinimumSize(new Dimension(300, 200));
@@ -266,370 +145,233 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     setResizable(true);
     setVisible(true);
   }
-
+  
   /**
-   * Builds a tree from a given forward slash delimited string.
+   * Install selection listeners over table that enables or disables the "Select All" CheckBox.
    * 
-   * @param model The tree model.
-   * @param data The string to build the tree from.
+   * @param resourcesTable  Checkbox table.
+   * @param selectAll       Select all checkbox.
    */
-  private void buildTreeFromString(final DefaultTreeModel model, final String data) {
-    // Fetch the root node
-    DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-
+  private void installTableItemSelectionModelListener(final JTable resourcesTable, final JCheckBox selectAll) /*NOSONAR*/ {
     
+    //when <code>true</code> the "Select All" checkbox does not notify table anymore.
+    final boolean[] inhibitSelectAll = new boolean[] {false};
+    final ResourcesTableModel model = (ResourcesTableModel) resourcesTable.getModel();
     
-    // Split the string around the delimiter
-    String [] dataStrings = data.split("/");
-
-    // Create a node object to use for traversing down the tree as it 
-    // is being created
-    DefaultMutableTreeNode node = root;
-    // Iterate of the string array
-    for (String stringForNode : dataStrings) {
-      // Look for the index of a node at the current level that
-      // has a value equal to the current string
-      int index = childIndex(node, stringForNode);
-
-      // Index less than 0, this is a new node not currently present on the tree
-      if (index < 0) {
-        stringForNode = URLUtil.decodeURIComponent(stringForNode);
-        // Add the new node
-        DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(stringForNode);
-        node.insert(newChild, node.getChildCount());
-        node = newChild;
+    TableModelListener tableModelListener = new TableModelListener() {
+      public void tableChanged(TableModelEvent e) {
+        inhibitSelectAll[0] = true;
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+        if (column == ResourcesTableModel.CHECK_BOX) {
+          Boolean checked = (Boolean) model.getValueAt(row, column);
+          if (!checked) {
+            selectAll.setSelected(false);
+          } else {
+            selectAll.setSelected(model.isEverythingSelected());
+          }
+        }
+        inhibitSelectAll[0] = false;
       }
-      // Else, existing node, skip to the next string
-      else {
-        node = (DefaultMutableTreeNode) node.getChildAt(index);
-      }
-    }
-  }
-  /**
-   * Returns the index of a child of a given node, provided its string value.
-   * 
-   * @param node The node to search its children.
-   * @param childValue The value of the child to compare with.
-   * @return The index.
-   */
-  private int childIndex(final DefaultMutableTreeNode node, final String childValue) {
-    @SuppressWarnings("unchecked")
-    Enumeration<DefaultMutableTreeNode> children = node.children();
-    DefaultMutableTreeNode child = null;
-    int index = -1;
-
-    while (children.hasMoreElements() && index < 0) {
-      child = children.nextElement();
-
-      if (child.getUserObject() != null && childValue.equals(child.getUserObject())) {
-        index = node.getIndex(child);
-      }
-    }
-
-    return index;
-  }
-
-  /**
-   * Deletes the unselected files(from the tree view option) from a specific directory.
-   * 
-   * @param dirPath  The directory that contains the selected files.
-   * @param selectedFiles  A list with all the selected files from the tree view option.
-   * @throws IOException  Problems reading the file.
-   */
-  private void deleteUnselectedFileFromDir(File dirPath, List<File> selectedFiles) throws IOException{
-    File[] everythingInThisDir = dirPath.listFiles();
-    if (everythingInThisDir != null){
-      // for every file in the current directory
-      for (int i = 0; i < everythingInThisDir.length; i++) {
-        //if current file is a directory
-        if (everythingInThisDir[i].isDirectory()){ 
-          //and if the directory should be deleted
-          if(shouldDelete(selectedFiles, everythingInThisDir[i])){
-            try {
-              // delete the directory
-              FileUtils.forceDelete(everythingInThisDir[i]);
-            } catch (IOException e1) {
-              logger.error(e1, e1);
+    };
+    
+    ItemListener itemListener = new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if(!inhibitSelectAll[0]){
+          // Select all table entries if the "Select all" checkbox is selected
+          if (e.getStateChange() == ItemEvent.SELECTED) {
+            for(int i = 0; i < model.getRowCount(); i++){
+              model.setValueAt(Boolean.TRUE, i, 0);
             }
-            if (logger.isDebugEnabled()) {
-              logger.debug("Deleted if dir : " + everythingInThisDir[i].getPath());
+          } else {
+            // otherwise deselect them.
+            for(int i = 0; i < model.getRowCount(); i++){
+              model.setValueAt(Boolean.FALSE, i, 0);
             }
-          }
-          // if the directory should NOT be deleted and it's not among the selected files
-          else if(!selectedFiles.contains(everythingInThisDir[i])){
-            // call the method recursively with the current directory
-            deleteUnselectedFileFromDir(everythingInThisDir[i], selectedFiles);
-          }
-        } // if current file is a file and it should be deleted
-        else if (everythingInThisDir[i].isFile() && shouldDelete(selectedFiles, everythingInThisDir[i])){          
-          try {
-            // delete the current file
-            FileUtils.forceDelete(everythingInThisDir[i]);
-          } catch (IOException e1) {
-            logger.error(e1, e1);
-          }
-          if (logger.isDebugEnabled()) {
-            logger.debug("Deleted if file: " + everythingInThisDir[i].getPath());
           }
         }
       }
-    } 
-    else{
-      throw new IOException("Please select a directory.");
-    }
+    };
+    
+    // Add the newly created listener.
+    selectAll.addItemListener(itemListener);
+    model.addTableModelListener(tableModelListener);
   }
+  
   /**
-   * Checks if a file is the parent of one of the selected files and if it's one of the selected files.
-   * 
-   * @param selectedFiles A list with all the selected files from the tree view option.
-   * @param child A file from the directory that contains the files shown in the tree view option.
-   * @return True if "child" isn't among the selected files.
+   * Switches between tree view and table view.
    */
-  private boolean shouldDelete(List<File> selectedFiles, File child) {
-    boolean shouldDelete = !selectedFiles.contains(child);
-    if (shouldDelete && child.isDirectory()) {
-      // Check in the selected files for its descendents.
-      for (Iterator<File> iterator = selectedFiles.iterator(); iterator.hasNext();) {
-        File file = iterator.next();
+  private void toggleTableTreeView(
+      final List<String> filePaths, 
+      final JTable resourcesTable, 
+      final JScrollPane modifiedResourcesPanel, 
+      final JCheckBox selectAll) {
+    // Switch the users view on switchViewButton click
+    switchViewButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        isListViewShowing = !isListViewShowing;
 
-        boolean isDescendant = file.getAbsolutePath().startsWith(child.getAbsolutePath());
-        if (isDescendant) {
-          shouldDelete = false;
-          break;
+        if (isListViewShowing) { 
+          modifiedResourcesPanel.setViewportView(resourcesTable);
+          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
+          selectAll.setVisible(true);
+        } else {
+          if(root == null) {
+            tree = createTreeView(filePaths, topLocation, translatedFileDir);
+          }
+
+          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_LIST_VIEW));
+          modifiedResourcesPanel.setViewportView(tree);
+          selectAll.setVisible(false);
         }
       }
-    }
-    return shouldDelete;
+    });
+  }
+
+  /**
+   * 
+   * @param resourcesTable
+   * @return
+   */
+  private JScrollPane createModifiedResourcesPanel(final JTable resourcesTable) {
+    final JScrollPane modifiedResourcesPanelHolder = new JScrollPane();
+    modifiedResourcesPanelHolder.setViewportView(resourcesTable);
+    modifiedResourcesPanelHolder.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    modifiedResourcesPanelHolder.setPreferredSize(new Dimension(500, 200));
+    return modifiedResourcesPanelHolder;
+  }
+
+  private JPanel createPanel(final JScrollPane scrollPane, final JCheckBox selectAll, JButton switchViewButton) {
+    final JPanel panel = new JPanel(new GridBagLayout());
+    Insets insets = new Insets(2, 2, 2, 2);
+    
+    JTextArea infoText = new JTextArea();
+    infoText.setText("Double click on an Oxygen supported file to see the differences.");
+    infoText.setLineWrap(true);
+    infoText.setWrapStyleWord(true);
+    
+    panel.add(selectAll, new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
+    panel.add(infoText, new GridBagConstraints(0, 1, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
+    panel.add(scrollPane, new GridBagConstraints(0, 2, 2, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 1, 1));
+    panel.add(switchViewButton, new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 1, 1));
+    return panel;
   }
 
   @Override
   protected void doOK() {
-
-    applyChanges();
-
-    super.doOK();
+    try {
+      applyChanges();
+      super.doOK();
+    } catch (NothingSelectedException e) {
+      pluginWorkspace.showErrorMessage(messages.getMessage(Tags.NO_SELECTED_FILES_TO_APPLY));
+    }
   }
   /**
    * Override the selected files from both,list and tree, views in the parent directory of the current ditamap.
+   * @throws Exception 
    */
-  private void applyChanges() {
-
-    final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
-    // List of selected files from the tree view
-    List<File> selectedTreeFiles = new ArrayList<File>();
-    // List of selected files from the list view
-    List<File> selectedListFiles = new ArrayList<File>();
-    // List of unselected files from list view
-    List<File> unSelectedListFiles = new ArrayList<File>();
-
-    if(switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)){
-      //Get all the selected paths
-      TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
-
-      for (TreePath treePath : treePaths) {
-        //Build the relative path 
-        Object[] obj = treePath.getPath();
-        int length = obj.length;
-        StringBuilder relativePath = new StringBuilder(); 
-        if(length >= 2){
-          relativePath.append(obj[1].toString());
-          for (int i = 2; i < length-1; i++) {
-            relativePath.append('/').append(obj[i].toString());
-          }
-        }
-
-        if (logger.isDebugEnabled()) {
-          logger.debug(new File(translatedFiles.getPath(), relativePath.toString()));
-        }
-        File selectedFile = new File(translatedFiles.getPath(), relativePath.toString());
-        selectedTreeFiles.add(selectedFile);
-      }
-      if(!selectedTreeFiles.isEmpty() && !selectedTreeFiles.get(0).equals(new File(translatedFiles.getPath()))){
+  private void applyChanges() throws NothingSelectedException {
+    List<File> filesToCopy = null;
+    if(!isListViewShowing) {
+      // Collect "checked" files from tree view.
+      filesToCopy = CheckboxTreeUtil.processTreeFiles(tree, translatedFileDir);
+      if (!filesToCopy.isEmpty() 
+          && !filesToCopy.get(0).equals(new File(translatedFileDir.getPath()))) {
         try {
-          deleteUnselectedFileFromDir(translatedFiles, selectedTreeFiles);
+          CheckboxTreeUtil.deleteTreeUnselectedFiles(translatedFileDir, filesToCopy);
         } catch (IOException e1) { 
           logger.error(e1, e1);
         }
       }
-    }
-    else{
-      for (int i = 0; i < tableModel.getRowCount(); i++) {
-        Boolean value = (Boolean) tableModel.getValueAt(i, 0);
-        if(value) {
-          File selected = new File(translatedFiles.getPath(), (String)tableModel.getValueAt(i, 1));
-          selectedListFiles.add(selected);
-        } else {
-          File unselected = new File(translatedFiles.getPath(), (String)tableModel.getValueAt(i, 1));
-          unSelectedListFiles.add(unselected);
-        }
-      }
-      if (!selectedListFiles.isEmpty()) {
-        for (File unselectedFile : unSelectedListFiles) {
-
-          if (logger.isDebugEnabled()) {
-            logger.debug(unselectedFile.getAbsolutePath());
-          }
-          try {
-            FileUtils.forceDelete(unselectedFile);
-            if (logger.isDebugEnabled()) {
-              logger.debug("Deleted : " + unselectedFile.getAbsolutePath());
-            }
-          } catch (IOException e1) {
-            logger.error(e1, e1);
-          }
-        } 
-      }
-    }
-
-    if((selectedTreeFiles.isEmpty() && switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_LIST_VIEW)) || 
-        (selectedListFiles.isEmpty() && switchViewButton.getText() == messages.getMessage(Tags.SWICH_TO_TREE_VIEW))){
-      pluginWorkspace.showErrorMessage(messages.getMessage(Tags.NO_SELECTED_FILES_TO_APPLY));
     } else {
-      setVisible(false);
-      //Copy the files on thread.
-      final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(filesOnDisk, translatedFiles);
-      //Install the tracker.
-      ProgressDialog.install(
-          copyDirTask, 
-          (JFrame) pluginWorkspace.getParentFrame(), 
-          messages.getMessage(Tags.APPLYING_SELECTED_FILES));
-      // This listener notifies the user about how the operation ended.
-      copyDirTask.addProgressListener(new ProgressChangeAdapter() {
-        @Override
-        public void done() {
-          pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
-          try {
-            FileUtils.deleteDirectory(translatedFiles);
-          } catch (IOException e) {
-            logger.error(e, e);
-          }
-        }
-        // Show an error message and delete the translatedFiles directory when the watched operation has failed.
-        @Override
-        public void operationFailed(Exception ex) {
-          logger.error(ex, ex);
-          if(!(ex instanceof StoppedByUserException)){
-            pluginWorkspace.showErrorMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
-          }
+      filesToCopy = CheckboxTableUtil.processTableFiles(tableModel, translatedFileDir);
+      if (!filesToCopy.isEmpty()) {
+        CheckboxTableUtil.deleteTableUnselectedFiles(tableModel, translatedFileDir); 
+      }
+    }
 
-          try {
-            FileUtils.deleteDirectory(translatedFiles);
-          } catch (IOException e) {
-            logger.error(e, e);
-          }
-        }
-      });
-      copyDirTask.execute();
+    if (!filesToCopy.isEmpty()) {
+      copyTranslatedFiles();
+    } else {
+      throw new NothingSelectedException();
     }
   }
+  
+  /**
+   * Starts a new thread that copies the files. 
+   */
+  private void copyTranslatedFiles() {
+    //Copy the files on thread.
+    final CopyDirectoryWorker copyDirTask = new CopyDirectoryWorker(topLocation, translatedFileDir);
+    //Install the tracker.
+    ProgressDialog.install(
+        copyDirTask, 
+        (JFrame) pluginWorkspace.getParentFrame(), 
+        messages.getMessage(Tags.APPLYING_SELECTED_FILES));
+    // This listener notifies the user about how the operation ended.
+    copyDirTask.addProgressListener(
+        new ProgressChangeAdapter() {
+          @Override
+          public void done() {
+            pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
+            try {
+              FileUtils.deleteDirectory(translatedFileDir);
+            } catch (IOException e) {
+              logger.error(e, e);
+            }
+          }
+          // Show an error message and delete the translatedFiles directory when the watched operation has failed.
+          @Override
+          public void operationFailed(Exception ex) {
+            logger.error(ex, ex);
+            if(!(ex instanceof StoppedByUserException)){
+              pluginWorkspace.showErrorMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
+            }
+            try {
+              FileUtils.deleteDirectory(translatedFileDir);
+            } catch (IOException e) {
+              logger.error(e, e);
+            }
+          }
+        });
+    copyDirTask.execute();
+  }
 
+  /**
+   * Cancel was pressed.
+   */
   @Override
   protected void doCancel() {
     super.doCancel();
-
     try {
-      FileUtils.deleteDirectory(translatedFiles);
+      FileUtils.deleteDirectory(translatedFileDir);
     } catch (IOException e1) {
       logger.warn(e1, e1);
     }
   }
-  /**
-   * 
-   *  Open the diff files tool with initial left and right URLs to compare. 
-   *  The comparison will begin automatically and the content types for the URLs will be auto-detected.
-   * 
-   * @param pluginWorkspace  Entry point for accessing the DITA Maps area.
-   * @param localFile The location of the current file on disk.
-   * @param translatedFile The location of the unpacked file. The file from the chosen archive.
-   */
-  private void showDiff(final StandalonePluginWorkspace pluginWorkspace, File localFile, File translatedFile) {
-    try {
-      URL leftURL = localFile.toURI().toURL();
-      URL rightURL = translatedFile.toURI().toURL();
 
-      //Check if the url it's a supported Oxygen file
-      if(!pluginWorkspace.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
-        pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
-      } else {
-        pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_SUPPORTED_OXYFILE));
-      }
-    } catch (MalformedURLException e2) {
-      // Shouldn't happen.
-      logger.error(e2, e2);
-    }
-  }
   /**
    * Creates the tree view.
    * 
-   * @param filePaths The list with the relative paths of the unpacked files.
-   * @param filesOnDiskDir The location of the current files on disk.
-   * @param translatedFilesDir  The location of the unpacked files. The files from the chosen archive.
+   * @param filePaths       The list with the relative paths of the unpacked files.
+   * @param topLocationDir  The common ancestor of all the DITA resources referred in the DITA map tree. 
+   *                        Either the DITA map folder or an ancestor of it.
+   * @param translatedFilesDir  The location of the unpacked files.
    * @param pluginWorkspace  Entry point for accessing the DITA Maps area.
    */
-  private void createTreeView(
+  private CheckBoxTree createTreeView(
       final List<String> filePaths, 
-      final File filesOnDiskDir,
-      final File translatedFilesDir, 
-      final StandalonePluginWorkspace pluginWorkspace) {
+      final File topLocationDir,
+      final File translatedFilesDir) {
     // Lazy create the tree view.
-    String filepath = filesOnDiskDir.getName();
-    filepath = URLUtil.decodeURIComponent(filepath);
-    root = new DefaultMutableTreeNode(filepath);
-
+    String rootElem = URLUtil.decodeURIComponent(topLocationDir.getName());
     // The default tree model of the CheckBoxTree.
+    root = new DefaultMutableTreeNode(rootElem);
     DefaultTreeModel treeModel = new DefaultTreeModel(root);
-    tree = new CheckBoxTree(treeModel); 
+    final CheckBoxTree cbTree = CheckboxTreeUtil.createResourcesTree(treeModel, filePaths);
+    CheckboxTreeUtil.installDiffOnMouseClick(cbTree, topLocationDir, translatedFilesDir);
     
-    // Make tree icons retina aware.
-    CheckboxTreeUtil.installIcons((DefaultTreeCellRenderer) tree.getActualCellRenderer());
-    
-    for (String data : filePaths) {
-      buildTreeFromString(treeModel, data);
-    }
-
-    tree.setEditable(false);
-    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-    tree.setShowsRootHandles(true);
-    tree.setRootVisible(true);
-    
-    int rowHeight = 20;
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      rowHeight *= RetinaDetector.getInstance().getScalingFactor();
-    }
-    tree.setRowHeight(rowHeight);
-    tree.setSelectionRow(0); 
-    tree.getCheckBoxTreeSelectionModel().addSelectionPath(new TreePath(root.getPath()));
-
-    tree.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent me) {
-        if(tree.getLastSelectedPathComponent() != null){
-          //Double click only on leafs to see the DIFF.
-          if (tree.getPathBounds(tree.getSelectionPath()).contains(me.getPoint()) && 
-              me.getClickCount() == 2 &&
-              tree.getModel().isLeaf(tree.getLastSelectedPathComponent())) {
-            //Build the selected path
-            Object[] selectedPath = tree.getSelectionPath().getPath();
-            int length = selectedPath.length;
-            StringBuilder relativePath = new StringBuilder();
-            for (int i = 1; i < length-1; i++) {
-              relativePath.append('/').append(selectedPath[i].toString());
-            }
-            relativePath.append('/').append(selectedPath[length-1]);
-
-            if (logger.isDebugEnabled()) {
-              logger.debug(tree.getSelectionPath());
-              logger.debug(new File(filesOnDiskDir, relativePath.toString()));
-            }
-
-            File localFile = new File(filesOnDiskDir, relativePath.toString());
-            File translatedFile = new File(translatedFilesDir, relativePath.toString());
-
-            showDiff(pluginWorkspace, localFile, translatedFile);
-          }
-        }
-      }
-    });
+    return cbTree;
   }
 
 }

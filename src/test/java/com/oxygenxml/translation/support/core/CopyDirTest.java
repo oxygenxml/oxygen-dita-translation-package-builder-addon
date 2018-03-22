@@ -1,9 +1,9 @@
 package com.oxygenxml.translation.support.core;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

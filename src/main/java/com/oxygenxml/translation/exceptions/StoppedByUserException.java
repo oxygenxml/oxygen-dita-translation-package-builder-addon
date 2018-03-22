@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.ui;
+package com.oxygenxml.translation.exceptions;
 
 /**
  *  An exception thrown when the user clicks on the Cancel button. 

@@ -10,13 +10,11 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.ui.StoppedByUserException;
-
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class JaxbTest {

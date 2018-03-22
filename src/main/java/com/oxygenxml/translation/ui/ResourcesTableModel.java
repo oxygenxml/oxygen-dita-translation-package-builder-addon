@@ -7,9 +7,18 @@ import javax.swing.table.AbstractTableModel;
  *  A custom Table Model.
  *  
  * @author Bivolan Dalina
- *
  */
-public class MyTableModel extends AbstractTableModel{
+public class ResourcesTableModel extends AbstractTableModel {
+  
+  /**
+   * Column index of checkboxes
+   */
+  public static final int CHECK_BOX = 0;
+  
+  /**
+   * Column index of the paths added to the table.
+   */
+  public static final int RELATIVE_PATH = 1;
   
   /**
    * The list with all the table content.
@@ -21,19 +30,11 @@ public class MyTableModel extends AbstractTableModel{
    */
   private transient List<String> colNames = new ArrayList<String>();
   
-  public List<CheckboxTableItem> getLoadPaths() {
-    return loadPaths;
-  }
-
-  public void setLoadPaths(List<CheckboxTableItem> loadPaths) {
-    this.loadPaths = loadPaths;
-  }
-  
   /**
    * Constructor.
    * @param loadPaths
    */
-  public MyTableModel(List<CheckboxTableItem> loadPaths) {
+  public ResourcesTableModel(List<CheckboxTableItem> loadPaths) {
     this.loadPaths = loadPaths;
   
     colNames.add("File status");
@@ -86,11 +87,7 @@ public class MyTableModel extends AbstractTableModel{
    */
   @Override
   public boolean isCellEditable(int rowIndex, int columnIndex) {
-    boolean result = true;
-    if(columnIndex == 1){
-      result = false;
-    }
-    return result;
+    return columnIndex == CHECK_BOX;
   }
 
   /**
@@ -98,7 +95,7 @@ public class MyTableModel extends AbstractTableModel{
    */
   public Object getValueAt(int rowIndex, int columnIndex) {
     CheckboxTableItem item = loadPaths.get(rowIndex);
-    if(columnIndex == 0){
+    if(columnIndex == CHECK_BOX){
       return item.isSelected();
     }else{
       return item.toString();
@@ -111,7 +108,7 @@ public class MyTableModel extends AbstractTableModel{
   @Override
   public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
     CheckboxTableItem item = loadPaths.get(rowIndex);
-    if(columnIndex == 0){
+    if(columnIndex == CHECK_BOX){
       item.setSelected((Boolean)aValue);
     }
     
@@ -124,7 +121,7 @@ public class MyTableModel extends AbstractTableModel{
   public Class<?> getColumnClass(int columnIndex) {
       Class<?> type = String.class;
       
-      if(columnIndex == 0) {
+      if(columnIndex == CHECK_BOX) {
         type = Boolean.class;
       } 
       return type;

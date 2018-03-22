@@ -1,10 +1,10 @@
 package com.oxygenxml.translation.support.util;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.ui.CustomDialogResults;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
 import java.io.File;

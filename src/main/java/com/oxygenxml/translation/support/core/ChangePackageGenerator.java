@@ -1,5 +1,6 @@
 package com.oxygenxml.translation.support.core;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.IResource;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
@@ -11,7 +12,6 @@ import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 import java.io.File;
 import java.io.FileNotFoundException;

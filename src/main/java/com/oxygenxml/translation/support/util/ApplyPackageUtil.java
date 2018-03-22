@@ -1,15 +1,17 @@
 package com.oxygenxml.translation.support.util;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.ui.PreviewDialog;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.UnzipWorker;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
@@ -215,4 +218,32 @@ public class ApplyPackageUtil {
       throw new IOException(resourceBundle.getMessage(Tags.SHOW_REPORT_EXCEPTION_MESSAGE));
     }
   }
+  
+  /**
+   * 
+   *  Open the diff files tool with initial left and right URLs to compare. 
+   *  The comparison will begin automatically and the content types for the URLs will be auto-detected.
+   * 
+   * @param localFile The location of the current file on disk.
+   * @param translatedFile The location of the unpacked file. The file from the chosen archive.
+   */
+  public static void showDiff(File localFile, File translatedFile) {
+    try {
+      URL leftURL = localFile.toURI().toURL();
+      URL rightURL = translatedFile.toURI().toURL();
+      
+      //Check if the url it's a supported Oxygen file
+      final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());
+      if(!pluginWorkspace.getUtilAccess().isUnhandledBinaryResourceURL(rightURL)){
+        pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
+      } else {
+        pluginWorkspace.showInformationMessage(
+            pluginWorkspace.getResourceBundle().getMessage(Tags.PREVIEW_DIALOG_SUPPORTED_OXYFILE));
+      }
+    } catch (MalformedURLException e2) {
+      // Shouldn't happen.
+      logger.error(e2, e2);
+    }
+  }
+  
 }

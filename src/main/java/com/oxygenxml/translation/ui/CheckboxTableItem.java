@@ -3,7 +3,6 @@ package com.oxygenxml.translation.ui;
  * This type of objects are stored in the JTable.
  * 
  * @author Bivolan Dalina
- *
  */
 class CheckboxTableItem {
   /**
@@ -15,6 +14,12 @@ class CheckboxTableItem {
    */
   private boolean isSelected = false;
 
+  /**
+   * Constructs a new item that will be added in the checkbox table.
+   * 
+   * @param isSelected   <code>true</code> if the item will be selected in the table.
+   * @param text          Value to present on the table.
+   */
   public CheckboxTableItem(boolean isSelected, String text){
     this.isSelected = isSelected;
     this.relativePath = text;

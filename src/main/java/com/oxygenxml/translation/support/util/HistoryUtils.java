@@ -1,8 +1,8 @@
 package com.oxygenxml.translation.support.util;
 
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.storage.ComboHistory;
 import com.oxygenxml.translation.support.storage.ComboItem;
-import com.oxygenxml.translation.ui.StoppedByUserException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
