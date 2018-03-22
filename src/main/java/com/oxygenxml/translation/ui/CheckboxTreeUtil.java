@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -19,8 +20,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.ui.hidpi.RetinaDetector;
 import ro.sync.util.URLUtil;
+
 
 /**
  * Utilities class for checkbox tree used in application.
@@ -42,19 +45,21 @@ public class CheckboxTreeUtil {
    * @param renderer Tree renderer. Can be <code>null</code>.
    */
   public static void installIcons(DefaultTreeCellRenderer renderer) {
+    ClassLoader classLoader = PluginWorkspaceProvider.class.getClassLoader();
+    ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
 
     // Load generic "file" icon
-    URL leafURL = PluginWorkspaceProvider.class.getClassLoader().getResource(Icons.TEXT_ICON);
     Icon leafIcon = null;
-    if(leafURL != null) {
-      leafIcon = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(leafURL);
+    URL leafIconURL = classLoader.getResource(Icons.TEXT_ICON);
+    if(leafIconURL != null) {
+      leafIcon = (Icon) imageUtilities.loadIcon(leafIconURL);
     }
 
     // Load the "folder" icon
-    URL folderURL = PluginWorkspaceProvider.class.getClassLoader().getResource(Icons.OPEN_DIRECTOR_ICON);
     Icon folderIcon = null;
-    if(folderURL != null) {
-      folderIcon = (Icon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(folderURL);
+    URL folderIconURL = classLoader.getResource(Icons.OPEN_DIRECTOR_ICON);
+    if(folderIconURL != null) {
+      folderIcon = (Icon) imageUtilities.loadIcon(folderIconURL);
     }
 
     // Apply them if the renderer is not null.
