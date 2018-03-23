@@ -26,7 +26,7 @@ public abstract class AbstractWorker extends SwingWorker<Void, Void> {
    * Constructor. Creates an empty list with listeners.
    */
   public AbstractWorker() {
-    this.listeners = new ArrayList<ProgressChangeListener>();
+    this.listeners = new ArrayList<>();
   }
   
   /**

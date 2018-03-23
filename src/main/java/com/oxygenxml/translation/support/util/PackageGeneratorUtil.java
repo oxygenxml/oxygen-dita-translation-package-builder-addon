@@ -1,11 +1,11 @@
 package com.oxygenxml.translation.support.util;
 
+import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.CustomDialogResults;
 import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
-import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
 import com.oxygenxml.translation.ui.Tags;
@@ -230,9 +230,7 @@ public class PackageGeneratorUtil {
         Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMap);
         pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
             resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + milestoneLastModified);                  
-      } catch (JAXBException e) {
-        logger.error(e, e);
-      } catch (IOException e) {
+      } catch (JAXBException | IOException e) {
         logger.error(e, e);
       }                
     }

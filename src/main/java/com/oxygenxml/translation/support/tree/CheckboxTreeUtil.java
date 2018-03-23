@@ -1,24 +1,24 @@
-package com.oxygenxml.translation.ui;
+package com.oxygenxml.translation.support.tree;
 
 import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.support.util.ApplyPackageUtil;
+import com.oxygenxml.translation.ui.Icons;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.Icon;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.ui.hidpi.RetinaDetector;
@@ -31,6 +31,11 @@ import ro.sync.util.URLUtil;
  * @author adrian_sorop
  */
 public class CheckboxTreeUtil {
+  
+  /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(CheckboxTreeUtil.class.getName());
 
   /**
    * Private constructor to avoid instantiation.
@@ -76,73 +81,13 @@ public class CheckboxTreeUtil {
   }
   
   /**
-   * Builds a tree from a given forward slash delimited string.
-   * 
-   * @param model The tree model.
-   * @param data The string to build the tree from.
-   */
-  public static void buildTreeFromString(final DefaultTreeModel model, final String data) {
-    // Fetch the root node
-    DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-    
-    // Split the string around the delimiter
-    String [] dataStrings = data.split("/");
-
-    // Create a node object to use for traversing down the tree as it 
-    // is being created
-    DefaultMutableTreeNode node = root;
-    // Iterate of the string array
-    for (String stringForNode : dataStrings) {
-      // Look for the index of a node at the current level that
-      // has a value equal to the current string
-      int index = childIndex(node, stringForNode);
-
-      // Index less than 0, this is a new node not currently present on the tree
-      if (index < 0) {
-        stringForNode = URLUtil.decodeURIComponent(stringForNode);
-        // Add the new node
-        DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(stringForNode);
-        node.insert(newChild, node.getChildCount());
-        node = newChild;
-      }
-      // Else, existing node, skip to the next string
-      else {
-        node = (DefaultMutableTreeNode) node.getChildAt(index);
-      }
-    }
-  }
-  
-  /**
-   * Returns the index of a child of a given node, provided its string value.
-   * 
-   * @param node The node to search its children.
-   * @param childValue The value of the child to compare with.
-   * @return The index.
-   */
-  private static int childIndex(final DefaultMutableTreeNode node, final String childValue) {
-    @SuppressWarnings("unchecked")
-    Enumeration<DefaultMutableTreeNode> children = node.children();
-    DefaultMutableTreeNode child = null;
-    int index = -1;
-
-    while (children.hasMoreElements() && index < 0) {
-      child = children.nextElement();
-
-      if (child.getUserObject() != null && childValue.equals(child.getUserObject())) {
-        index = node.getIndex(child);
-      }
-    }
-
-    return index;
-  }
-  
-  /**
    * Installs a mouse listener that opens the diff when double clicking a leaf.
    * 
    * @param tree                Current checkbox tree.
    * @param topLocationDir      The common ancestor of all the DITA resources referred in the DITA map tree. 
    *                            Either the DITA map folder or an ancestor of it.
    * @param translatedFilesDir  The location of the unpacked files.
+   * @param name 
    */
   public static void installDiffOnMouseClick(final CheckBoxTree tree, final File topLocationDir, final File translatedFilesDir) {
     tree.addMouseListener(new MouseAdapter() {
@@ -155,55 +100,25 @@ public class CheckboxTreeUtil {
           boolean isLeaf = tree.getModel().isLeaf(tree.getLastSelectedPathComponent());
           if (contains && doubleLeftClick && isLeaf) {
             //Build the selected path
-            Object[] selectedPath = tree.getSelectionPath().getPath();
-            int length = selectedPath.length;
-            StringBuilder relativePath = new StringBuilder();
-            for (int i = 1; i < length-1; i++) {
-              relativePath.append('/').append(selectedPath[i].toString());
-            }
-            relativePath.append('/').append(selectedPath[length-1]);
+            File selectedPath = (File) tree.getLastSelectedPathComponent();
 
-            File localFile = new File(topLocationDir, relativePath.toString());
-            File translatedFile = new File(translatedFilesDir, relativePath.toString());
-            ApplyPackageUtil.showDiff(localFile, translatedFile);
+            try {
+              URL top = translatedFilesDir.toURI().toURL();
+              URL url = selectedPath.toURI().toURL();
+              String relative = URLUtil.makeRelative(top, url);
+
+              File localFile = new File(topLocationDir, relative);
+              localFile = new File(URLUtil.decodeURIComponent(localFile.getAbsolutePath()));
+              File translatedFile = new File(URLUtil.decodeURIComponent(selectedPath.getAbsolutePath()));
+
+              ApplyPackageUtil.showDiff(localFile, translatedFile);
+            } catch (MalformedURLException e) {
+              logger.error(e, e);
+            }
           }
         }
       }
     });
-  }
-  
-  /**
-   * Creates a new checkbox tree.
-   * 
-   * @param treeModel   Tree model.
-   * @param filePaths   The list with the relative paths of the unpacked files.
-   * @return            A new tree.
-   */
-  public static CheckBoxTree createResourcesTree(DefaultTreeModel treeModel, final List<String> filePaths) {
-    CheckBoxTree tree = new CheckBoxTree(treeModel); 
-    for (String data : filePaths) {
-      buildTreeFromString(treeModel, data);
-    }
-
-    // Make tree icons retina aware.
-    CheckboxTreeUtil.installIcons((DefaultTreeCellRenderer) tree.getActualCellRenderer());
-
-    tree.setEditable(false);
-    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-    tree.setShowsRootHandles(true);
-    tree.setRootVisible(true);
-
-    int rowHeight = 20;
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      rowHeight *= RetinaDetector.getInstance().getScalingFactor();
-    }
-    
-    tree.setRowHeight(rowHeight);
-    tree.setSelectionRow(0); 
-    TreePath rootPath = new TreePath(((DefaultMutableTreeNode)treeModel.getRoot()).getPath());
-    tree.getCheckBoxTreeSelectionModel().addSelectionPath(rootPath);
-    
-    return tree;
   }
   
   /**
@@ -269,28 +184,71 @@ public class CheckboxTreeUtil {
    * @return Kept files from translated zip package or empty if
    * no file was checked for copy.
    */
-  public static List<File> processTreeFiles(CheckBoxTree tree, File translatedFileDir) {
+  public static List<File> processTreeFiles(CheckBoxTree tree) {
 
-    List<File> selectedTreeFiles = new ArrayList<File>();
-    //Get all the selected paths
+    List<File> selectedTreeFiles = new ArrayList<>();
+    //Get all the checked paths
     TreePath[] treePaths = tree.getCheckBoxTreeSelectionModel().getSelectionPaths();
-
+    
     for (TreePath treePath : treePaths) {
-      //Build the relative path 
-      Object[] obj = treePath.getPath();
-      int length = obj.length;
-      StringBuilder relativePath = new StringBuilder(); 
-      if(length >= 2){
-        relativePath.append(obj[1].toString());
-        for (int i = 2; i < length-1; i++) {
-          relativePath.append('/').append(obj[i].toString());
-        }
+      Object location = treePath.getLastPathComponent();
+      CheckBoxTreeFileSystemModel model = (CheckBoxTreeFileSystemModel) tree.getModel();
+      File selectedFile = new File(treePath.getLastPathComponent().toString());
+      
+      boolean leaf = model.isLeaf(location);
+      if (leaf) {
+        selectedTreeFiles.add(selectedFile);
+      } else {
+        // Folder
+        @SuppressWarnings("unchecked")
+        Collection<File> allFiles = FileUtils.listFiles(selectedFile, null, true);
+        selectedTreeFiles.addAll(allFiles);
       }
-
-      File selectedFile = new File(translatedFileDir.getPath(), relativePath.toString());
-      selectedTreeFiles.add(selectedFile);
     }
-
+    
     return selectedTreeFiles;
+  }
+
+  /**
+   * Creates a new checkbox tree.
+   * 
+   * @param treeModel   Tree model.
+   * @param rootLabel   Custom value to render for root element.
+   * 
+   * @return            A new tree.
+   */
+  public static CheckBoxTree createFileSystemTree(CheckBoxTreeFileSystemModel treeModel,final String rootLabel) {
+    CheckBoxTree tree = new CheckBoxTree(treeModel)/*NOSONAR*/ {
+      @Override
+      public String convertValueToText(Object value, boolean selected,
+          boolean expanded, boolean leaf, int row, boolean hasFocus) {
+        if (value == treeModel.getRoot()) {
+          return rootLabel;
+        }
+        return ((File)value).getName();
+      }
+    
+    }; 
+  
+    // Make tree icons retina aware.
+    CheckboxTreeUtil.installIcons((DefaultTreeCellRenderer) tree.getActualCellRenderer());
+  
+    tree.setEditable(false);
+    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+    tree.setShowsRootHandles(true);
+    tree.setRootVisible(true);
+  
+    int rowHeight = 20;
+    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
+      rowHeight *= RetinaDetector.getInstance().getScalingFactor();
+    }
+    
+    tree.setRowHeight(rowHeight);
+    tree.setSelectionRow(0);
+    
+    // Check root
+    tree.getCheckBoxTreeSelectionModel().addSelectionPath(tree.getPathForRow(0));
+    
+    return tree;
   }
 }

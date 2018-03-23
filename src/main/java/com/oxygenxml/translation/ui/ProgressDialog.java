@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -124,12 +121,10 @@ public class ProgressDialog extends OKCancelDialog /*NOSONAR*/ implements Progre
    *  A 2 seconds timer. After the 2 seconds the dialog is visible to the user.
    */
   private void scheduleStart() {
-    Timer timer = new Timer(2000, new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if(!isTaskDone()){
-          setVisible(true);
-          isDialogVisible = true;
-        }
+    Timer timer = new Timer(2000, e -> {
+      if(!isTaskDone()){
+        setVisible(true);
+        isDialogVisible = true;
       }
     });
     timer.start();

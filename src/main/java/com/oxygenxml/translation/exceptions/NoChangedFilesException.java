@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.ui;
+package com.oxygenxml.translation.exceptions;
 /**
  * No file was changed since the last generation of a milestone file.
  * 

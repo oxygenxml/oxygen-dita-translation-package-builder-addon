@@ -5,8 +5,9 @@ import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -122,10 +123,11 @@ public class PathUtil {
   }
   
   /**
-   * XXX
-   * @param rootMapUrl
+   * Calculates the top location using the URL of a DITA MAP.
+   * 
+   * @param rootMapUrl      URL of DITA map opened in DMM.
    * @param packageBuilder can be <code>null</code>. 
-   * @return
+   * @return The top location in URL form.             
    */
   public static URL calculateTopLocationURL(URL rootMapUrl, ChangePackageGenerator packageBuilder) {
     URL location = null;
@@ -142,17 +144,18 @@ public class PathUtil {
   }
   
   /**
-   * XXX
-   * @param rootMapUrl
-   * @param packageBuilder
-   * @return
+   * Calculates the top location using the URL of a DITA MAP.
+   * 
+   * @param rootMapUrl      URL of DITA map opened in DMM.
+   * @param packageBuilder  The package generator.
+   * @return                The top location in STRING form.
    */
-  public static String calculateTopLocation(URL rootMapUrl, ChangePackageGenerator packageBuilder) {
+  private static String calculateTopLocation(URL rootMapUrl, ChangePackageGenerator packageBuilder) {
     String path = null;
     try {
       IRootResource rootRes = ResourceFactory.getInstance().getResource(rootMapUrl);
       if (rootRes != null) {
-        List<ResourceInfo> list = new ArrayList<ResourceInfo>();
+        List<ResourceInfo> list = new ArrayList<>();
         list.add(rootRes.getResourceInfo());
         Set<URL> visited = new HashSet<URL>();//NOSONAR
         packageBuilder.computeResourceInfo(rootRes, list, visited);
@@ -172,14 +175,8 @@ public class PathUtil {
    */
   public static File createTempDirectory() {
     try {
-      final File temp = File.createTempFile("D_T_B_temp", Long.toString(System.nanoTime()));
-      if(!(temp.delete()))    {
-        throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
-      }
-      if(!(temp.mkdir())) {
-        throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
-      }
-      return (temp);
+      Path tempPath = Files.createTempDirectory("D_T_B_temp");
+      return tempPath.toFile();
     } catch (Exception e) {
       logger.error(e, e);
     }

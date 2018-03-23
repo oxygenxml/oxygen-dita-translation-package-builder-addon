@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
+import ro.sync.util.URLUtil;
 
 /**
  * Utility class used in the process of applying the translated package.
@@ -229,8 +230,8 @@ public class ApplyPackageUtil {
    */
   public static void showDiff(File localFile, File translatedFile) {
     try {
-      URL leftURL = localFile.toURI().toURL();
-      URL rightURL = translatedFile.toURI().toURL();
+      URL leftURL = URLUtil.correct(localFile.toURI().toURL());
+      URL rightURL = URLUtil.correct(translatedFile.toURI().toURL());
       
       //Check if the url it's a supported Oxygen file
       final StandalonePluginWorkspace pluginWorkspace = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace());

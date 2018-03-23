@@ -81,7 +81,7 @@ public class ReportGenerator {
   private void generateReport(final File ditaMap, final List<ResourceInfo> modifiedResources, final File report)
       throws TransformerFactoryConfigurationError {
     final File rootDir = ditaMap.getParentFile();
-    List<ResourceInfo> relativePaths = new ArrayList<ResourceInfo>();
+    List<ResourceInfo> relativePaths = new ArrayList<>();
     for (int i = 0; i < modifiedResources.size(); i++) {
       relativePaths.add(new ResourceInfo(modifiedResources.get(i).getRelativePath()));
     }
@@ -98,8 +98,7 @@ public class ReportGenerator {
     File xslFile = new File(TranslationPackageBuilderPlugin.getInstance().getDescriptor().getBaseDir(), 
         REPORT_TRANSFORMATION_XSL);
     
-    FileOutputStream outputStream = null;
-    try {
+    try (FileOutputStream outputStream = new FileOutputStream(report.getAbsolutePath())){
       TransformerFactory factory = TransformerFactory.newInstance();
 
       StreamSource xslSource = new StreamSource(xslFile.getAbsolutePath());
@@ -111,7 +110,6 @@ public class ReportGenerator {
       }
       transformer.setParameter("mapTitle", mapTitle != null ? mapTitle : "DITAMap");
       
-      outputStream = new FileOutputStream(report.getAbsolutePath());
       String absolutePath = null;
       if (xmlReport != null) {
         absolutePath = xmlReport.getAbsolutePath();
@@ -123,15 +121,8 @@ public class ReportGenerator {
       
     } catch (Exception ex) {
       logger.error(ex, ex);
-    } finally {
-      if (outputStream != null) {
-        try {
-          outputStream.close();
-        } catch (IOException e) {
-          /*Nothing to do here*/
-          }
-      }
-    }
+    } 
+    
     //Delete the .xml report file after converting it to a .xhtml file
     try {
       if (xmlReport != null) {

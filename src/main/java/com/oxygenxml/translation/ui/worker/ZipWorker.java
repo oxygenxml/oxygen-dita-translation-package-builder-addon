@@ -1,5 +1,6 @@
 package com.oxygenxml.translation.ui.worker;
 
+import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
@@ -7,7 +8,6 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.support.util.ResultsManagerUtil;
-import com.oxygenxml.translation.ui.NoChangedFilesException;
 import com.oxygenxml.translation.ui.PackResult;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class ZipWorker extends AbstractWorker {
   /**
    * The list containing all the modified files.
    */
-  private List<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+  private List<ResourceInfo> modifiedResources = new ArrayList<>();
   
   /**
    * Current DITA map.

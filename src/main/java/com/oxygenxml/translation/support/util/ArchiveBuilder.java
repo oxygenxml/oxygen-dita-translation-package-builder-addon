@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import org.apache.log4j.Logger;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
@@ -33,6 +34,11 @@ import ro.sync.io.FileSystemUtil;
 public final class ArchiveBuilder {
   
   /**
+   * Logger for logging.
+   */
+  private static final Logger logger = Logger.getLogger(ArchiveBuilder.class.getName());
+
+  /**
    * A list of ProgressChangeListener listeners.
    */
   private List<ProgressChangeListener> listeners;
@@ -44,7 +50,7 @@ public final class ArchiveBuilder {
    */
   public ArchiveBuilder(List<ProgressChangeListener> listeners) {
     if (listeners == null) {
-      this.listeners = new ArrayList<ProgressChangeListener>();
+      this.listeners = new ArrayList<>();
     } else {
       this.listeners = listeners;
     }
@@ -63,18 +69,12 @@ public final class ArchiveBuilder {
   public void zipDirectory(File dir, File zipFile) throws IOException, StoppedByUserException {
     zipFile.getParentFile().mkdirs();
 
-    FileOutputStream fout = null;
-    ZipOutputStream zout = null;
-    try {
-      fout = new FileOutputStream(zipFile);
-      zout = new ZipOutputStream(fout);
+    try (
+        FileOutputStream fout = new FileOutputStream(zipFile);
+        ZipOutputStream zout = new ZipOutputStream(fout) ) {
       zipSubDirectory("", dir, zout, 0);
-    } finally{
-      if (zout != null) {
-        zout.close();
-      } else if(fout != null) {
-        fout.close();
-      }
+    } catch (Exception e) {
+      logger.error(e, e);
     }
   }
 
@@ -123,10 +123,8 @@ public final class ArchiveBuilder {
    */
   private void zipFileInternal(String basePath, ZipOutputStream zout, int resourceCounter, 
       byte[] buffer, File file) throws IOException, StoppedByUserException {
-    FileInputStream fin = null;
     
-    try{
-      fin = new FileInputStream(file);
+    try( FileInputStream fin = new FileInputStream(file) ){
       zout.putNextEntry(new ZipEntry(basePath + file.getName()));
       int length;
       while ((length = fin.read(buffer)) > 0) {
@@ -143,19 +141,8 @@ public final class ArchiveBuilder {
           resourceCounter + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
       fireChangeEvent(progress);
 
-    } finally {
-      try {
-        zout.closeEntry();
-      } catch (Exception ee) {
-        // Nothing
-      }
-      if (fin != null) {
-        try {
-          fin.close();
-        } catch (Exception e) {
-          // Nothing
-        }
-      }
+    } catch (Exception e) {
+      logger.error(e, e);
     }
   }
 
@@ -173,7 +160,7 @@ public final class ArchiveBuilder {
    */
   public List<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException {
 
-    List<String> nameList = new ArrayList<String>();
+    List<String> nameList = new ArrayList<>();
     int counter = 0;
     try {
       // Open the zip file
@@ -232,19 +219,12 @@ public final class ArchiveBuilder {
     }
 
     //  Extract the file
-    InputStream is = null;
-    try {
-      is = zipFile.getInputStream(zipEntry);                  
-      FileOutputStream fos = new FileOutputStream(file);
+    try(
+        InputStream is = zipFile.getInputStream(zipEntry);                  
+        FileOutputStream fos = new FileOutputStream(file) ) {
       FileSystemUtil.copyInputStreamToOutputStream(is, fos, true);
-    } finally {
-      try {
-        if (is != null) {
-          is.close();
-        }
-      } catch (IOException e) {
-        //Do nothing.
-      }
+    } catch (Exception e) {
+      logger.error(e, e);
     }
   }
 
@@ -329,7 +309,7 @@ public final class ArchiveBuilder {
    */
   public void addListener(ProgressChangeAdapter progressChangeAdapter) {
     if (listeners == null) {
-      listeners = new ArrayList<ProgressChangeListener>();
+      listeners = new ArrayList<>();
     }
     listeners.add(progressChangeAdapter);
   }

@@ -72,7 +72,7 @@ public class SaxContentHandler extends DefaultHandler {
     this.baseUrl = baseUrl;
      
     if (ditamapHrefs == null) {
-      ditamapHrefs = new HashSet<ReferencedResource>();
+      ditamapHrefs = new HashSet<>();
     }
   }
   

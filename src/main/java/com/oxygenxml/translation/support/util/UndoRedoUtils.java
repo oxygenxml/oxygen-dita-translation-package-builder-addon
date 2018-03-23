@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.CannotRedoException;
@@ -47,11 +45,7 @@ public class UndoRedoUtils {
     Document textFieldDocument = component.getDocument();
     
     // Listen for undo and redo events
-    textFieldDocument.addUndoableEditListener(new UndoableEditListener() {
-      public void undoableEditHappened(UndoableEditEvent evt) {
-        undo.addEdit(evt.getEdit());
-      }
-    });
+    textFieldDocument.addUndoableEditListener(evt -> undo.addEdit(evt.getEdit()));
     
     component.getActionMap().put("Undo", new AbstractAction("Undo") {
       public void actionPerformed(ActionEvent evt) {

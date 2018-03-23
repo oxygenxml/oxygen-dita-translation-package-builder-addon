@@ -3,6 +3,8 @@ package com.oxygenxml.translation.ui;
 import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.exceptions.NothingSelectedException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.tree.CheckBoxTreeFileSystemModel;
+import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;
 import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -10,8 +12,6 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
@@ -25,10 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
@@ -131,7 +129,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     // By default all entries are selected.
     selectAll.setSelected(true); 
     
-    toggleTableTreeView(filePaths, resourcesTable, modifiedResourcesPanel, selectAll);
+    toggleTableTreeView(resourcesTable, modifiedResourcesPanel, selectAll);
     
     installTableItemSelectionModelListener(resourcesTable, selectAll);
 
@@ -158,36 +156,32 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     final boolean[] inhibitSelectAll = new boolean[] {false};
     final ResourcesTableModel model = (ResourcesTableModel) resourcesTable.getModel();
     
-    TableModelListener tableModelListener = new TableModelListener() {
-      public void tableChanged(TableModelEvent e) {
-        inhibitSelectAll[0] = true;
-        int row = e.getFirstRow();
-        int column = e.getColumn();
-        if (column == ResourcesTableModel.CHECK_BOX) {
-          Boolean checked = (Boolean) model.getValueAt(row, column);
-          if (!checked) {
-            selectAll.setSelected(false);
-          } else {
-            selectAll.setSelected(model.isEverythingSelected());
-          }
+    TableModelListener tableModelListener = e -> {
+      inhibitSelectAll[0] = true;
+      int row = e.getFirstRow();
+      int column = e.getColumn();
+      if (column == ResourcesTableModel.CHECK_BOX) {
+        Boolean checked = (Boolean) model.getValueAt(row, column);
+        if (!checked) {
+          selectAll.setSelected(false);
+        } else {
+          selectAll.setSelected(model.isEverythingSelected());
         }
-        inhibitSelectAll[0] = false;
       }
+      inhibitSelectAll[0] = false;
     };
     
-    ItemListener itemListener = new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if(!inhibitSelectAll[0]){
-          // Select all table entries if the "Select all" checkbox is selected
-          if (e.getStateChange() == ItemEvent.SELECTED) {
-            for(int i = 0; i < model.getRowCount(); i++){
-              model.setValueAt(Boolean.TRUE, i, 0);
-            }
-          } else {
-            // otherwise deselect them.
-            for(int i = 0; i < model.getRowCount(); i++){
-              model.setValueAt(Boolean.FALSE, i, 0);
-            }
+    ItemListener itemListener = e -> {
+      if(!inhibitSelectAll[0]){
+        // Select all table entries if the "Select all" checkbox is selected
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          for(int i1 = 0; i1 < model.getRowCount(); i1++){
+            model.setValueAt(Boolean.TRUE, i1, 0);
+          }
+        } else {
+          // otherwise deselect them.
+          for(int i2 = 0; i2 < model.getRowCount(); i2++){
+            model.setValueAt(Boolean.FALSE, i2, 0);
           }
         }
       }
@@ -202,28 +196,25 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
    * Switches between tree view and table view.
    */
   private void toggleTableTreeView(
-      final List<String> filePaths, 
       final JTable resourcesTable, 
       final JScrollPane modifiedResourcesPanel, 
       final JCheckBox selectAll) {
     // Switch the users view on switchViewButton click
-    switchViewButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        isListViewShowing = !isListViewShowing;
+    switchViewButton.addActionListener(e -> {
+      isListViewShowing = !isListViewShowing;
 
-        if (isListViewShowing) { 
-          modifiedResourcesPanel.setViewportView(resourcesTable);
-          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
-          selectAll.setVisible(true);
-        } else {
-          if(root == null) {
-            tree = createTreeView(filePaths, topLocation, translatedFileDir);
-          }
-
-          switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_LIST_VIEW));
-          modifiedResourcesPanel.setViewportView(tree);
-          selectAll.setVisible(false);
+      if (isListViewShowing) { 
+        modifiedResourcesPanel.setViewportView(resourcesTable);
+        switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
+        selectAll.setVisible(true);
+      } else {
+        if(root == null) {
+          tree = createTreeView(topLocation, translatedFileDir);
         }
+
+        switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_LIST_VIEW));
+        modifiedResourcesPanel.setViewportView(tree);
+        selectAll.setVisible(false);
       }
     });
   }
@@ -274,9 +265,8 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     List<File> filesToCopy = null;
     if(!isListViewShowing) {
       // Collect "checked" files from tree view.
-      filesToCopy = CheckboxTreeUtil.processTreeFiles(tree, translatedFileDir);
-      if (!filesToCopy.isEmpty() 
-          && !filesToCopy.get(0).equals(new File(translatedFileDir.getPath()))) {
+      filesToCopy = CheckboxTreeUtil.processTreeFiles(tree);
+      if (!filesToCopy.isEmpty()) {
         try {
           CheckboxTreeUtil.deleteTreeUnselectedFiles(translatedFileDir, filesToCopy);
         } catch (IOException e1) { 
@@ -360,15 +350,16 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
    * @param pluginWorkspace  Entry point for accessing the DITA Maps area.
    */
   private CheckBoxTree createTreeView(
-      final List<String> filePaths, 
       final File topLocationDir,
       final File translatedFilesDir) {
     // Lazy create the tree view.
-    String rootElem = URLUtil.decodeURIComponent(topLocationDir.getName());
-    // The default tree model of the CheckBoxTree.
+    String name = topLocationDir.getName();
+    String rootElem = URLUtil.decodeURIComponent(name);
+//     The default tree model of the CheckBoxTree.
     root = new DefaultMutableTreeNode(rootElem);
-    DefaultTreeModel treeModel = new DefaultTreeModel(root);
-    final CheckBoxTree cbTree = CheckboxTreeUtil.createResourcesTree(treeModel, filePaths);
+    
+    CheckBoxTreeFileSystemModel treeModel = new CheckBoxTreeFileSystemModel(translatedFilesDir);
+    CheckBoxTree cbTree = CheckboxTreeUtil.createFileSystemTree(treeModel, name);
     CheckboxTreeUtil.installDiffOnMouseClick(cbTree, topLocationDir, translatedFilesDir);
     
     return cbTree;

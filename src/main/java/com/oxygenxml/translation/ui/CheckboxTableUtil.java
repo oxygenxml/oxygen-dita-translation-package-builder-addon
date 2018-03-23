@@ -66,7 +66,7 @@ public class CheckboxTableUtil {
    */
   public static ResourcesTableModel createTableModel(final List<String> filePaths) {
     
-    List<CheckboxTableItem> loadPaths = new ArrayList<CheckboxTableItem>();
+    List<CheckboxTableItem> loadPaths = new ArrayList<>();
     for (String data : filePaths) {
       data = URLUtil.decodeURIComponent(data);
       loadPaths.add(new CheckboxTableItem(Boolean.TRUE , data));

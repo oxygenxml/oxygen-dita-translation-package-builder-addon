@@ -45,12 +45,12 @@ public class ChangePackageGenerator {
   /**
    *  A list of custom listeners.
    */
-  private List<ProgressChangeListener> listeners = new ArrayList<ProgressChangeListener>();
+  private List<ProgressChangeListener> listeners = new ArrayList<>();
   
   /**
    * A list containing all the resources that were unable to pack to archive.
    */
-  private List<String> filesNotCopied = new ArrayList<String>();
+  private List<String> filesNotCopied = new ArrayList<>();
   
   /**
    * The common ancestor of all the DITA resources referred in the DITA map tree. 
@@ -152,10 +152,10 @@ public class ChangePackageGenerator {
      * 3. Compares the current file MD5 with the old ones and collects the changed resources.
      */
     // Store state.
-    Set<ResourceInfo> resources = new HashSet<ResourceInfo>(MilestoneUtil.loadMilestoneFile(resource));
+    Set<ResourceInfo> resources = new HashSet<>(MilestoneUtil.loadMilestoneFile(resource));
     
     //Current states.
-    List<ResourceInfo> currentStates = new ArrayList<ResourceInfo>();
+    List<ResourceInfo> currentStates = new ArrayList<>();
     
     // Add the root map.
     ResourceInfo rootResource = resource.getResourceInfo();
@@ -172,7 +172,7 @@ public class ChangePackageGenerator {
     commonPath = PathUtil.commonPath(visited);
     
     // A list to hold the modified resources.
-    ArrayList<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+    ArrayList<ResourceInfo> modifiedResources = new ArrayList<>();
     int counter = 0;
     // Compare serializedResources with newly generated hashes.
     for (ResourceInfo newInfo : currentStates) {
@@ -317,7 +317,7 @@ public class ChangePackageGenerator {
    */
   public File generateChangeMilestone(IRootResource resource) 
       throws NoSuchAlgorithmException, IOException, JAXBException, StoppedByUserException {
-    List<ResourceInfo> list = new ArrayList<ResourceInfo>();
+    List<ResourceInfo> list = new ArrayList<>();
     
     // Add the root map
     ResourceInfo rootResourceInfo = resource.getResourceInfo();

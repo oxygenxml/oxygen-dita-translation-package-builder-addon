@@ -72,7 +72,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
       Iterator<IResource> toReturn = null;
       File[] listFiles = file.listFiles();
       if (listFiles != null) {
-        List<IResource>  children = new ArrayList<IResource>(listFiles.length);
+        List<IResource>  children = new ArrayList<>(listFiles.length);
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < listFiles.length; i++) {
           File child = listFiles[i];

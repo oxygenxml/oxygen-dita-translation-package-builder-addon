@@ -13,10 +13,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -83,7 +80,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
   /**
    *  Where the package location is displayed.
    */
-  private JComboBox<String> archiveLocationCombobox = new JComboBox<String>();
+  private JComboBox<String> archiveLocationCombobox = new JComboBox<>();
   
   /**
    * A list that contains all the chosen package locations.
@@ -197,11 +194,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     if(image != null) {
       folderButton = new ToolbarToggleButton(image);
       // Show a file chooser when the user clicks on the folder image.
-      folderButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          showArchiveSaveLocationChooser();
-        }
-      });
+      folderButton.addActionListener(e-> showArchiveSaveLocationChooser());
     }
     
     // The default location of the report file.
@@ -376,15 +369,13 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     generateReportCheckbox.setSelected(true);
     generateReportCheckbox.setToolTipText(messages.getMessage(Tags.REPORT_DIALOG_CHECKBOX_TOOLTIP));
     
-    generateReportCheckbox.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if(e.getStateChange() == ItemEvent.SELECTED){
-          textInfo.setText(messages.getMessage(Tags.XHTML_REPORT_LOCATION) + ProjectConstants.getHTMLReportFile(rootMapFile));         
-        } else {
-          Date date = new Date(reportFile.lastModified());
-          SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
-          textInfo.setText(messages.getMessage(Tags.LAST_REPORT_CREATION_TIME) +" "+ dataFormat.format(date));
-        }
+    generateReportCheckbox.addItemListener(e -> {
+      if(e.getStateChange() == ItemEvent.SELECTED){
+        textInfo.setText(messages.getMessage(Tags.XHTML_REPORT_LOCATION) + ProjectConstants.getHTMLReportFile(rootMapFile));         
+      } else {
+        Date date = new Date(reportFile.lastModified());
+        SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
+        textInfo.setText(messages.getMessage(Tags.LAST_REPORT_CREATION_TIME) +" "+ dataFormat.format(date));
       }
     });
   }

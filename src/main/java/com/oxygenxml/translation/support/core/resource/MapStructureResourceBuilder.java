@@ -104,7 +104,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         try {
           Set<ReferencedResource> currentHrefs = gatherReferences();
           if (currentHrefs != null) {
-            children = new LinkedList<IResource>();
+            children = new LinkedList<>();
             for (ReferencedResource child : currentHrefs) {
               String childRelativePath = URLUtil.makeRelative(rootMap, child.getLocation());
               childRelativePath = URLUtil.decodeURIComponent(childRelativePath);

@@ -19,7 +19,7 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker {
   /**
    * The list with all the modified resources.
    */
-  private List<ResourceInfo> modifiedResources = new ArrayList<ResourceInfo>();
+  private List<ResourceInfo> modifiedResources = new ArrayList<>();
   
   /**
    * The common ancestor of all the DITA resources referred in the DITA map tree.

@@ -28,7 +28,7 @@ public class ResourcesTableModel extends AbstractTableModel {
   /**
    * The list with all the columns names.
    */
-  private transient List<String> colNames = new ArrayList<String>();
+  private transient List<String> colNames = new ArrayList<>();
   
   /**
    * Constructor.
