@@ -1,6 +1,5 @@
 package com.oxygenxml.translation.support.core;
 
-import com.google.common.io.Files;
 import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.support.tree.CheckBoxTreeFileSystemModel;
 import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;

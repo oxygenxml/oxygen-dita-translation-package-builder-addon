@@ -28,14 +28,12 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TableModelListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
-import ro.sync.util.URLUtil;
 /**
  *  The dialog that shows a preview before applying a package.
  * 
@@ -58,11 +56,6 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
    */
   private static final Logger logger = Logger.getLogger(PreviewDialog.class.getName());
 
-  /**
-   *  The root node of the tree.
-   */
-  private DefaultMutableTreeNode root = null;
-  
   /**
    *  The tree that displays the translated files in a set of hierarchical data.
    */
@@ -210,7 +203,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
         switchViewButton.setText(messages.getMessage(Tags.SWICH_TO_TREE_VIEW));
         selectAll.setVisible(true);
       } else {
-        if(root == null) {
+        if(tree == null) {
           tree = createTreeView(topLocation, translatedFileDir);
         }
 
@@ -355,13 +348,8 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
       final File topLocationDir,
       final File translatedFilesDir) {
     // Lazy create the tree view.
-    String name = topLocationDir.getName();
-    String rootElem = URLUtil.decodeURIComponent(name);
-//     The default tree model of the CheckBoxTree.
-    root = new DefaultMutableTreeNode(rootElem);
-    
     CheckBoxTreeFileSystemModel treeModel = new CheckBoxTreeFileSystemModel(translatedFilesDir);
-    CheckBoxTree cbTree = CheckboxTreeUtil.createFileSystemTree(treeModel, name);
+    CheckBoxTree cbTree = CheckboxTreeUtil.createFileSystemTree(treeModel, topLocationDir.getName());
     CheckboxTreeUtil.installDiffOnMouseClick(cbTree, topLocationDir, translatedFilesDir);
     
     return cbTree;
