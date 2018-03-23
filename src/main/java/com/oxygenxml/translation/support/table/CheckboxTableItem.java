@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.ui;
+package com.oxygenxml.translation.support.table;
 /**
  * This type of objects are stored in the JTable.
  * 

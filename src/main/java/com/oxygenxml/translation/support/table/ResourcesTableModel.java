@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.ui;
+package com.oxygenxml.translation.support.table;
 
 import java.util.ArrayList;
 import java.util.List;

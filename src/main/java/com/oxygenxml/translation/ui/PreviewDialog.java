@@ -3,6 +3,8 @@ package com.oxygenxml.translation.ui;
 import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.exceptions.NothingSelectedException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.table.CheckboxTableUtil;
+import com.oxygenxml.translation.support.table.ResourcesTableModel;
 import com.oxygenxml.translation.support.tree.CheckBoxTreeFileSystemModel;
 import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;
 import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;

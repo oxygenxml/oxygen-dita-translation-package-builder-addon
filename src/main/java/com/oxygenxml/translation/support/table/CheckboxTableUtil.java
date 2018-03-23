@@ -1,4 +1,4 @@
-package com.oxygenxml.translation.ui;
+package com.oxygenxml.translation.support.table;
 
 import com.oxygenxml.translation.support.util.ApplyPackageUtil;
 import java.awt.Rectangle;
@@ -56,7 +56,7 @@ public class CheckboxTableUtil {
     resourcesTable.setTableHeader(null);
     resourcesTable.setShowGrid(false);
     // TODO setMaxWidth(calculateMaxLength)
-    resourcesTable.getColumnModel().getColumn(0).setMaxWidth(40);
+    resourcesTable.getColumnModel().getColumn(ResourcesTableModel.CHECK_BOX).setMaxWidth(40);
     resourcesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     return resourcesTable;
   } 
@@ -89,7 +89,7 @@ public class CheckboxTableUtil {
           int selectedColumn = resourcesTable.getSelectedColumn();
           int selectedRow = resourcesTable.getSelectedRow();
 
-          Rectangle goodCell = resourcesTable.getCellRect(selectedRow, 1, true);
+          Rectangle goodCell = resourcesTable.getCellRect(selectedRow, ResourcesTableModel.RELATIVE_PATH, true);
           // show DIFF only if the user double clicks on the second column cells
           if (goodCell.contains(event.getPoint())) {
             String selectedPath = resourcesTable.getModel().getValueAt(selectedRow, selectedColumn).toString();
@@ -109,7 +109,7 @@ public class CheckboxTableUtil {
    */
   public static List<File> processTableFiles(ResourcesTableModel model, File translatedFileDir) {
     
-    List<File> selectedFiles = new ArrayList<File>();
+    List<File> selectedFiles = new ArrayList<>();
     
     for (int i = 0; i < model.getRowCount(); i++) {
       Boolean checked = (Boolean) model.getValueAt(i, ResourcesTableModel.CHECK_BOX);
