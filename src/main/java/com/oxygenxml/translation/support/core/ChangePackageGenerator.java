@@ -8,7 +8,6 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.support.util.ResultsManagerUtil;
-import com.oxygenxml.translation.ui.PackResult;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
@@ -209,7 +208,7 @@ public class ChangePackageGenerator {
    * @throws IOException  Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public PackResult generateChangedFilesPackage(
+  public int generateChangedFilesPackage(
       // TODO Adrian Pass just one Interator<URL> instead of "rootDir" and "modifiedResources"
       File rootDir,
       File packageLocation,
@@ -221,8 +220,6 @@ public class ChangePackageGenerator {
      * 2. ZIP the "destinationDir" at "packageLocation".
      * 3. Delete the "destinationDir".
      */
-    PackResult result = new PackResult();
-
     int nrModFiles = 0;
     final int totalModifiedfiles = modifiedResources.size();
     // If there are modified resources
@@ -274,7 +271,6 @@ public class ChangePackageGenerator {
             
           }
 
-          result.setModifiedFilesNumber(nrModFiles);
 
           ArchiveBuilder archiveBuilder = new ArchiveBuilder(null);
           archiveBuilder.addListener(new ProgressChangeAdapter() {
@@ -300,7 +296,7 @@ public class ChangePackageGenerator {
         }
     }
 
-    return result;
+    return nrModFiles;
   }
 
   /**

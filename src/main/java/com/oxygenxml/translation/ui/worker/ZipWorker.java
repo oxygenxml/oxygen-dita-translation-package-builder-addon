@@ -8,7 +8,6 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.support.util.ResultsManagerUtil;
-import com.oxygenxml.translation.ui.PackResult;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -35,7 +34,7 @@ public class ZipWorker extends AbstractWorker {
   /**
    * An object that holds the number of modified files.
    */
-  private PackResult modifiedFilesNumber;
+  private int modifiedFilesNumber;
   
   /**
    * True if the user wants to pack the entire directory.
@@ -129,7 +128,7 @@ public class ZipWorker extends AbstractWorker {
   /**
    * @return The number of modified files.
    */
-  public PackResult getModifiedFilesNumber() {
+  public int getModifiedFilesNumber() {
     return modifiedFilesNumber;
   }
 }

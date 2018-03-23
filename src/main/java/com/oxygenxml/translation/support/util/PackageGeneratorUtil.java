@@ -115,7 +115,7 @@ public class PackageGeneratorUtil {
         if(packAll) {
           pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.DIRECTORY_WAS_PACKED));
         } else {
-          int nrOfFiles = zipTask.getModifiedFilesNumber().getNumber();
+          int nrOfFiles = zipTask.getModifiedFilesNumber();
           pluginWorkspace.showInformationMessage(
               MessageFormat.format(resourceBundle.getMessage(Tags.REPORT_NUMBER_OF_MODIFIED_FILES), nrOfFiles));
           if(generateXHTMLReport){
