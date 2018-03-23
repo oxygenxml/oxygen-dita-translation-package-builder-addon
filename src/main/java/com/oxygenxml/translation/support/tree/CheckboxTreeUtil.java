@@ -52,7 +52,12 @@ public class CheckboxTreeUtil {
   public static void installIcons(DefaultTreeCellRenderer renderer) {
     ClassLoader classLoader = PluginWorkspaceProvider.class.getClassLoader();
     ImageUtilities imageUtilities = PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities();
-
+    
+    if (imageUtilities == null) {
+      // If the image utilities is not mocked, an NPE will occur.
+      return;
+    }
+    
     // Load generic "file" icon
     Icon leafIcon = null;
     URL leafIconURL = classLoader.getResource(Icons.TEXT_ICON);
