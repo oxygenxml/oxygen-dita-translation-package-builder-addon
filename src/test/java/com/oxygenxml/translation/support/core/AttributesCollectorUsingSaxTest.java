@@ -76,6 +76,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(rootDir,"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD FILE", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -110,6 +111,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(rootDir,"topics/add-terms-list.dita");
     assertTrue("UNABLE TO LOAD FILE", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -144,6 +146,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(TestUtil.getPath("issue-9"),"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
@@ -171,6 +174,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(TestUtil.getPath("issue-15"),"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
@@ -201,6 +205,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(TestUtil.getPath("issue-15_1"),"rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
@@ -209,6 +214,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
+    System.out.println(result);
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic2.dita</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic3.dita</relativePath>"));
@@ -228,6 +234,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(TestUtil.getPath("issue-15_1/topics"),"topic2.dita");
     assertTrue("UNABLE TO LOAD FILE", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -264,6 +271,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(TestUtil.getPath("issue-18"), "rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
@@ -292,6 +300,7 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File ditaFile = new File(TestUtil.getPath("issue-not-parse-image-sax"), "rootMap.ditamap");
     assertTrue("UNABLE TO LOAD ROOT MAP", ditaFile.exists());
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(ditaFile);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(ditaFile.getName());
     
     URL url = URLUtil.correct(ditaFile);
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);

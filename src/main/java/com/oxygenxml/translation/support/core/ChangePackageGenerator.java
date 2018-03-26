@@ -209,13 +209,13 @@ public class ChangePackageGenerator {
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
   public int generateChangedFilesPackage(
-      // TODO Adrian Pass just one Interator<URL> instead of "rootDir" and "modifiedResources"
-      File rootDir,
+      // TODO Adrian Pass just one Iterator<URL> instead of "rootDir" and "modifiedResources"
+      URL rootMapURL,
       File packageLocation,
       List<ResourceInfo> modifiedResources,
       URL topLocationInFileSystem) throws IOException, StoppedByUserException  {
 
-    /**
+    /*
      * 1. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
      * 2. ZIP the "destinationDir" at "packageLocation".
      * 3. Delete the "destinationDir".
@@ -224,6 +224,7 @@ public class ChangePackageGenerator {
     final int totalModifiedfiles = modifiedResources.size();
     // If there are modified resources
     if (!modifiedResources.isEmpty()) {
+      File rootDir = MilestoneUtil.getFile(rootMapURL).getParentFile();
         final File tempDir = new File(rootDir, "toArchive");
         //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
         //files in the right directory

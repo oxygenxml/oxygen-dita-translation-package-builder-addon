@@ -1,15 +1,17 @@
 package com.oxygenxml.translation.support.core;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * MD5 and milestone generation tests.
@@ -42,10 +44,17 @@ public class GenerateMilestoneTest {
 	@Test
 	public void testChangeMilestone() throws Exception {
 		File rootDir = TestUtil.getPath("generateMilestone-Test");
+		
+		StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+	  PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
+	  
+	  PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
 
 		ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
 		
 		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
+    
     packageBuilder.generateChangeMilestone(rootResource);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();

@@ -3,7 +3,6 @@ package com.oxygenxml.translation.ui.worker;
 import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
-import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.support.util.PathUtil;
@@ -102,9 +101,12 @@ public class ZipWorker extends AbstractWorker {
         }
       }
     } else {
-      File rootDir = MilestoneUtil.getFile(rootMap).getParentFile();
+      
+      
+      
+//      File rootDir = MilestoneUtil.getFile(rootMap).getParentFile();
       modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
-          rootDir,
+          rootMap,
           zipDestinationDir, 
           modifiedResources, 
           topLocationURL);

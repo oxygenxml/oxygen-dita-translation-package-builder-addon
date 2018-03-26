@@ -53,6 +53,7 @@ public class ZipTest extends TestCase{
     
     UtilAccess utilMock = Mockito.mock(UtilAccess.class);
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
     
     Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
     
@@ -131,6 +132,7 @@ public class ZipTest extends TestCase{
     
     UtilAccess utilMock = Mockito.mock(UtilAccess.class);
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
     
     Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
     
@@ -203,6 +205,7 @@ public class ZipTest extends TestCase{
     
     UtilAccess utilMock = Mockito.mock(UtilAccess.class);
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
     
     Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
     
@@ -266,6 +269,7 @@ public class ZipTest extends TestCase{
 
     UtilAccess utilMock = Mockito.mock(UtilAccess.class);
     Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootDir);
+    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
     Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
 
     Future<?> future = PackageGeneratorUtil.createPackage(

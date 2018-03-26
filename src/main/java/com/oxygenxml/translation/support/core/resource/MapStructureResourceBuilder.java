@@ -154,8 +154,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
         // It's the root map
         PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
         if (pluginWorkspace != null) {
-          File file = pluginWorkspace.getUtilAccess().locateFile(resource.getLocation());
-          String name = file.getName();
+          String name = pluginWorkspace.getUtilAccess().getFileName(resource.getLocation().toExternalForm());
           resourceInfo.setRelativePath(name);
         }
       }
