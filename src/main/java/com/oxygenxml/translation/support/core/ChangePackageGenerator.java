@@ -1,5 +1,21 @@
 package com.oxygenxml.translation.support.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.io.FileUtils;
+
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.IResource;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
@@ -12,19 +28,7 @@ import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.Tags;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import javax.xml.bind.JAXBException;
-import org.apache.commons.io.FileUtils;
+
 import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -49,7 +53,7 @@ public class ChangePackageGenerator {
   /**
    * A list containing all the resources that were unable to pack to archive.
    */
-  private List<String> filesNotCopied = new ArrayList<>();
+  private List<URL> filesNotCopied = new ArrayList<>();
   
   /**
    * The common ancestor of all the DITA resources referred in the DITA map tree. 
@@ -174,13 +178,13 @@ public class ChangePackageGenerator {
     ArrayList<ResourceInfo> modifiedResources = new ArrayList<>();
     int counter = 0;
     // Compare serializedResources with newly generated hashes.
+    PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
     for (ResourceInfo newInfo : currentStates) {
       // Use a HasSet to ensure better search performance.
       if (!resources.contains(newInfo)) {
         modifiedResources.add(newInfo);
       }
-      
-      PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+
       counter++;
       if(isCanceled()){
         throw new StoppedByUserException();
@@ -198,10 +202,9 @@ public class ChangePackageGenerator {
   /**
    * Entry point. Detect what files were modified and put them in a ZIP.
    * 
-   * @param rootDir Folder of the DITA map.
    * @param packageLocation The location of the generated ZIP file.
    * @param modifiedResources The list with all the modified files.
-   * @param topLocationInFileSystem The common ancestor of all the DITA resources referred in the DITA map tree. Either the DITA map folder or an ancestor of it.
+   * @param topLocationForModifiedResources The common ancestor of all the DITA resources referred in the DITA map tree. Either the DITA map folder or an ancestor of it.
    * 
    * @return How many files were modified.
    * 
@@ -209,47 +212,32 @@ public class ChangePackageGenerator {
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
   public int generateChangedFilesPackage(
-      // TODO Adrian Pass just one Iterator<URL> instead of "rootDir" and "modifiedResources"
-      URL rootMapURL,
       File packageLocation,
-      List<ResourceInfo> modifiedResources,
-      URL topLocationInFileSystem) throws IOException, StoppedByUserException  {
-
+      List<URL> modifiedResources,
+      URL topLocationForModifiedResources) throws IOException, StoppedByUserException  {
     /*
      * 1. Inside a temporary "destinationDir" creates a file structure and copies the changed files.
      * 2. ZIP the "destinationDir" at "packageLocation".
      * 3. Delete the "destinationDir".
      */
     int nrModFiles = 0;
-    final int totalModifiedfiles = modifiedResources.size();
     // If there are modified resources
     if (!modifiedResources.isEmpty()) {
-      File rootDir = MilestoneUtil.getFile(rootMapURL).getParentFile();
-        final File tempDir = new File(rootDir, "toArchive");
+      int totalModifiedfiles = modifiedResources.size();
+      // Create a temp directory.
+        final File tempDir = new File(PathUtil.createTempDirectory(), "toArchive");
         //We iterate over the list above, build the sistem of files in a temporary directory and copy the 
         //files in the right directory
         //Then we compress the tempDir and delete it.
         try{
-          for(ResourceInfo aux : modifiedResources){
-            String relativePath = aux.getRelativePath();
-            /*
-             * #15 - the relative paths can be path/to.file.dita#ID
-             * We have to remove the anchors to allow file copy.
-             */
-            int indexOf = relativePath.indexOf('#');
-            if(indexOf != -1){
-              relativePath = relativePath.substring(0, indexOf);
-            }
-            
-            URL url = new URL(rootDir.toURI().toURL(), relativePath);
-            // TODO Adrian A test to put the map in the package. The Map dir has spaces in it.
-            String relative = URLUtil.makeRelative(topLocationInFileSystem, url);
+          for (URL url : modifiedResources) {
+            String relative = URLUtil.makeRelative(topLocationForModifiedResources, url);
             relative = URLUtil.decodeURIComponent(relative);
             
             // fallback
             if (relative.startsWith("../")) {
               String externalForm = URLUtil.decodeURIComponent(url.toExternalForm());
-              relative = externalForm.replaceAll(topLocationInFileSystem.toExternalForm(), "");
+              relative = externalForm.replaceAll(topLocationForModifiedResources.toExternalForm(), "");
             }
             
             File dest = new File(tempDir, relative);
@@ -258,20 +246,23 @@ public class ChangePackageGenerator {
             try {
               FileUtils.copyURLToFile(url, dest);
             } catch (IOException e) {
-              filesNotCopied.add(relativePath);
+              // Collect the not copied resources.
+              filesNotCopied.add(url);
             }
 
             if(isCanceled()){
               throw new StoppedByUserException();
             }
             
-            PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+            PluginResourceBundle resourceBundle = 
+                ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
             nrModFiles++;
-            ProgressChangeEvent progress = new ProgressChangeEvent(nrModFiles, resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 2*totalModifiedfiles);
+            ProgressChangeEvent progress = new ProgressChangeEvent(
+                nrModFiles, 
+                resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 
+                2 * totalModifiedfiles);
             fireChangeEvent(progress);
-            
           }
-
 
           ArchiveBuilder archiveBuilder = new ArchiveBuilder(null);
           archiveBuilder.addListener(new ProgressChangeAdapter() {
@@ -287,7 +278,10 @@ public class ChangePackageGenerator {
             
             @Override
             public void change(ProgressChangeEvent progress) {
-              ProgressChangeEvent event = new ProgressChangeEvent(progress.getCounter() + totalModifiedfiles, progress.getMessage(), 2*totalModifiedfiles);
+              ProgressChangeEvent event = new ProgressChangeEvent(
+                  progress.getCounter() + totalModifiedfiles,
+                  progress.getMessage(), 
+                  2 * totalModifiedfiles);
               fireChangeEvent(event);
             }
           });
@@ -394,7 +388,7 @@ public class ChangePackageGenerator {
   /**
    * @return The list of resource that were unable to copy.
    */
-  public List<String> getFilesNotCopied() {
+  public List<URL> getFilesNotCopied() {
     return filesNotCopied;
   }
  

@@ -1,13 +1,5 @@
 package com.oxygenxml.translation.ui;
 
-import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.exceptions.NothingSelectedException;
-import com.oxygenxml.translation.exceptions.StoppedByUserException;
-import com.oxygenxml.translation.support.table.CheckboxTableUtil;
-import com.oxygenxml.translation.support.table.ResourcesTableModel;
-import com.oxygenxml.translation.support.tree.CheckBoxTreeFileSystemModel;
-import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;
-import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -19,6 +11,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -28,8 +21,19 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TableModelListener;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+
+import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.exceptions.NothingSelectedException;
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.table.CheckboxTableUtil;
+import com.oxygenxml.translation.support.table.ResourcesTableModel;
+import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;
+import com.oxygenxml.translation.support.tree.FileSystemTreeModel;
+import com.oxygenxml.translation.ui.worker.CopyDirectoryWorker;
+
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -348,7 +352,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
       final File topLocationDir,
       final File translatedFilesDir) {
     // Lazy create the tree view.
-    CheckBoxTreeFileSystemModel treeModel = new CheckBoxTreeFileSystemModel(translatedFilesDir);
+    FileSystemTreeModel treeModel = new FileSystemTreeModel(translatedFilesDir);
     CheckBoxTree cbTree = CheckboxTreeUtil.createFileSystemTree(treeModel, topLocationDir.getName());
     CheckboxTreeUtil.installDiffOnMouseClick(cbTree, topLocationDir, translatedFilesDir);
     

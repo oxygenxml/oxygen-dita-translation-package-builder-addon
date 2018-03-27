@@ -1,8 +1,5 @@
 package com.oxygenxml.translation.support.tree;
 
-import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.support.util.ApplyPackageUtil;
-import com.oxygenxml.translation.ui.Icons;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -13,12 +10,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.Icon;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+
+import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.support.util.ApplyPackageUtil;
+import com.oxygenxml.translation.ui.Icons;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
 import ro.sync.ui.hidpi.RetinaDetector;
@@ -197,7 +201,7 @@ public class CheckboxTreeUtil {
     
     for (TreePath treePath : treePaths) {
       Object location = treePath.getLastPathComponent();
-      CheckBoxTreeFileSystemModel model = (CheckBoxTreeFileSystemModel) tree.getModel();
+      FileSystemTreeModel model = (FileSystemTreeModel) tree.getModel();
       File selectedFile = new File(treePath.getLastPathComponent().toString());
       
       boolean leaf = model.isLeaf(location);
@@ -222,7 +226,7 @@ public class CheckboxTreeUtil {
    * 
    * @return            A new tree.
    */
-  public static CheckBoxTree createFileSystemTree(CheckBoxTreeFileSystemModel treeModel,final String rootLabel) {
+  public static CheckBoxTree createFileSystemTree(FileSystemTreeModel treeModel,final String rootLabel) {
     CheckBoxTree tree = new CheckBoxTree(treeModel)/*NOSONAR*/ {
       @Override
       public String convertValueToText(Object value, boolean selected,

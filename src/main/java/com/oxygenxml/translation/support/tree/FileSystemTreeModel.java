@@ -6,11 +6,11 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * A checkbox tree model over file system.
+ * A tree model over the file system.
  * 
  * @author adrian_sorop
  */
-public class CheckBoxTreeFileSystemModel implements TreeModel {
+public class FileSystemTreeModel implements TreeModel {
   
   /**
    * Root File.
@@ -18,9 +18,11 @@ public class CheckBoxTreeFileSystemModel implements TreeModel {
   private File root;
   
   /**
-   * @param rootDirectory Tree root as file.
+   * Constructor.
+   * 
+   * @param rootDirectory The top directory.
    */
-  public CheckBoxTreeFileSystemModel(File rootDirectory) {
+  public FileSystemTreeModel(File rootDirectory) {
     root = rootDirectory;
   }
   
@@ -72,13 +74,18 @@ public class CheckBoxTreeFileSystemModel implements TreeModel {
     return -1;
   }
   
+  @Override
   public void valueForPathChanged(TreePath path, Object value) {
-    // Nothing
+    // Nothing is changed in the model.
   }
+  
+  @Override
   public void addTreeModelListener(TreeModelListener listener) {
-    // do nothing: model never changes.
+    // Nothing is changed in the model.
   }
+  
+  @Override
   public void removeTreeModelListener(TreeModelListener listener) {
-    // do nothing: model never changes.
+    // Nothing is changed in the model.
   }
 }

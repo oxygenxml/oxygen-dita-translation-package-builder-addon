@@ -1,16 +1,20 @@
 package com.oxygenxml.translation.support.core;
 
-import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.support.tree.CheckBoxTreeFileSystemModel;
-import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.swing.tree.TreePath;
-import junit.framework.TestCase;
+
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
+
+import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.support.tree.CheckboxTreeUtil;
+import com.oxygenxml.translation.support.tree.FileSystemTreeModel;
+
+import junit.framework.TestCase;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -33,7 +37,7 @@ public class CheckBoxTreeTest extends TestCase{
     PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
     
     
-    CheckBoxTreeFileSystemModel treeModel = new CheckBoxTreeFileSystemModel(testDir);
+    FileSystemTreeModel treeModel = new FileSystemTreeModel(testDir);
     String name = "DOC ROOT";
     CheckBoxTree tree = CheckboxTreeUtil.createFileSystemTree(treeModel, name);
     List<File> processTreeFiles = CheckboxTreeUtil.processTreeFiles(tree);

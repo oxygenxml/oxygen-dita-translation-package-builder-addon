@@ -1,11 +1,9 @@
 package com.oxygenxml.translation.support.core;
 
-import com.jidesoft.plaf.LookAndFeelFactory;
-import com.jidesoft.swing.CheckBoxTree;
-import com.oxygenxml.translation.support.tree.CheckBoxTreeFileSystemModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -13,17 +11,25 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+
+import com.jidesoft.plaf.LookAndFeelFactory;
+import com.jidesoft.swing.CheckBoxTree;
+import com.oxygenxml.translation.support.tree.FileSystemTreeModel;
+
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
+/**
+ * Utility class to present a CheckBoxTree for manual tests. 
+ */
 public class CheckBoxTreeFileSystemMain extends JFrame {
   private CheckBoxTree fileTree;
 
-  private CheckBoxTreeFileSystemModel fileSystemModel;
+  private FileSystemTreeModel fileSystemModel;
 
   public CheckBoxTreeFileSystemMain(String directory) {
     super("JTree FileSystem Viewer");
     
-    fileSystemModel = new CheckBoxTreeFileSystemModel(new File(directory));
+    fileSystemModel = new FileSystemTreeModel(new File(directory));
     fileTree = new CheckBoxTree(fileSystemModel) {
       public String convertValueToText(Object value, boolean selected,
           boolean expanded, boolean leaf, int row, boolean hasFocus) {
