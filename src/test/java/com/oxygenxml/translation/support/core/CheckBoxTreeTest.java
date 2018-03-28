@@ -91,19 +91,8 @@ public class CheckBoxTreeTest extends TestCase{
     
     // Select a single file
     TreePath pathForRow = tree.getPathForRow(2);
-    System.out.println("PATH FOR ROW 2: " + pathForRow );
     tree.expandPath(pathForRow);
-    
-    Thread.sleep(500);
-    
     pathForRow = tree.getPathForRow(6);
-    System.out.println("P6: " + pathForRow);
-    
-    System.out.println("tree.getPathForRow(5) = " + tree.getPathForRow(5));
-    
-    System.out.println("tree.getPathForRow(4) = " + tree.getPathForRow(4));
-    
-    
     tree.getCheckBoxTreeSelectionModel().addSelectionPath(pathForRow);
     processTreeFiles = CheckboxTreeUtil.processTreeFiles(tree);
     

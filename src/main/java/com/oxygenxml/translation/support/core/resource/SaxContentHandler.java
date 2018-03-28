@@ -1,14 +1,12 @@
 package com.oxygenxml.translation.support.core.resource;
 
 import java.net.URL;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
 import ro.sync.util.URLUtil;
 
 /**
@@ -72,7 +70,7 @@ public class SaxContentHandler extends DefaultHandler {
     this.baseUrl = baseUrl;
      
     if (ditamapHrefs == null) {
-      ditamapHrefs = new HashSet<>();
+      ditamapHrefs = new LinkedHashSet<>();
     }
   }
   

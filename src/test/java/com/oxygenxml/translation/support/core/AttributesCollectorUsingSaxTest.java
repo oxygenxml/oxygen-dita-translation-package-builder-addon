@@ -251,10 +251,10 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     
     assertEquals("Two files should have been referred.", 2, referredFiles.size());
     
-    assertTrue("Should be a content reference to topicConref.dita but was" + referredFiles.get(1).getLocation(), 
-        referredFiles.get(1).getLocation().toString().contains("issue-15_1/topics/topicConref.dita"));
+    assertTrue("Should be a content reference to topicConref.dita but was" + referredFiles.get(0).getLocation(), 
+        referredFiles.get(0).getLocation().toString().contains("issue-15_1/topics/topicConref.dita"));
     assertTrue("Should be a xref to topic3.dita", 
-        referredFiles.get(0).getLocation().toString().contains("issue-15_1/topics/topic3.dita"));
+        referredFiles.get(1).getLocation().toString().contains("issue-15_1/topics/topic3.dita"));
   }
 
   /**
