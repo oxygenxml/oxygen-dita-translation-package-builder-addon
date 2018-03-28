@@ -13,6 +13,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Tests for detecting the modified files with respect to a saved milestone. 
@@ -22,6 +26,13 @@ public class ModifiedFilesDetectionTest {
 	public void testModifiedfiles() throws NoSuchAlgorithmException, FileNotFoundException, JAXBException, IOException, StoppedByUserException {
 		File rootDir = TestUtil.getPath("modifiedFiles-Test");
 		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
+		
+		StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
+    
+    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
+
 		
     // Load and assert the milestone content.
 		List<ResourceInfo> actualResourcesFromMilestone = MilestoneUtil.loadMilestoneFile(rootResource);

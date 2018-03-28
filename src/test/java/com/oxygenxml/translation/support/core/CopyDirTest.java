@@ -12,13 +12,31 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Tests for applying a package. basically copying the translated resources over a target
  * directory.
  */
 public class CopyDirTest {
+  
+  @Before
+  public void setup() {
+    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
+    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
+    
+    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(new PluginResourceBundle() {
+      @Override
+      public String getMessage(String messageKey) {
+        return messageKey;
+      }
+    });
+  }
 
   /**
    * Copies some resources over an empty directory.
@@ -54,7 +72,8 @@ public class CopyDirTest {
 
     new ArchiveBuilder(null).copyDirectory(sourceLocation, targetLocation, 0, true);
 
-    String expectedResult = "file1.txt                   66e17a2f53f0a5c2b4599ef525b9b150\n" +
+    String expectedResult = 
+        "file1.txt                   66e17a2f53f0a5c2b4599ef525b9b150\n" +
         "test.txt                    00b06ff6801dc0a3ffa565f77d92052a\n" +
         "testFile.txt                f573c260c18ec17d95ac48baff76db9a\n" +
         "toCopy/dir1/dir2/file3.txt  efd89f6fb31003d61d62835be048ce86\n" +
