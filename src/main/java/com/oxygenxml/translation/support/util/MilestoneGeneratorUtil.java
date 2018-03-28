@@ -85,7 +85,7 @@ public class MilestoneGeneratorUtil {
    */
   public static void askForMilestoneOverrideConfirmation(final StandalonePluginWorkspace pluginWorkspaceAccess, URL rootMapLocation,
       final File milestoneFile) throws JAXBException, IOException {
-    // TODO Adrian - getMilestoneCreationDate throws JAXB Exception!! Not cool!!
+    // Creation date is written in milestone, thats why the JAXB exception is thrown.
     Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMapLocation);
     PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     
