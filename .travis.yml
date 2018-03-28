@@ -17,8 +17,7 @@ before_script:
   - echo "https://${OXYGEN_PLUGIN_TOKEN}:@github.com" > .git/credentials
   - ./travis/checkForTag.sh
 script:
- - mvn clean
- - mvn install sonar:sonar -DskipTests
+ - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
 before_deploy:
   - ./travis/deploy.sh
 deploy:
