@@ -57,15 +57,30 @@ public class CheckBoxTreeTest extends TestCase{
     
     Collections.sort(checked, String.CASE_INSENSITIVE_ORDER);
     
-    assertEquals(
-        "[rootMap.ditamap, "
-        + "topics/add-terms-list.dita, "
-        + "topics/refFile.txt, "
-        + "topics/topic1.dita, "
-        + "topics/topic2.dita, "
-        + "topics/topic3.dita" +
-        "]", 
-        checked.toString());
+    String property = System.getProperty("os.name");
+    
+    boolean isWindows = property.toLowerCase().startsWith("win");
+    if (isWindows) {
+      assertEquals("WINDOWS RUN!! ", 
+          "[rootMap.ditamap, "
+          + "topics\\add-terms-list.dita, "
+          + "topics\\refFile.txt, "
+          + "topics\\topic1.dita, "
+          + "topics\\topic2.dita, "
+          + "topics\\topic3.dita" +
+          "]", 
+          checked.toString());
+    } else {
+      assertEquals("LINUX RUN!! ", 
+          "[rootMap.ditamap, "
+          + "topics/add-terms-list.dita, "
+          + "topics/refFile.txt, "
+          + "topics/topic1.dita, "
+          + "topics/topic2.dita, "
+          + "topics/topic3.dita" +
+          "]", 
+          checked.toString());
+    }
     
     processTreeFiles.clear();
     
