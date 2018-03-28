@@ -38,7 +38,7 @@ public class ModifiedFilesDetectionTest {
 		List<ResourceInfo> actualResourcesFromMilestone = MilestoneUtil.loadMilestoneFile(rootResource);
 		
 		ArrayList<ResourceInfo> expectedResultMilestone = new ArrayList<ResourceInfo>();
-		expectedResultMilestone.add(new ResourceInfo("0330c493e6a1efda89242d99195c6eca" , "dir1/dir1.1/test.txt"));
+		expectedResultMilestone.add(new ResourceInfo("4968e34fc3cff228a13704425f04d785" , "dir1/dir1.1/test.txt"));
 		expectedResultMilestone.add(new ResourceInfo("f4fbf41346cdf2995d37388c6331a184" , "dir1/new1.txt"));
 		expectedResultMilestone.add(new ResourceInfo("6d7e8058723731106992e9e54e91e478" , "dir2/new2.txt"));
 		
@@ -48,7 +48,6 @@ public class ModifiedFilesDetectionTest {
 		
 		// Test how the change files are detected.
     List<ResourceInfo> actualResult = new ChangePackageGenerator(null).collectModifiedResources(rootResource);
-    
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
     expectedResult.add(new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt"));
     

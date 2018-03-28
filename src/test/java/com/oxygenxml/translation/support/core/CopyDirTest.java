@@ -73,12 +73,12 @@ public class CopyDirTest {
     new ArchiveBuilder(null).copyDirectory(sourceLocation, targetLocation, 0, true);
 
     String expectedResult = 
-        "file1.txt                   66e17a2f53f0a5c2b4599ef525b9b150\n" +
-        "test.txt                    00b06ff6801dc0a3ffa565f77d92052a\n" +
+        "file1.txt                   643b63c75d1205597e095f1e0a04fac2\n" +
+        "test.txt                    de57058e47c4c0c9c1c8fcdabc1a5142\n" +
         "testFile.txt                f573c260c18ec17d95ac48baff76db9a\n" +
-        "toCopy/dir1/dir2/file3.txt  efd89f6fb31003d61d62835be048ce86\n" +
-        "toCopy/dir1/file2.txt       df182645e551073d3505dced3455b694\n" +
-        "toCopy/file1.txt            bc8dc04e5c01a166ba05cc5c2e09b261\n" +
+        "toCopy/dir1/dir2/file3.txt  ff94178c4ab70f1d64539a431a6d6d83\n" +
+        "toCopy/dir1/file2.txt       3397df370cbcf15d92055b5f49612e98\n" +
+        "toCopy/file1.txt            540b1d9d17d7c48a59e20cdce151e4ee\n" +
         "";
     
     Set<URL> visited = new HashSet<URL>();

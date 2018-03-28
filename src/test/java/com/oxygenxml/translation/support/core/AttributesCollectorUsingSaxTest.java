@@ -214,7 +214,6 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
-    System.out.println(result);
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic2.dita</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic3.dita</relativePath>"));

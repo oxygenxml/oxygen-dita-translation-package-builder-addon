@@ -52,7 +52,7 @@ public class GenerateResourceInfoTest {
         new FileSystemResourceBuilder().wrapDirectory(dirPath), list, visited);
 
     String expectedResult = 
-        "md5.txt      f5e45edee5ee0e2dffe9fbe6a736ab02\n" + 
+        "md5.txt      357f82eaa10b09268cc26c766fc03c16\n" + 
         "md5_no2.txt  521304ca436443d97ccf68ee919c03b3\n";
 
     Assert.assertEquals(expectedResult, TestUtil.dump(list));
@@ -74,9 +74,9 @@ public class GenerateResourceInfoTest {
         new FileSystemResourceBuilder().wrapDirectory(rootDir), milestoneInfo, visited);
 
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
-    expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testGenerate/md5.txt"));
-    expectedResult.add(new ResourceInfo("80c28c189a32e6e60f9e43010bb10a9e", "testGenerate/md5_no2.txt"));
-    expectedResult.add(new ResourceInfo("1ea64c493f5278ec6ee5aaa7a35c77f6", "testIteration/dir1/md5.txt"));
+    expectedResult.add(new ResourceInfo("754d9436d3a245ad9a340b8d9929fc46", "testGenerate/md5.txt"));
+    expectedResult.add(new ResourceInfo("3c01bd69152843f5aada9595c6b75bf2", "testGenerate/md5_no2.txt"));
+    expectedResult.add(new ResourceInfo("754d9436d3a245ad9a340b8d9929fc46", "testIteration/dir1/md5.txt"));
     expectedResult.add(new ResourceInfo("521304ca436443d97ccf68ee919c03b3", "testIteration/dir1/md5_no2.txt"));
     expectedResult.add(new ResourceInfo("55047487acf9f525244b12cff4bfc49c", "testIteration/dir2/md5.txt"));
     expectedResult.add(new ResourceInfo("5c24a78aec732e9626a4a7114efd98b1", "testIteration/dir2/md5_no2.txt"));
