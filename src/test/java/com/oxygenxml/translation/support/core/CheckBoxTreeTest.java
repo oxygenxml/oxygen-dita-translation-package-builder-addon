@@ -103,14 +103,8 @@ public class CheckBoxTreeTest extends TestCase{
       }
     });
     
-    Thread.sleep(500);
-    
-    for (File f : processTreeFiles) {
-      System.out.println(f.getAbsolutePath());
-    }
     
     assertTrue("ONE FILE but was: " + processTreeFiles.size(), processTreeFiles.size() == 1);
-    
     assertTrue("topic2.dita but was: " + processTreeFiles.get(0).getName(),
         processTreeFiles.get(0).getName().equals("topic2.dita"));
   }
