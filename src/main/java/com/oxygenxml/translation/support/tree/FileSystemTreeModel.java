@@ -1,6 +1,9 @@
 package com.oxygenxml.translation.support.tree;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
+
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -38,6 +41,16 @@ public class FileSystemTreeModel implements TreeModel {
   public Object getChild(Object parent, int index) {
     File directory = (File) parent;
     String[] children = directory.list();
+    
+    Arrays.sort(children, new Comparator<String>() {
+
+      @Override
+      public int compare(String o1, String o2) {
+        
+        return o1.compareTo(o2);
+      }
+    });
+    
     return new File(directory, children[index]);
   }
   

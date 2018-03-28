@@ -153,12 +153,12 @@ public class AttributesCollectorUsingSaxTest extends TestCase{
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
-    generateChangeMilestone.deleteOnExit();
     String result = TestUtil.readFile(generateChangeMilestone);
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic2.dita</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic3.dita</relativePath>"));
     assertTrue(result.contains("<relativePath>topics/topic1.dita</relativePath>"));
+    generateChangeMilestone.delete();
   }
 
   /**

@@ -3,6 +3,8 @@ package com.oxygenxml.translation.support.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.tree.TreePath;
@@ -47,17 +49,21 @@ public class CheckBoxTreeTest extends TestCase{
       String absolutePath = file.getAbsolutePath();
       if (absolutePath.startsWith(testDir.getAbsolutePath())) {
         String replace = absolutePath.replace(testDir.getAbsolutePath(), "").substring(1);
-        checked.add(replace);
+        if (!replace.equalsIgnoreCase("rootMap_translation_milestone.xml")) {
+          checked.add(replace);
+        }
       }
     }
     
+    Collections.sort(checked, String.CASE_INSENSITIVE_ORDER);
+    
     assertEquals(
         "[rootMap.ditamap, "
-        + "topics\\add-terms-list.dita, "
-        + "topics\\refFile.txt, "
-        + "topics\\topic1.dita, "
-        + "topics\\topic2.dita, "
-        + "topics\\topic3.dita" +
+        + "topics/add-terms-list.dita, "
+        + "topics/refFile.txt, "
+        + "topics/topic1.dita, "
+        + "topics/topic2.dita, "
+        + "topics/topic3.dita" +
         "]", 
         checked.toString());
     
@@ -70,13 +76,39 @@ public class CheckBoxTreeTest extends TestCase{
     
     // Select a single file
     TreePath pathForRow = tree.getPathForRow(2);
+    System.out.println("PATH FOR ROW 2: " + pathForRow );
     tree.expandPath(pathForRow);
+    
+    Thread.sleep(500);
+    
     pathForRow = tree.getPathForRow(6);
+    System.out.println("P6: " + pathForRow);
+    
+    System.out.println("tree.getPathForRow(5) = " + tree.getPathForRow(5));
+    
+    System.out.println("tree.getPathForRow(4) = " + tree.getPathForRow(4));
+    
+    
     tree.getCheckBoxTreeSelectionModel().addSelectionPath(pathForRow);
     processTreeFiles = CheckboxTreeUtil.processTreeFiles(tree);
     
-    assertTrue("ONE FILE", processTreeFiles.size() == 1);
-    assertTrue("topic2.dita", processTreeFiles.get(0).getName().equals("topic2.dita"));
+    processTreeFiles.sort(new Comparator<File>() {
+      @Override
+      public int compare(File o1, File o2) {
+        return o1.getAbsolutePath().compareTo(o2.getAbsolutePath());
+      }
+    });
+    
+    Thread.sleep(500);
+    
+    for (File f : processTreeFiles) {
+      System.out.println(f.getAbsolutePath());
+    }
+    
+    assertTrue("ONE FILE but was: " + processTreeFiles.size(), processTreeFiles.size() == 1);
+    
+    assertTrue("topic2.dita but was: " + processTreeFiles.get(0).getName(),
+        processTreeFiles.get(0).getName().equals("topic2.dita"));
   }
   
   /**
@@ -97,6 +129,14 @@ public class CheckBoxTreeTest extends TestCase{
     Collection<File> allFiles = FileUtils.listFiles(testDir, null, true);
     assertEquals(4, allFiles.size());
     filesToKeep.addAll(allFiles);
+    
+    filesToKeep.sort(new Comparator<File>() {
+
+      @Override
+      public int compare(File o1, File o2) {
+        return o1.getAbsolutePath().compareTo(o2.getAbsolutePath());
+      }
+    });
     
     // keep all except last file - topic3.dita
     File remove = filesToKeep.remove(3);
