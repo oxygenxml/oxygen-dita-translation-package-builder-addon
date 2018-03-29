@@ -40,6 +40,20 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.11</h1>
+                <ul>
+                    <li>Tree and table views from Preview are now HiDPI aware.</li>
+                    <li>Milestone generation has been corrected to scan and add all referred files, even if the root map is not in the top directory <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/9">#9</a></li>
+                    <li>Corrected a small issue regarding modified files package in which not all files were added to the archive.(side-effect of <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/9">#9</a>)</li>
+                    <li>Fiexd an internal issue where white spaces in file names or file location was generating incorrect results</li>
+                    <li>Selection in Tree View from Preview dialog will now take into account the selection.</li>
+                </ul>
+                <h1>Release Notes 1.0.10</h1>
+                <ul>
+                    <li>Override confirmation when generating the modified files package <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/5">#5</a></li>
+                    <li>Removed 'Experimental' tag.</li>
+                    <li>Small UI changes.</li>
+                </ul>
                 <h1>Release Notes 1.0.9</h1>
                 <ul>
                     <li>XML files are scanned for changes <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/18">#18</a></li>
