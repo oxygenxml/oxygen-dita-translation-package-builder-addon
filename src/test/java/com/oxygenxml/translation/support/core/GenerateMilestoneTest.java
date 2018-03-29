@@ -7,23 +7,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
-import ro.sync.exml.workspace.api.PluginResourceBundle;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * MD5 and milestone generation tests.
  */
-public class GenerateMilestoneTest {
+public class GenerateMilestoneTest extends TranslationPackageTestBase{
   
   /**
    * Tests the MD5 generation for a file.
    * 
    * @throws Exception If it fails.
    */
-  @Test
   public void testMd5_File() throws Exception {
     File file = TestUtil.getPath("md5Test.txt");
     
@@ -41,21 +35,8 @@ public class GenerateMilestoneTest {
    * 
    * @throws Exception If it fails.
    */
-	@Test
 	public void testChangeMilestone() throws Exception {
 		File rootDir = TestUtil.getPath("generateMilestone-Test");
-		
-		StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-	  PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
-	  
-	  PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
-
-		ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
-		
-		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
-    
-    packageBuilder.generateChangeMilestone(rootResource);
 		
 		ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
 		expectedResult.add(new ResourceInfo("754d9436d3a245ad9a340b8d9929fc46", "testGenerate/md5.txt"));
@@ -65,6 +46,9 @@ public class GenerateMilestoneTest {
 		expectedResult.add(new ResourceInfo("55047487acf9f525244b12cff4bfc49c", "testIteration/dir2/md5.txt"));
 		expectedResult.add(new ResourceInfo("5c24a78aec732e9626a4a7114efd98b1", "testIteration/dir2/md5_no2.txt"));
 		
+		ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
+		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
+		packageBuilder.generateChangeMilestone(rootResource);
 		List<ResourceInfo> actualResult = MilestoneUtil.loadMilestoneFile(rootResource);
 		
 		Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));

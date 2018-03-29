@@ -1,26 +1,23 @@
 package com.oxygenxml.translation.support.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import edu.emory.mathcs.backport.java.util.Arrays;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+import javax.xml.bind.JAXBException;
+import junit.framework.TestCase;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 
-public class JaxbTest {
+public class JaxbTest extends TestCase {
 	private File rootDir = TestUtil.getPath("JAXB-test");
 
-	@Test
 	public void testMarshaller() throws JAXBException, IOException, StoppedByUserException {
 
 		InfoResources info = new InfoResources();
@@ -56,7 +53,6 @@ public class JaxbTest {
 	 *  
 	 *  @throws Exception If it fails.
 	 */
-	@Test
 	public void testUnmarshaller() throws Exception {
 	  File file = new File(rootDir, "JAXB-test");
 	  IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(file);

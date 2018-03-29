@@ -12,39 +12,19 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import ro.sync.exml.workspace.api.PluginResourceBundle;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 /**
  * Tests for applying a package. basically copying the translated resources over a target
  * directory.
  */
-public class CopyDirTest {
+public class CopyDirTest extends TranslationPackageTestBase {
   
-  @Before
-  public void setup() {
-    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-    
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(new PluginResourceBundle() {
-      @Override
-      public String getMessage(String messageKey) {
-        return messageKey;
-      }
-    });
-  }
-
   /**
    * Copies some resources over an empty directory.
    * 
    * @throws Exception If it fails.
    */
-  @Test
-  public void copyDir_to_emptyDir_Test() throws Exception {
+  public void testCopyDirToEmptyDir() throws Exception {
     File sourceLocation = TestUtil.getPath("copyDir-Test");
     File targetLocation = new File(sourceLocation.getParentFile(), "targetEmptyCopyDir-Test");
 
@@ -64,9 +44,11 @@ public class CopyDirTest {
 
     Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));
   }
-
-  @Test
-  public void copyDir_to_notEmptyDir_Test() throws IOException, StoppedByUserException, NoSuchAlgorithmException {
+  
+  /**
+   * Copy files to a non empty dir.
+   */
+  public void testCopyDirToNotEmptyDir() throws IOException, StoppedByUserException, NoSuchAlgorithmException {
     File sourceLocation = TestUtil.getPath("copyDir-Test");
     File targetLocation = TestUtil.getPath("targetCopyDir-Test");
 

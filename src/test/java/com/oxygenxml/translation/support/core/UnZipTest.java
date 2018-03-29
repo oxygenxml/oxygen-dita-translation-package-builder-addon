@@ -10,19 +10,13 @@ import java.util.Enumeration;
 import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
-import org.mockito.Mockito;
-import ro.sync.exml.workspace.api.PluginResourceBundle;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Test the zipping functionality.
  * @author adrian_sorop
  */
-public class UnZipTest extends TestCase{
+public class UnZipTest extends TranslationPackageTestBase {
   
   /**
    * <p><b>Description:</b> The root map might not be in the top folder.</p>
@@ -39,37 +33,25 @@ public class UnZipTest extends TestCase{
     
     File topic1 = new File(rootDir, "root/from_root/topic1.dita");
     
-//    InputStream is = new FileInputStream(topic1);
-//    String topic1Content = IOUtils.toString(is, "UTF-8");
-//    assertEquals(
-//        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-//        "<!DOCTYPE dita PUBLIC \"-//OASIS//DTD DITA Composite//EN\" \"ditabase.dtd\">\n" + 
-//        "<dita id=\"aidi\">\n" + 
-//        "    <topic><aiDi>xxaasda</aiDi>\n" + 
-//        "        <title>DOREL WAS HERE!!!</title>\n" + 
-//        "        <body>\n" + 
-//        "            <p></p>\n" + 
-//        "        </body>\n" + 
-//        "    </topic>\n" + 
-//        "</dita>\n" + 
-//        "", 
-//        topic1Content);
+    InputStream is0 = new FileInputStream(topic1);
+    String topic1Content = IOUtils.toString(is0, "UTF-8");
+    assertEquals(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+        "<!DOCTYPE dita PUBLIC \"-//OASIS//DTD DITA Composite//EN\" \"ditabase.dtd\">\n" + 
+        "<dita id=\"aidi\">\n" + 
+        "    <topic><aiDi>xxaasda</aiDi>\n" + 
+        "        <title>DOREL WAS HERE!!!</title>\n" + 
+        "        <body>\n" + 
+        "            <p></p>\n" + 
+        "        </body>\n" + 
+        "    </topic>\n" + 
+        "</dita>\n" + 
+        "", 
+        topic1Content);
     
-    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-    
-    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
-    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
-    
-    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootDir);
-    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
- 
     File archiveLocation = new File(rootDir, "root/THE_ROOT_translation_package.zip");
     ZipFile zipFile = new ZipFile(archiveLocation);
     Enumeration<? extends ZipEntry> entries = zipFile.entries();
-    
     
     String zipContent = null;
     while(entries.hasMoreElements()){

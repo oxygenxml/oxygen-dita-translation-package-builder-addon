@@ -1,8 +1,5 @@
 package com.oxygenxml.translation.support.core;
 
-import com.oxygenxml.translation.support.core.resource.DetectionType;
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import java.io.File;
@@ -14,18 +11,12 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import junit.framework.TestCase;
-import org.mockito.Mockito;
-import ro.sync.exml.workspace.api.PluginResourceBundle;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Test the zipping functionality.
  * @author adrian_sorop
  */
-public class ZipTest extends TestCase{
+public class ZipTest extends TranslationPackageTestBase {
   
   /**
    * <p><b>Description:</b> The root map might not be in the top folder.</p>
@@ -39,30 +30,10 @@ public class ZipTest extends TestCase{
     File rootDir = TestUtil.getPath("issue-9-full");
     File rootMap = new File(rootDir, "root/THE_ROOT.ditamap");
     File rootParentFile = rootMap.getParentFile();
-    
     final URL rootMapURL = rootMap.toURI().toURL();
-    
     final File saveLocation = new File(rootParentFile, "archive.zip");
     
-    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-    
-    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
-    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
-    
-    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
-    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
-    
-    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
-    
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
-    ResourceFactory resourceFactory = ResourceFactory.getInstance();
-    resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
-    
-    IRootResource resource = resourceFactory.getResource(rootMapURL);
-    final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
+    final List<ResourceInfo> modifiedResources = generatesModifiedFilesUsingMapStructureBuilder(rootMapURL);
     
     Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
@@ -120,28 +91,9 @@ public class ZipTest extends TestCase{
     File rootParentFile = rootMap.getParentFile();
     
     final URL rootMapURL = rootMap.toURI().toURL();
-    
     final File saveLocation = new File(rootParentFile, "archive.zip");
     
-    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-    
-    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
-    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
-    
-    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
-    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
-    
-    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
-    
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
-    ResourceFactory resourceFactory = ResourceFactory.getInstance();
-    resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
-    
-    IRootResource resource = resourceFactory.getResource(rootMapURL);
-    List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
+    List<ResourceInfo> modifiedResources = generatesModifiedFilesUsingMapStructureBuilder(rootMapURL);
     
     Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
@@ -196,25 +148,7 @@ public class ZipTest extends TestCase{
     final URL rootMapURL = rootMap.toURI().toURL();
     final File saveLocation = new File(rootParentFile, "archive.zip");
     
-    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-    
-    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
-    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
-    
-    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootMap);
-    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
-    
-    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
-    
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
-    ResourceFactory resourceFactory = ResourceFactory.getInstance();
-    resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
-    
-    IRootResource resource = resourceFactory.getResource(rootMapURL);
-    final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
+    final List<ResourceInfo> modifiedResources = generatesModifiedFilesUsingMapStructureBuilder(rootMapURL);
     
     Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
@@ -259,18 +193,6 @@ public class ZipTest extends TestCase{
 
     final URL rootMapURL = rootMap.toURI().toURL();
     final File saveLocation = new File(rootDir.getParentFile(), "archive.zip");
-
-    final StandalonePluginWorkspace saPluginWorkspaceMock = Mockito.mock(StandalonePluginWorkspace.class);
-    PluginWorkspaceProvider.setPluginWorkspace(saPluginWorkspaceMock);
-
-    final PluginResourceBundle resourceBundleMock = Mockito.mock(PluginResourceBundle.class);
-    Mockito.when(saPluginWorkspaceMock.getResourceBundle()).thenReturn(resourceBundleMock);
-    Mockito.when(resourceBundleMock.getMessage(Mockito.anyString())).thenReturn("RETURN_MESSAGE");
-
-    UtilAccess utilMock = Mockito.mock(UtilAccess.class);
-    Mockito.when(utilMock.locateFile((URL) Mockito.any())).thenReturn(rootDir);
-    Mockito.when(utilMock.getFileName((String) Mockito.any())).thenReturn(rootMap.getName());
-    Mockito.when(saPluginWorkspaceMock.getUtilAccess()).thenReturn(utilMock);    
 
     Future<?> future = PackageGeneratorUtil.createPackage(
         rootMapURL, 
