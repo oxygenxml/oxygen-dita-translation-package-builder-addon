@@ -9,6 +9,7 @@ import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
 import com.oxygenxml.translation.ui.Tags;
+import com.oxygenxml.translation.ui.worker.AbstractWorker;
 import com.oxygenxml.translation.ui.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.ui.worker.ZipWorker;
 import java.awt.Desktop;
@@ -69,7 +70,7 @@ public class PackageGeneratorUtil {
    * Packs the modified files or an entire directory in the specified chosenDir. 
    *  
    * @param rootMap The location of the parent directory of the current ditamap.
-   * @param chosenDir Where to save the archive.
+   * @param archive The Archive.
    * @param pluginWorkspace Entry point for accessing the DITA Maps area.
    * @param packAll  True if the user wants to pack the entire directory.
    * @param modifiedResources All the modified files.
@@ -80,7 +81,7 @@ public class PackageGeneratorUtil {
    */
   public static ZipWorker createPackage( 
       final URL rootMap, 
-      File chosenDir,
+      File archive,
       final StandalonePluginWorkspace pluginWorkspace,
       final boolean packAll,
       final List<ResourceInfo> modifiedResources,
@@ -97,9 +98,9 @@ public class PackageGeneratorUtil {
       logger.debug("pack entire dir: " + packAll);
     }
     if(packAll){
-      zipTask = new ZipWorker(rootMap, chosenDir, packAll);
+      zipTask = new ZipWorker(rootMap, archive, packAll);
     } else { 
-      zipTask = new ZipWorker(rootMap, chosenDir, modifiedResources);
+      zipTask = new ZipWorker(rootMap, archive, modifiedResources);
     }
 
     // Install the progress tracker.
@@ -148,25 +149,27 @@ public class PackageGeneratorUtil {
    * @param pluginWorkspaceAccess Workspace access.
    * @param rootMap               Current file opened in DMM.
    */
-  public static void createModifiedFilesPackage(
+  public static AbstractWorker createModifiedFilesPackage(
       final StandalonePluginWorkspace pluginWorkspaceAccess,
-      final URL rootMap) {
+      final URL rootMap,
+      final File milestoneFile) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
+
     // Find the number of modified resources on thread.
-    final GenerateModifiedResourcesWorker modifiedResourcesWorker = new GenerateModifiedResourcesWorker(rootMap);
+    final GenerateModifiedResourcesWorker worker = new GenerateModifiedResourcesWorker(rootMap, milestoneFile);
     // Install the progress tracker.
     ProgressDialog.install(
-        modifiedResourcesWorker, 
+        worker, 
         (JFrame)pluginWorkspaceAccess.getParentFrame(), 
         resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
 
     // This listener notifies the user about how the operation ended.
-    modifiedResourcesWorker.addProgressListener(new ProgressChangeAdapter() {
+    worker.addProgressListener(new ProgressChangeAdapter() {
       @Override
       public void done() {
-        zipResources(pluginWorkspaceAccess, rootMap, modifiedResourcesWorker.getModifiedResources());                  
+        zipResources(pluginWorkspaceAccess, rootMap, worker.getModifiedResources(), milestoneFile);                  
       }
-      
+
       @Override
       public void operationFailed(Exception ex) {
         if(ex instanceof NoChangedFilesException){
@@ -178,7 +181,9 @@ public class PackageGeneratorUtil {
         }               
       } 
     });
-    modifiedResourcesWorker.execute();
+    worker.execute();
+
+    return worker;
   }
   
   
@@ -193,9 +198,11 @@ public class PackageGeneratorUtil {
   private static void zipResources(
       final StandalonePluginWorkspace pluginWorkspaceAccess, 
       final URL rootMap, 
-      List<ResourceInfo> modifiedResources) {
+      List<ResourceInfo> modifiedResources, 
+      File milestoneFile) {
+    
     // If the number of modified files is grater than 0 show the report dialog and create package.
-    if(!modifiedResources.isEmpty()){
+    if(modifiedResources != null && !modifiedResources.isEmpty()){
       // The resources were collected. Ask some user input and create the package.
 
       GenerateArchivePackageDialog createPackageDialog = GenerateArchivePackageDialog.getInstance();
@@ -227,8 +234,9 @@ public class PackageGeneratorUtil {
       try {
         PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
         // Inform the user that no resources were modified.
-        Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMap);
-        pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
+        Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMap, milestoneFile);
+        pluginWorkspaceAccess.showInformationMessage(
+            resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
             resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + milestoneLastModified);                  
       } catch (JAXBException | IOException e) {
         logger.error(e, e);

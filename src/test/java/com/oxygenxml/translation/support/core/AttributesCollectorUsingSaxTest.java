@@ -106,7 +106,7 @@ public class AttributesCollectorUsingSaxTest extends TranslationPackageTestBase 
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, null);
     String result = TestUtil.readFile(generateChangeMilestone);
     
     assertTrue(result.contains("<relativePath>rootMap.ditamap</relativePath>"));

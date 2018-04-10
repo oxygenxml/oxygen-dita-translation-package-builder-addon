@@ -89,7 +89,7 @@ public class TranslationPackageTestBase extends TestCase {
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
     IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
-    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
+    File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes, null);
     String result = TestUtil.readFile(generateChangeMilestone);
     generateChangeMilestone.delete();
     return result;
@@ -139,7 +139,8 @@ public class TranslationPackageTestBase extends TestCase {
     resourceFactory.setDetectionTypeForTestes(DetectionType.MAP_STRUCTURE);
     
     IRootResource resource = resourceFactory.getResource(rootMapURL);
-    final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource);
+    List<ResourceInfo> milestoneContent = MilestoneUtil.loadMilestoneFile(resource);
+    final List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(resource, milestoneContent);
     return modifiedResources;
   }
   

@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                                                                                                                                        package com.oxygenxml.translation.support;
+package com.oxygenxml.translation.support;
 
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.util.ApplyPackageUtil;
@@ -6,6 +6,7 @@ import com.oxygenxml.translation.support.util.MilestoneGeneratorUtil;
 import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.ui.CustomDialogResults;
+import com.oxygenxml.translation.ui.PackageAndUpdateMilestoneDialog;
 import com.oxygenxml.translation.ui.Tags;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -23,6 +24,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.ditamap.WSDITAMapEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
+import ro.sync.exml.workspace.api.standalone.ui.Menu;
 
 /**
  * Plug-in extension - workspace access extension.
@@ -50,11 +52,12 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       public void customizeDITAMapPopUpMenu(JPopupMenu popUp, WSDITAMapEditorPage ditaMapEditorPage) {
         //Create a submenu "Translation Package Builder" for the 3 actions.
         // Tooltips for all actions.
-        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME));
+        JMenu submenu = new Menu(resourceBundle.getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME));
         submenu.setMnemonic(KeyEvent.VK_S);
 
         // Action 1: Generate Milestone
-        JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM1));
+        String generateMilestone = resourceBundle.getMessage(Tags.JMENU_ITEM1);
+        JMenuItem menuItemMilestone = new JMenuItem(generateMilestone);
         menuItemMilestone.addActionListener(generateMilestoneAction);
         menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM1));
 
@@ -67,13 +70,56 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         JMenuItem menuItemApply = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM3));
         menuItemApply.addActionListener(applyTranslatedFilesAction);
         menuItemApply.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM3));
-
-        submenu.add(menuItemMilestone);
-        submenu.add(menuItemPakage);
+        
+        JMenuItem generateMilestoneWithLocation = new JMenuItem(generateMilestone + "...");
+        generateMilestoneWithLocation.setToolTipText("Choose place where to generate milstone");
+        generateMilestoneWithLocation.addActionListener(
+            new AbstractAction("Generate Milestone To Location") {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                File chooseFile = pluginWorkspaceAccess.chooseFile("Save Milestone", new String[] {"xml"}, "XML Documents", true);
+                if (chooseFile != null) {
+                  WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
+                  if (editor != null) {
+                    URL editorLocation = editor.getEditorLocation();
+                    MilestoneGeneratorUtil.generateMilestone(pluginWorkspaceAccess, editorLocation, chooseFile, true);
+                  }
+                }
+              }
+            }
+          );
+        
+        JMenuItem pack = new JMenuItem("Generate package/milesone");
+        pack.addActionListener(new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            WSEditor editor = pluginWorkspaceAccess.getCurrentEditorAccess(StandalonePluginWorkspace.DITA_MAPS_EDITING_AREA);
+            if (editor != null) {
+              
+              URL rootMapLocation = editor.getEditorLocation();
+              File fileOnDisk = pluginWorkspaceAccess.getUtilAccess().locateFile(rootMapLocation);
+              final File milestoneFile = MilestoneUtil.getMilestoneFile(fileOnDisk);
+              if (milestoneFile.exists()) {
+                PackageGeneratorUtil.createModifiedFilesPackage(pluginWorkspaceAccess, rootMapLocation, null);
+              } else {
+                PackageAndUpdateMilestoneDialog instance = PackageAndUpdateMilestoneDialog.getInstance();
+                instance.showDialog(pluginWorkspaceAccess, editor.getEditorLocation());
+              }
+              
+            }
+          }
+        });
+        
+        
+        submenu.add(pack);
         submenu.add(menuItemApply);
+//        submenu.add(menuItemMilestone);
+//        submenu.add(menuItemPakage);
+//        submenu.add(generateMilestoneWithLocation);
 
         popUp.add(submenu);
       }
+
     });
   }
 
@@ -143,7 +189,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           if(!milestoneFile.exists()){
             PackageGeneratorUtil.modifiedFilespackageAlternatives(pluginWorkspaceAccess, editorLocation, milestoneFile);
           } else {  
-            PackageGeneratorUtil.createModifiedFilesPackage(pluginWorkspaceAccess, editorLocation);      
+            PackageGeneratorUtil.createModifiedFilesPackage(pluginWorkspaceAccess, editorLocation, null);      
           }
         } catch (Exception e) {
           // Preset error to user.

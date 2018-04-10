@@ -1,9 +1,12 @@
 package com.oxygenxml.translation.ui.worker;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 /**
@@ -25,14 +28,17 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker {
    * The common ancestor of all the DITA resources referred in the DITA map tree.
    */
   private String commonPath;
+  
+  File milestoneFile;
 
   /**
    * Constructor.
    * 
    * @param rootMap The root map.
    */
-  public GenerateModifiedResourcesWorker(URL rootMap) {
+  public GenerateModifiedResourcesWorker(URL rootMap, File milestoneFile) {
     this.rootMap = rootMap;
+    this.milestoneFile = milestoneFile;
   }
   /**
    * Main task. Executed in background thread.
@@ -40,8 +46,16 @@ public class GenerateModifiedResourcesWorker extends AbstractWorker {
   @Override
   protected Void doInBackground() throws Exception {
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-    modifiedResources = packageBuilder.collectModifiedResources(
-        ResourceFactory.getInstance().getResource(rootMap));
+    IRootResource resource = ResourceFactory.getInstance().getResource(rootMap);
+    
+    List<ResourceInfo> milestoneContent = null;
+    if (milestoneFile == null) {
+      milestoneContent = MilestoneUtil.loadMilestoneFile(resource);
+    } else {
+      milestoneContent = MilestoneUtil.loadMilestoneContentFromFile(milestoneFile);
+    }
+    
+    modifiedResources = packageBuilder.collectModifiedResources(resource, milestoneContent);
     commonPath = packageBuilder.getCommonPath();
     
     return null;

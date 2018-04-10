@@ -35,16 +35,17 @@ public class MilestoneGeneratorUtil {
    * 
    * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
    * @param rootMap The parent directory of the current ditamap.
-   * @param milestoneFile The predefined location of the milestone file.
+   * @param milestoneFile The location of the milestone file. If <code>null</code>, the 
+   *        default location will be used.
    */
-  public static void generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
+  public static GenerateMilestoneWorker generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
       final URL rootMap,
       final File milestoneFile,
       final boolean isFromAction1) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     
     // Generate the milestone on thread.
-    GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootMap);
+    GenerateMilestoneWorker milestoneWorker = new GenerateMilestoneWorker(rootMap, milestoneFile);
 
     // Install the progress tracker.
     ProgressDialog.install(
@@ -60,7 +61,7 @@ public class MilestoneGeneratorUtil {
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
         } else {
           // TODO Adrian THis will never put anything in the ZIP. The milestone is created for the current file states.
-          PackageGeneratorUtil.createModifiedFilesPackage(pluginWorkspaceAccess, rootMap);
+          PackageGeneratorUtil.createModifiedFilesPackage(pluginWorkspaceAccess, rootMap, null);
         }
       }
       @Override
@@ -71,6 +72,7 @@ public class MilestoneGeneratorUtil {
       }
     });
     milestoneWorker.execute();
+    return milestoneWorker;
   }
   
   /**
@@ -86,7 +88,7 @@ public class MilestoneGeneratorUtil {
   public static void askForMilestoneOverrideConfirmation(final StandalonePluginWorkspace pluginWorkspaceAccess, URL rootMapLocation,
       final File milestoneFile) throws JAXBException, IOException {
     // Creation date is written in milestone, thats why the JAXB exception is thrown.
-    Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMapLocation);
+    Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMapLocation, null);
     PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     
     // TODO Adrian i18n this.

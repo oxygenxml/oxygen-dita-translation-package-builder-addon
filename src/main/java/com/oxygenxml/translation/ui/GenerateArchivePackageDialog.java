@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -109,11 +108,16 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
   /**
    * Archive location field.
    */
-  final JTextField locationField;
+  JTextField locationField;
   /**
    * The generate report check box.
    */
-  private final JCheckBox generateReportCheckbox;
+  private JCheckBox generateReportCheckbox;
+  
+  /**
+   * <code>true</code> to update the milestone automatically after the package is generated.
+   */
+  private JCheckBox updateMilestone;
   
   /**
    * The format of the date.
@@ -164,6 +168,12 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
         true);
     
     
+    extracted();
+    
+  }
+
+
+  private void extracted() {
     modifiedFilesLabel = new JLabel();
     moreDetailsLabel = new JLabel();
     // Add the listener once 
@@ -197,6 +207,9 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
       folderButton.addActionListener(e-> showArchiveSaveLocationChooser());
     }
     
+    updateMilestone = new JCheckBox("Update Milestone after package generation");
+    updateMilestone.setSelected(true);
+    
     // The default location of the report file.
     generateReportCheckbox = new JCheckBox("Generate report");
 
@@ -208,22 +221,26 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     gbc.anchor = GridBagConstraints.WEST;
     getContentPane().add(new JLabel("Package Location: "), gbc);
     
-    gbc.gridx = 1; 
+    gbc.gridx ++; 
     gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.weightx = 1;
     getContentPane().add(archiveLocationCombobox, gbc);
     
-    gbc.gridx = 2;
+    gbc.gridx ++;
     gbc.weightx = 0;
     if(folderButton != null) {
       getContentPane().add(folderButton, gbc);
     }
     
+    gbc.insets.top = 5;
+    gbc.insets.bottom = 5;
+    
     gbc.gridx = 0;
     gbc.gridy++;
     gbc.gridwidth = 3;
-    generateReportCheckbox.setBorder(null);
-    gbc.insets = new Insets(5, 0, 5, 0);
+    getContentPane().add(updateMilestone, gbc);
+    
+    gbc.gridy++;
     getContentPane().add(generateReportCheckbox, gbc);
     
     gbc.gridy++;
@@ -232,7 +249,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     gbc.anchor = GridBagConstraints.NORTHWEST;
     gbc.fill = GridBagConstraints.NONE;
     getContentPane().add(createInfoPanel(), gbc);
-    
   }
 
 
@@ -241,11 +257,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
    * @return The panel.
    */
   private JPanel createInfoPanel() {
-    ImageIcon infoIcon = null;
-    URL resource = getClass().getClassLoader().getResource(Icons.INFO_ICON);
-    if(resource != null) {
-      infoIcon = (ImageIcon) PluginWorkspaceProvider.getPluginWorkspace().getImageUtilities().loadIcon(resource);
-    }
+    Icon infoIcon = IconsUtil.getInfoIcon();
     
     JPanel infoPanel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();

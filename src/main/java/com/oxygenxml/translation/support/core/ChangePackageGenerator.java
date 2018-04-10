@@ -147,7 +147,7 @@ public class ChangePackageGenerator {
    * @throws IOException	Problems reading the file/directory.
    * @throws StoppedByUserException The user pressed the cancel button.
    */
-  public List<ResourceInfo> collectModifiedResources(IRootResource resource) 
+  public List<ResourceInfo> collectModifiedResources(IRootResource resource, List<ResourceInfo> milestoneContent) 
       throws JAXBException, NoSuchAlgorithmException, IOException, StoppedByUserException{
     /*
      * 1. Loads the milestone XML from rootDIr using JAXB
@@ -155,7 +155,7 @@ public class ChangePackageGenerator {
      * 3. Compares the current file MD5 with the old ones and collects the changed resources.
      */
     // Store state.
-    Set<ResourceInfo> resources = new HashSet<>(MilestoneUtil.loadMilestoneFile(resource));
+    Set<ResourceInfo> resources = new HashSet<>(milestoneContent);
     
     //Current states.
     List<ResourceInfo> currentStates = new ArrayList<>();
@@ -298,6 +298,8 @@ public class ChangePackageGenerator {
    * Entry point. Compute a hash for each file in the given directory and store this information
    * inside the directory (as a "special file"). 
    * 
+   * @param milestoneLocation Where to save the milestone. If <code>null</code>, the 
+   *        default location will be used.
    * @return	The "special file"(translation_builder_milestone.xml).
    * 
    * @throws NoSuchAlgorithmException	The MD5 algorithm is not available.
@@ -306,8 +308,14 @@ public class ChangePackageGenerator {
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    * @throws StoppedByUserException The user pressed the "Cancel" button.
    */
-  public File generateChangeMilestone(IRootResource resource) 
+  public File generateChangeMilestone(IRootResource resource, File milestoneLocation) 
       throws NoSuchAlgorithmException, IOException, JAXBException, StoppedByUserException {
+    
+    File milestoneFile = resource.getMilestoneFile();
+    if (milestoneLocation != null) {
+      milestoneFile = milestoneLocation;
+    }
+    
     List<ResourceInfo> list = new ArrayList<>();
     
     // Add the root map
@@ -317,7 +325,6 @@ public class ChangePackageGenerator {
     }
     
     computeResourceInfo(resource, list, new HashSet<URL>());
-    File milestoneFile = resource.getMilestoneFile();
     /**
      * XXX check functionality of the date and time of the milestone creation.
      */

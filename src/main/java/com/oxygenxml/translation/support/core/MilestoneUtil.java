@@ -115,7 +115,7 @@ public class MilestoneUtil {
    * 
    * @throws JAXBException	 Problems with JAXB, serialization/deserialization of a file.
    */
-  static List<ResourceInfo> loadMilestoneFile(IRootResource iRootResource) throws JAXBException, IOException {
+  public static List<ResourceInfo> loadMilestoneFile(IRootResource iRootResource) throws JAXBException, IOException {
     File milestoneFile = iRootResource.getMilestoneFile();
   
     if (!milestoneFile.exists()) {
@@ -181,9 +181,11 @@ public class MilestoneUtil {
    * 
    * @throws JAXBException   Problems with JAXB, serialization/deserialization of a file.
    */
-  public static Date getMilestoneCreationDate(URL rootMap) throws JAXBException, IOException {
+  public static Date getMilestoneCreationDate(URL rootMap, File milestoneFile) throws JAXBException, IOException {
     File rootMapFile = getFile(rootMap);
-    File milestoneFile = new File(rootMapFile.getParentFile(),MilestoneUtil.getMilestoneFileName(rootMapFile));
+    if (milestoneFile == null) {
+      milestoneFile = new File(rootMapFile.getParentFile(),MilestoneUtil.getMilestoneFileName(rootMapFile));
+    }
 
     if (!milestoneFile.exists()) {
       throw new IOException("No milestone was created.");
@@ -245,5 +247,18 @@ public class MilestoneUtil {
   public static String getMilestoneFileName(File rootMapFile) {
     String name = FilenameUtils.removeExtension(rootMapFile.getName());
     return name + MILESTONE_FILE_NAME;
+  }
+  
+  public static List<ResourceInfo> loadMilestoneContentFromFile(File milestone){
+    List<ResourceInfo> list = null;
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class);
+      Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();   
+      InfoResources resources = (InfoResources) jaxbUnmarshaller.unmarshal(milestone);    
+      list = resources.getList();
+    } catch (JAXBException e) {
+      logger.error(e, e);
+    } 
+    return list;
   }
 }

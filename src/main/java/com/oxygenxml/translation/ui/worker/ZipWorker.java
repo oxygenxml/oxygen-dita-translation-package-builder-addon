@@ -106,14 +106,14 @@ public class ZipWorker extends AbstractWorker {
         }
       }
     } else {
-      List<URL> collect = 
-          modifiedResources.stream().map(t -> resolve(rootMap, t.getRelativePath())).collect(Collectors.toList());
-      
-      modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
-          zipDestinationDir, 
-          collect, 
-          topLocationURL);
-
+      if (modifiedResources != null) {
+        List<URL> collect = 
+            modifiedResources.stream().map(t -> resolve(rootMap, t.getRelativePath())).collect(Collectors.toList());
+        modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
+            zipDestinationDir, 
+            collect, 
+            topLocationURL);
+      }
       List<URL> filesNotCopied = packageBuilder.getFilesNotCopied();
       if (!filesNotCopied.isEmpty()) {
         // Avoid errors duplication.

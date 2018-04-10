@@ -48,7 +48,7 @@ public class GenerateMilestoneTest extends TranslationPackageTestBase{
 		
 		ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
 		IRootResource rootResource = new FileSystemResourceBuilder().wrapDirectory(rootDir);
-		packageBuilder.generateChangeMilestone(rootResource);
+		packageBuilder.generateChangeMilestone(rootResource, null);
 		List<ResourceInfo> actualResult = MilestoneUtil.loadMilestoneFile(rootResource);
 		
 		Assert.assertEquals(TestUtil.dump(expectedResult), TestUtil.dump(actualResult));

@@ -90,7 +90,8 @@ public final class ArchiveBuilder {
    * @throws IOException  Problems reading the files.
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int resourceCounter) throws IOException, StoppedByUserException {
+  private void zipSubDirectory(String basePath, File dir, ZipOutputStream zout, int resourceCounter)
+      throws IOException, StoppedByUserException {
     byte[] buffer = new byte[4096];
     File[] files = dir.listFiles();
     if (files != null) {

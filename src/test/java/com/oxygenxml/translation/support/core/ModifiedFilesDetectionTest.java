@@ -35,7 +35,7 @@ public class ModifiedFilesDetectionTest extends TranslationPackageTestBase {
 		    TestUtil.dump(actualResourcesFromMilestone));
 		
 		// Test how the change files are detected.
-    List<ResourceInfo> actualResult = new ChangePackageGenerator(null).collectModifiedResources(rootResource);
+    List<ResourceInfo> actualResult = new ChangePackageGenerator(null).collectModifiedResources(rootResource, actualResourcesFromMilestone);
     ArrayList<ResourceInfo> expectedResult = new ArrayList<ResourceInfo>();
     expectedResult.add(new ResourceInfo("555b6a76c37746c6f2a4efd07874f01d" , "new.txt"));
     
