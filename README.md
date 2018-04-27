@@ -1,8 +1,10 @@
 # Translation Package Builder
-This plugin is a helper for sending DITA files to translation. It contributes a sub-menu named *Translation Package Builder* in the *DITA Maps Manager*'s contextual menu. The actions present in this group are:
-1. *Generate Milestone* - this action is the first one to use. It will generate an unique hash for each documentation resource. This information will be used by the second action to detect which files have been modified. A milestone file should be generated the first time you install this plugin and, afterwards, after each package sent to translators.
-2. *Create Modified Files Package* - this action detects which files have been changed since the last generated milestone. These files are packed inside a ZIP file that can be send to translators. After doing this you can also generate a new milestone so that the next package will contain just the new changes.
-3. *Apply Package* - when  the translated files arrive from the translator you should open the DITA map that corresponds to the received language (open dita-map-french.ditamap if the package contains the french translation). Invoking this action will extract the changed files inside the map's directory.
+This add-on contributes contextual menu actions that help you build a translation package for DITA files that can be sent to translators. You can also extract the changed files back into your project once you receive the package back from the translators.
+
+Once installed, a sub-menu named *Translation Package Builder* is available in contextual menu of the *DITA Maps Manager* with the following actions:
+1. *Generate Milestone* - This action is the first one to use. It will generate an unique hash for each documentation resource. This information will be used by the second action to detect which files have been modified. A milestone file should be generated the first time you install this plugin and, afterwards, after each package is sent to translators.
+2. *Create Modified Files Package* - This action detects which files have been changed since the last generated milestone. These files are packed inside a ZIP file that can be sent to translators. After doing this, you can also generate a new milestone so that the next package will only contain new changes.
+3. *Apply Package* - When  the translated files arrive from the translator you should open the DITA map that corresponds to the received language (open dita-map-french.ditamap if the package contains the french translation). Invoking this action will extract the changed files inside the map's directory.
 
 How to install
 --------------
