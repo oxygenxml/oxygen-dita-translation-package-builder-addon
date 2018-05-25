@@ -23,13 +23,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="jmenu_item1">
+    <key value="Generate_milestone">
         <comment>JMenu milestone action.</comment>
         <val lang="en_US">Generate Milestone</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Generate Milestone</val>
+        <val lang="fr_FR">Generate Milestone</val>
+        <val lang="ja_JP">Generate Milestone</val>
+        <val lang="nl_NL">Generate Milestone</val>
     </key>
     <key value="jmenu_tooltip_item1">
         <comment>JMenu milestone tooltip.</comment>

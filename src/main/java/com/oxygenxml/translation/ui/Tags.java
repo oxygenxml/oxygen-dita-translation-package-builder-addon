@@ -5,7 +5,12 @@ package com.oxygenxml.translation.ui;
 public interface Tags /*NOSONAR*/ {
   
   public final String TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME = "translation_package_builder_plugin_name";
-  public final String JMENU_ITEM1 = "jmenu_item1";
+  
+  /**
+   * en: Generate Milestone
+   */
+  public final String GENERATE_MILESTONE = "Generate_milestone";
+  
   public final String JMENU_TOOLTIP_ITEM1 = "jmenu_tooltip_item1";
   
   /**

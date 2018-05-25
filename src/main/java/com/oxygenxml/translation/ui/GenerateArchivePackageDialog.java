@@ -194,7 +194,16 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     if(image != null) {
       folderButton = new ToolbarToggleButton(image);
       // Show a file chooser when the user clicks on the folder image.
-      folderButton.addActionListener(e-> showArchiveSaveLocationChooser());
+      folderButton.addActionListener(e -> {
+        File location = showArchiveSaveLocationChooser();
+        if (location != null) {
+          chosenZip = location;
+          currentPath = chosenZip.getPath();
+          archiveLocationCombobox.setSelectedItem(currentPath);
+          locationField.select(currentPath.length() - location.getName().length(), 
+              currentPath.length() - ProjectConstants.ZIP_FILE_SUFFIX.length());
+        }
+      });
     }
     
     // The default location of the report file.
@@ -279,21 +288,13 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
   /**
    * @return The location where the archive will be saved.
    */
-  private String showArchiveSaveLocationChooser() {
+  private File showArchiveSaveLocationChooser() {
     //Get the location from the file chooser.
-    File chosenZipFromChooser = PluginWorkspaceProvider.getPluginWorkspace().chooseFile(
+    return PluginWorkspaceProvider.getPluginWorkspace().chooseFile(
         messages.getMessage(Tags.PACKAGE_LOCATION),
         new String[] {"zip"},
         messages.getMessage(Tags.ZIP_FILES), 
         true);
-    //Update the package location field with the choosed location from the file chooser.
-    if(chosenZipFromChooser != null){
-      currentPath = chosenZipFromChooser.getPath();
-      archiveLocationCombobox.setSelectedItem(currentPath);
-      locationField.select(currentPath.length() - chosenZipFromChooser.getName().length(), 
-          currentPath.length() - ProjectConstants.ZIP_FILE_SUFFIX.length());
-    }
-    return currentPath;
   }
   
   /**
@@ -408,11 +409,13 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
       chosenZip = new File(chosenZip.getPath() + ".zip");
     }
     
+    int response = -1;
     if (chosenZip.exists()) {
-      int response = JOptionPane.showConfirmDialog(this, "Override " + chosenZip.getName() + "?", "Confirm Override", JOptionPane.YES_NO_OPTION);
-      if (response == JOptionPane.NO_OPTION) {
-        chosenZip = new File(showArchiveSaveLocationChooser());
-      }
+      response = JOptionPane.showConfirmDialog(
+          this, 
+          "Override " + chosenZip.getName() + "?", 
+          "Confirm Override", 
+          JOptionPane.YES_NO_OPTION);
     }
     
     // Find out if the currentPath is in the comboBox model.
@@ -420,7 +423,8 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     ComboBoxModel<String> model = archiveLocationCombobox.getModel();
     int size = model.getSize();
     for (int i = 0; i < size; i++) {
-      if(model.getElementAt(i).equals(currentPath)){
+      String elementAt = model.getElementAt(i);
+      if(elementAt != null && elementAt.equals(currentPath)){
         isInModel = true;
         break;
       }
@@ -449,7 +453,12 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     if(logger.isDebugEnabled()){
       logger.debug(messages.getMessage(Tags.REPORT_DIALOG_LOGGER_MESSAGE) + chosenZip.getAbsolutePath());
     }
-    super.doOK();
+    
+    
+    if (response == JOptionPane.YES_OPTION || 
+        response == -1) {
+      super.doOK();
+    }
   }
   
   /**
