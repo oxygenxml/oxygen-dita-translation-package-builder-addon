@@ -446,7 +446,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     }
     
     // Generate report if the user selected the checkbox
-    if(generateReportCheckbox.isSelected()){    
+    if(generateReportCheckbox.isSelected() && getResult() == RESULT_OK){    
       new ReportGenerator(rootMapFile, modifiedResources, reportFile);
     }
 
