@@ -54,7 +54,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         submenu.setMnemonic(KeyEvent.VK_S);
 
         // Action 1: Generate Milestone
-        JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM1));
+        JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.GENERATE_MILESTONE));
         menuItemMilestone.addActionListener(generateMilestoneAction);
         menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM1));
 
