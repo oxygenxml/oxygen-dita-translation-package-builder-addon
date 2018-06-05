@@ -55,7 +55,6 @@ public class CheckboxTableUtil {
     resourcesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);     
     resourcesTable.setTableHeader(null);
     resourcesTable.setShowGrid(false);
-    // TODO setMaxWidth(calculateMaxLength)
     resourcesTable.getColumnModel().getColumn(ResourcesTableModel.CHECK_BOX).setMaxWidth(40);
     resourcesTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     return resourcesTable;
