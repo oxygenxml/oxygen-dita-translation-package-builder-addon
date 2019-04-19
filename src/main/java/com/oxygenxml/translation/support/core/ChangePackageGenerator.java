@@ -318,15 +318,9 @@ public class ChangePackageGenerator {
     
     computeResourceInfo(resource, list, new HashSet<URL>());
     File milestoneFile = resource.getMilestoneFile();
-    /**
-     * XXX check functionality of the date and time of the milestone creation.
-     */
-    long lastModified = milestoneFile.lastModified();
-    if (lastModified == 0) {
-      lastModified = new Date().getTime();
-    }
+    // Issue #22 - when the milestone is modified, set the current time.
     MilestoneUtil.storeMilestoneFile(
-        new InfoResources(list, new Date(lastModified)), 
+        new InfoResources(list, new Date()), 
         milestoneFile);
     if(isCanceled()){
       throw new StoppedByUserException();
