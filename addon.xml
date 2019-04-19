@@ -41,6 +41,12 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.12</h1>
+                <ul>
+                	<li>Fixed an issue when the package with the modifiled file was wrongly overriden. </li>
+                    <li>Corrected the value of the <i>date</i> attribute from the milestone; when the milestone is overriden its value is updated <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/22">#22</a></li>
+                	<li>Fixed other small issues.</li>
+                </ul>
                 <h1>Release Notes 1.0.11</h1>
                 <ul>
                     <li>Tree and table views from Preview are now HiDPI aware.</li>
