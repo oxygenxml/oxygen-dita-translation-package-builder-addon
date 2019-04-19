@@ -132,7 +132,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     public void mouseClicked(MouseEvent e) {
       //Show the list of modified files.
       try {
-        ShowModifiedFilesDialog.getInstance().showDialog(modifiedResources);
+        ShowModifiedFilesDialog.getInstance().showDialog(parentFrame, modifiedResources);
       } catch (IOException e1) {
         logger.error(e1, e1);
       }
@@ -143,6 +143,11 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
    * A ReportDialog instance.
    */
   private static GenerateArchivePackageDialog instance;
+  
+  /**
+   * The parent frame of this dialog.
+   */
+  private JFrame parentFrame;
   
   /**
    * Creates a dialog where the user can choose the location of the modified resources archive
@@ -162,6 +167,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
          * Modal
          */
         true);
+    this.parentFrame = parentFrame;
     
     
     modifiedFilesLabel = new JLabel();

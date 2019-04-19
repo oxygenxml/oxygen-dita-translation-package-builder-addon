@@ -1,23 +1,25 @@
 package com.oxygenxml.translation.ui;
 
-import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.IOException;
 import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
+
+import com.oxygenxml.translation.support.storage.ResourceInfo;
 
 /**
  * Dialog with the modified files.
  * 
  * @author adrian_sorop
  */
+@SuppressWarnings("serial")
 public class ShowModifiedFilesDialog extends JPanel{
   
   /**
@@ -68,9 +70,10 @@ public class ShowModifiedFilesDialog extends JPanel{
   /**
    * Shows the dialog with the modified files.
    * 
+   * @param parentFrame The parent frame for this dialog.
    * @param list The List with the modified resources.
    */
-  public void showDialog(List<ResourceInfo> list) throws IOException {
+  public void showDialog(JFrame parentFrame, List<ResourceInfo> list) throws IOException {
     modifiedFiles.setText("");
     if (list != null && !list.isEmpty()) {
       modifiedFiles.append(list.get(0).getRelativePath());
@@ -80,7 +83,6 @@ public class ShowModifiedFilesDialog extends JPanel{
       }
       modifiedFiles.setCaretPosition(0);
 
-      JFrame parentFrame = (JFrame) PluginWorkspaceProvider.getPluginWorkspace().getParentFrame();
       JOptionPane.showMessageDialog(parentFrame, instance, 
           "Resources to pack", JOptionPane.INFORMATION_MESSAGE);
     } else {
