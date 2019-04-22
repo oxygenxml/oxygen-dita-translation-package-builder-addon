@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>oxygen-plugin-workspace-access</name>
+	<name>translation-package-builder</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -17,7 +17,6 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.sonar.ide.eclipse.core.sonarNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
