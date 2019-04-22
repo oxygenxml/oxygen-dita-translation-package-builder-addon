@@ -6,8 +6,8 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
         id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
-        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.11/translation-package-builder-1.0.11-plugin.jar"/>
-        <xt:version>1.0.11</xt:version>
+        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.12/translation-package-builder-1.0.12-plugin.jar"/>
+        <xt:version>1.0.12</xt:version>
         <xt:oxy_version>19.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft SRL</xt:author>
@@ -18,7 +18,8 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
             </head>
             <body>
                 <div>
-                    <p>This plugin is a helper for sending DITA files to translation. It contributes a sub-menu
+                    <p>This add-on contributes contextual menu actions that help you build a translation package for DITA files that can be sent to translators. You can also extract the changed files back into your project once you receive the package back from the translators.</p>
+                    <p>It contributes a sub-menu
                         named "Translation Package Builder" in the <b>DITA Maps Manager</b>'s contextual menu. The 
                         actions present in this group are: </p>
                     <ol>
@@ -40,6 +41,12 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.12</h1>
+                <ul>
+                	<li>Fixed an issue when the package with the modifiled file was wrongly overriden. </li>
+                    <li>Corrected the value of the <i>date</i> attribute from the milestone; when the milestone is overriden its value is updated <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder/issues/22">#22</a></li>
+                	<li>Fixed other small issues.</li>
+                </ul>
                 <h1>Release Notes 1.0.11</h1>
                 <ul>
                     <li>Tree and table views from Preview are now HiDPI aware.</li>
@@ -82,7 +89,7 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                             >#17</a>
                     </li>
                 </ul>
-                <p>For more details, please visit the project location: 
+                <p>For more details, see: 
                     <a href="https://github.com/oxygenxml/oxygen-dita-translation-package-builder">
                         https://github.com/oxygenxml/oxygen-dita-translation-package-builder</a></p>
             </body>
