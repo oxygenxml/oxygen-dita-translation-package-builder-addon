@@ -9,10 +9,8 @@ import java.util.List;
 
 import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
-import com.oxygenxml.translation.support.core.ChangePackageGenerator;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
-import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.support.util.ResultsManagerUtil;
 
 import ro.sync.document.DocumentPositionedInfo;
@@ -85,17 +83,14 @@ public class ZipWorker extends AbstractWorker {
    */
   @Override
   public Void doInBackground() throws IOException, StoppedByUserException, NoSuchAlgorithmException, NoChangedFilesException {
-    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-    URL topLocationURL = PathUtil.calculateTopLocationURL(rootMap, packageBuilder);
     // Clear previous reported errors.
     ResultsManagerUtil.clearResultsPanel();
     if(packAll){
-      PackageGeneratorUtil.zipEntireRootMapStructure(topLocationURL, listeners, zipDestinationDir);
+      PackageGeneratorUtil.zipEntireRootMapStructure(rootMap, listeners, zipDestinationDir);
     } else {
-      List<URL> filesNotCopied = PackageGeneratorUtil.zipModifiedResources(topLocationURL, listeners, zipDestinationDir, modifiedResources);
+      List<URL> filesNotCopied = PackageGeneratorUtil.zipModifiedResources(rootMap, listeners, zipDestinationDir, modifiedResources);
       
-      modifiedFilesNumber = modifiedResources.size();
-      
+      modifiedFilesNumber = modifiedResources != null ? modifiedResources.size() : 0;
       if (!filesNotCopied.isEmpty()) {
         // Avoid errors duplication.
         ResultsManagerUtil.clearResultsPanel();
@@ -110,7 +105,7 @@ public class ZipWorker extends AbstractWorker {
     
     return null;
   }
-  
+
   /**
    * @return The number of modified files.
    */
