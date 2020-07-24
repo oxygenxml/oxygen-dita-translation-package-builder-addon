@@ -1,29 +1,41 @@
 package com.oxygenxml.translation.support.util;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import javax.swing.JFrame;
+import javax.xml.bind.JAXBException;
+
+import org.apache.log4j.Logger;
+
 import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.core.ChangePackageGenerator;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
 import com.oxygenxml.translation.ui.CustomDialogResults;
 import com.oxygenxml.translation.ui.GenerateArchivePackageDialog;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.ProgressDialog;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.ui.worker.ZipWorker;
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
-import javax.swing.JFrame;
-import javax.xml.bind.JAXBException;
-import org.apache.log4j.Logger;
+
 import ro.sync.exml.workspace.api.PluginResourceBundle;
+import ro.sync.exml.workspace.api.PluginWorkspace;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
+import ro.sync.exml.workspace.api.util.UtilAccess;
 import ro.sync.util.URLUtil;
 
 /**
@@ -282,6 +294,94 @@ public class PackageGeneratorUtil {
         PackageGeneratorUtil.createPackage(editorLocation, chosenDirectory, pluginWorkspaceAccess, true, null, false);
       }
       
+    }
+  }
+  
+  /**
+   * Creates a ZIP Package with the given resources.
+   * 
+   * @param rootMap Main map from which all resources are referred.
+   * @param listeners Listeners to be notified.
+   * @param zipDestinationDir File where to save the zip.
+   * @param modifiedResources Modified resources to put in the archive.
+   * 
+   * @return A list with the the files that for some reasons didn't make it in the archive.
+   * 
+   * @throws IOException problems creating the archive.
+   * @throws StoppedByUserException The user canceled the operation though the progress listener.
+   */
+  public static List<URL> zipModifiedResources(
+      URL rootMap, 
+      List<ProgressChangeListener> listeners, 
+      File zipDestinationDir,
+      List<ResourceInfo> modifiedResources) throws IOException, StoppedByUserException {
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
+    URL topLocationURL = PathUtil.calculateTopLocationURL(rootMap, packageBuilder);
+    
+    List<URL> collect = 
+        modifiedResources.stream().map(t -> resolve(rootMap, t.getRelativePath())).collect(Collectors.toList());
+    
+    packageBuilder.generateChangedFilesPackage(
+        zipDestinationDir, 
+        collect, 
+        topLocationURL);
+
+    return packageBuilder.getFilesNotCopied();
+  }
+
+  /**
+   * Detects and zips the entire root map top directory (the ancestor of all resources referred in the map.)
+   * 
+   * @param rootMap Main map from which all resources are referred.
+   * @param listeners Listeners to be notified.
+   * @param zipDestinationDir File where to save the zip.
+   * 
+   * @throws IOException problems creating the archive.
+   * @throws StoppedByUserException The user canceled the operation though the progress listener.
+   */
+  public static void zipEntireRootMapStructure(
+      URL rootMap, 
+      List<ProgressChangeListener> listeners, 
+      File zipDestinationDir)
+      throws IOException, StoppedByUserException {
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
+    URL topLocationURL = PathUtil.calculateTopLocationURL(rootMap, packageBuilder);
+    
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
+    PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
+    if (pluginWorkspace != null) {
+      UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
+      if (utilAccess != null) {
+        File locateFile = utilAccess.locateFile(topLocationURL);
+        archiveBuilder.zipDirectory(locateFile, zipDestinationDir);
+      }
+    }
+  }
+  
+  /**
+   * Resolves the relative path.
+   * 
+   * @param baseURL The base URL. 
+   * @param relativePath Relative path to resolve.
+   *  
+   * @return Resolved URL.
+   */
+  private static URL resolve(final URL baseURL, String relativePath) {
+    /*
+     * #15 - the relative paths can be path/to.file.dita#ID
+     * We have to remove the anchors to allow file copy.
+     */
+    int indexOf = relativePath.indexOf('#');
+    if (indexOf != -1){
+      relativePath = relativePath.substring(0, indexOf);
+    }
+    
+    try {
+      return new URL(baseURL, relativePath);
+    } catch (MalformedURLException e) {
+      NoSuchElementException noSuchElementException = new NoSuchElementException();
+      noSuchElementException.initCause(e);
+      throw noSuchElementException;
     }
   }
   

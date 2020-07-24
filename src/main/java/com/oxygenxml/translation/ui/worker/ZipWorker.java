@@ -2,27 +2,21 @@ package com.oxygenxml.translation.ui.worker;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.support.util.ResultsManagerUtil;
 
 import ro.sync.document.DocumentPositionedInfo;
-import ro.sync.exml.workspace.api.PluginWorkspace;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
-import ro.sync.exml.workspace.api.util.UtilAccess;
 
 /**
  * Creates an AbstractWorker for packing a directory.
@@ -96,25 +90,12 @@ public class ZipWorker extends AbstractWorker {
     // Clear previous reported errors.
     ResultsManagerUtil.clearResultsPanel();
     if(packAll){
-      ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
-      PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
-      if (pluginWorkspace != null) {
-        UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
-        if (utilAccess != null) {
-          File locateFile = utilAccess.locateFile(topLocationURL);
-          archiveBuilder.zipDirectory(locateFile, zipDestinationDir);
-        }
-      }
+      PackageGeneratorUtil.zipEntireRootMapStructure(topLocationURL, listeners, zipDestinationDir);
     } else {
-      List<URL> collect = 
-          modifiedResources.stream().map(t -> resolve(rootMap, t.getRelativePath())).collect(Collectors.toList());
+      List<URL> filesNotCopied = PackageGeneratorUtil.zipModifiedResources(topLocationURL, listeners, zipDestinationDir, modifiedResources);
       
-      modifiedFilesNumber = packageBuilder.generateChangedFilesPackage(
-          zipDestinationDir, 
-          collect, 
-          topLocationURL);
-
-      List<URL> filesNotCopied = packageBuilder.getFilesNotCopied();
+      modifiedFilesNumber = modifiedResources.size();
+      
       if (!filesNotCopied.isEmpty()) {
         // Avoid errors duplication.
         ResultsManagerUtil.clearResultsPanel();
@@ -128,33 +109,6 @@ public class ZipWorker extends AbstractWorker {
     }
     
     return null;
-  }
-  
-  /**
-   * Resolves the relative path.
-   * 
-   * @param baseURL The base URL. 
-   * @param relativePath Relative path to resolve.
-   *  
-   * @return Resolved URL.
-   */
-  private URL resolve(final URL baseURL, String relativePath) {
-    /*
-     * #15 - the relative paths can be path/to.file.dita#ID
-     * We have to remove the anchors to allow file copy.
-     */
-    int indexOf = relativePath.indexOf('#');
-    if (indexOf != -1){
-      relativePath = relativePath.substring(0, indexOf);
-    }
-    
-    try {
-      return new URL(baseURL, relativePath);
-    } catch (MalformedURLException e) {
-      NoSuchElementException noSuchElementException = new NoSuchElementException();
-      noSuchElementException.initCause(e);
-      throw noSuchElementException;
-    }
   }
   
   /**
