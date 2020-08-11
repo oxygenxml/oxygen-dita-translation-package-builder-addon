@@ -12,7 +12,7 @@ import com.oxygenxml.translation.ui.ProgressChangeListener;
  * Creates an Abstract SwingWorker.
  * @author Bivolan Dalina
  */
-public abstract class AbstractWorker extends SwingWorker<Void, Void> {
+public abstract class AbstractWorker<T> extends SwingWorker<T, Void> {
   /**
    *  A listener for notifying the changes.
    */

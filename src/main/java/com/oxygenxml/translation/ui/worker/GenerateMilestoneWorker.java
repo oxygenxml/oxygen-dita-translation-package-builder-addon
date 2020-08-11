@@ -1,5 +1,6 @@
 package com.oxygenxml.translation.ui.worker;
 
+import java.io.File;
 import java.net.URL;
 
 import com.oxygenxml.translation.support.core.ChangePackageGenerator;
@@ -9,7 +10,7 @@ import com.oxygenxml.translation.support.core.resource.ResourceFactory;
  * 
  * @author Bivolan Dalina
  */
-public class GenerateMilestoneWorker extends AbstractWorker{
+public class GenerateMilestoneWorker extends AbstractWorker<File> {
   /**
    * The root map.
    */
@@ -28,10 +29,8 @@ public class GenerateMilestoneWorker extends AbstractWorker{
    * Main task. Executed in background thread.
    */
   @Override
-  protected Void doInBackground() throws Exception {
+  protected File doInBackground() throws Exception {
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(listeners);
-    packageBuilder.generateChangeMilestone(ResourceFactory.getInstance().getResource(rootMap));
-    
-    return null;
+    return packageBuilder.generateChangeMilestone(ResourceFactory.getInstance().getResource(rootMap));
   }
 }

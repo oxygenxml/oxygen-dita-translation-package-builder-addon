@@ -1,16 +1,17 @@
 package com.oxygenxml.translation.ui.worker;
 
-import com.oxygenxml.translation.exceptions.StoppedByUserException;
-import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 /**
  * Creates an AbstractWorker for unpacking a zip file.
  * @author Bivolan Dalina
  */
-public class UnzipWorker extends AbstractWorker {
+public class UnzipWorker extends AbstractWorker<List<String>> {
   
   /**
    *  Where to put the extracted files.
@@ -50,10 +51,10 @@ public class UnzipWorker extends AbstractWorker {
    * Main task. Executed in background thread.
    */
   @Override
-  public Void doInBackground() throws IOException, StoppedByUserException {
+  public List<String> doInBackground() throws IOException, StoppedByUserException {
     ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
     unpackedFiles = archiveBuilder.unzipDirectory(zipDir, rootDir);
 
-    return null;
+    return unpackedFiles;
   }
 }
