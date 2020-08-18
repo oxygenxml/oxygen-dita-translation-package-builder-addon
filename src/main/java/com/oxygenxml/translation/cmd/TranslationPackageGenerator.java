@@ -1,12 +1,12 @@
 package com.oxygenxml.translation.cmd;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.oxygenxml.translation.support.util.PathUtil;
-import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.worker.GenerateChangePackageWorker;
 import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
 import com.oxygenxml.translation.ui.worker.UnzipWorker;
@@ -31,18 +31,18 @@ public class TranslationPackageGenerator {
    * on to detect file changes.
    * 
    * @param ditaMapURL DITA Map.
-   * @param progressListener An optional listener to receive notifications.
+   * @param progressListener An optional print stream where to write progress data and errors.
    * 
    * @return The worker that generates the milestone.
    * 
    * @throws ExecutionException 
    * @throws InterruptedException 
    */
-  public static File generateMilestone(URL ditaMapURL, ProgressChangeListener progressListener) throws InterruptedException, ExecutionException {
+  public static File generateMilestone(URL ditaMapURL, PrintStream ps) throws InterruptedException, ExecutionException {
     GenerateMilestoneWorker worker = new GenerateMilestoneWorker(ditaMapURL);
     
-    if (progressListener != null) {
-      worker.addProgressListener(progressListener);
+    if (ps != null) {
+      worker.addProgressListener(new OutputStreamProgressChangeListener(ps));
     }
     
     worker.execute();
@@ -50,15 +50,27 @@ public class TranslationPackageGenerator {
     return worker.get();
   }
   
+  /**
+   * Creates a package with all the changed files that need translating.
+   * 
+   * @param rootMap DITA Map.
+   * @param packageFile Resulting package file.
+   * @param ps An optional print stream where to write progress data and errors.
+   * 
+   * @return Resulting package file.
+   * 
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
   public static File createPackage(
       URL rootMap, 
       File packageFile, 
-      ProgressChangeListener progressListener) throws InterruptedException, ExecutionException {
+      PrintStream ps) throws InterruptedException, ExecutionException {
     // TODO add an option to generate the package when the milestone is missing.
     GenerateChangePackageWorker worker = new GenerateChangePackageWorker(rootMap, packageFile);
     
-    if (progressListener != null) {
-      worker.addProgressListener(progressListener);
+    if (ps != null) {
+      worker.addProgressListener(new OutputStreamProgressChangeListener(ps));
     }
     
     worker.execute();
@@ -71,25 +83,25 @@ public class TranslationPackageGenerator {
    * 
    * @param rootMap Target root map.
    * @param packageFile translation package.
-   * @param progressListener Optional listener to get notifications.
+   * @param ps An optional print stream where to write progress data and errors.
    * 
    * @return A list with the relative path of every extracted file.
    * 
    * @throws ExecutionException 
    * @throws InterruptedException 
    */
-  public static List<String> applyPackage(URL rootMap, File packageFile, ProgressChangeListener progressListener) throws InterruptedException, ExecutionException {
-    // TODO Move this on the worker. It parses files and can take some time.
-    // Although the way it will be invoked, we are waiting for the worker to finish.
-    // TODO We could wait here for the worker... 
-    final File unzipLocation = PathUtil.calculateTopLocationFile(rootMap);
+  public static List<String> applyPackage(
+      URL rootMap, 
+      File packageFile, 
+      PrintStream ps) throws InterruptedException, ExecutionException {
+    File unzipLocation = PathUtil.calculateTopLocationFile(rootMap);
     
     UnzipWorker unzipTask = new UnzipWorker(
         unzipLocation, 
         packageFile);
     
-    if (progressListener != null) {
-      unzipTask.addProgressListener(progressListener);
+    if (ps != null) {
+      unzipTask.addProgressListener(new OutputStreamProgressChangeListener(ps));
     }
     
     unzipTask.execute();
