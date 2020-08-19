@@ -27,14 +27,14 @@ public class OutputStreamProgressChangeListener implements ProgressChangeListene
 
   @Override
   public void change(ProgressChangeEvent progress) {
-    stream.print(progress.getMessage());
-    
-    if (progress.getCounter() % 10 == 0) {
+    if (progress.getTotalFiles() > -1) {
       int percent = progress.getCounter() * 100 / progress.getTotalFiles();
-      stream.print(" ");
+      stream.print("");
       stream.print(percent);
-      stream.println("%");
+      stream.print("% ");
     }
+    
+    stream.println(progress.getMessage());
   }
 
   @Override

@@ -7,7 +7,22 @@
         <language description="Japanese" lang="ja_JP" />
         <language description="Dutch" lang="nl_NL" />
     </languageList>
-    
+    <key value="Copy_to_package_dir">
+        <comment>Progress message. A file is copied into the temporary package directory.</comment>
+        <val lang="en_US">Copy to package directory: {0}</val>
+        <val lang="de_DE">Copy to package directory: {0}</val>
+        <val lang="fr_FR">Copy to package directory: {0}</val>
+        <val lang="ja_JP">Copy to package directory: {0}</val>
+        <val lang="nl_NL">Copy to package directory: {0}</val>
+    </key>
+    <key value="Unpack_file">
+        <comment>Progress message. A file is unpacked from the translation package.</comment>
+        <val lang="en_US">Unpack new version to: {0}</val>
+        <val lang="de_DE">Unpack new version to: {0}</val>
+        <val lang="fr_FR">Unpack new version to: {0}</val>
+        <val lang="ja_JP">Unpack new version to: {0}</val>
+        <val lang="nl_NL">Unpack new version to: {0}</val>
+    </key>    
     <key value="Analyze_for_changes">
         <comment>Progress message. A file is being analyzed to see if it has changes compared to the milestone version.</comment>
         <val lang="en_US">Analyze for changes</val>
@@ -419,14 +434,6 @@
     <key value="zipDirectory_progressText">
         <comment>Progress dialog label text.</comment>
         <val lang="en_US"> files packed.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="unzipDirectory_progressText">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US"> files unpacked.</val>
         <val lang="de_DE">de_DE_translation</val>
         <val lang="fr_FR">fr_FR_translation</val>
         <val lang="ja_JP">ja_JP_translation</val>

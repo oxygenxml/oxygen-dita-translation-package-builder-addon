@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -257,7 +258,7 @@ public class ChangePackageGenerator {
             nrModFiles++;
             ProgressChangeEvent progress = new ProgressChangeEvent(
                 nrModFiles, 
-                "Prepare to pack: " + url.toExternalForm(),
+                MessageFormat.format(resourceBundle.getMessage(Tags.COPY_TO_PACKAGE_DIR), url.toExternalForm()),
                 2 * totalModifiedfiles);
             fireChangeEvent(progress);
           }

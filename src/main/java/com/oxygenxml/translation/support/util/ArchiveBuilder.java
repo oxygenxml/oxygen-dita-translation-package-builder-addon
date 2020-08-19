@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -186,7 +187,10 @@ public final class ArchiveBuilder {
 
           PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
           counter++;
-          ProgressChangeEvent progress = new ProgressChangeEvent(counter, counter + resourceBundle.getMessage(Tags.UNZIPDIR_PROGRESS_TEXT));
+          ProgressChangeEvent progress = new ProgressChangeEvent(
+              counter, 
+              MessageFormat.format(
+                  resourceBundle.getMessage(Tags.UNPACK_FILE), file.getAbsolutePath()));
           fireChangeEvent(progress);
 
         }

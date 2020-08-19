@@ -3,15 +3,24 @@ package com.oxygenxml.translation.ui;
  * An interface used for accessing the key values from the "i18n/translation.xml" file.
  */
 public interface Tags /*NOSONAR*/ {
+  
+  /**
+   * Progress message. A file is copied into the temporary package directory.
+   */
+  public static final String COPY_TO_PACKAGE_DIR = "Copy_to_package_dir";
   /**
    * Progress message. A file is being analyzed to see if it has changes compared to the milestone version.
    */
   public static final String ANALYZE_FOR_CHANGES = "Analyze_for_changes";
   
   /**
-   * PProgress message. A file is being added to the translation package.
+   * Progress message. A file is being added to the translation package.
    */
   public static final String ADD_TO_PACKAGE = "Add_to_package";
+  /**
+   * Progress message. A file is unpacked from the translation package.
+   */
+  public static final String UNPACK_FILE = "Unpack_file";
   
   public final String TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME = "translation_package_builder_plugin_name";
   
@@ -164,7 +173,6 @@ public interface Tags /*NOSONAR*/ {
   public final String CHANGE_MILESTONE_PROGRESS_TEXT = "changeMilestone_progressText";
   
   public final String ZIPDIR_PROGRESS_TEXT = "zipDirectory_progressText";
-  public final String UNZIPDIR_PROGRESS_TEXT = "unzipDirectory_progressText";
   public final String COPYDIR_PROGRESS_TEXT = "copyDirectory_progressText";
   
   /**
