@@ -190,9 +190,7 @@ public class ChangePackageGenerator {
         throw new StoppedByUserException();
       }
       ProgressChangeEvent progress = new ProgressChangeEvent(counter, 
-          resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE1) + 
-          counter + 
-          resourceBundle.getMessage(Tags.GENERATE_MODIFIED_FILES_PROGRESS_MESSAGE2), 
+          resourceBundle.getMessage(Tags.ANALYZE_FOR_CHANGES) + ": "+ newInfo.getRelativePath(), 
           currentStates.size());
       fireChangeEvent(progress);
     }
@@ -259,7 +257,7 @@ public class ChangePackageGenerator {
             nrModFiles++;
             ProgressChangeEvent progress = new ProgressChangeEvent(
                 nrModFiles, 
-                resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT1) + nrModFiles + resourceBundle.getMessage(Tags.PACKAGEBUILDER_PROGRESS_TEXT2), 
+                "Prepare to pack: " + url.toExternalForm(),
                 2 * totalModifiedfiles);
             fireChangeEvent(progress);
           }

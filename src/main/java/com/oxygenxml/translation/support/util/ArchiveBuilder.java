@@ -138,7 +138,7 @@ public final class ArchiveBuilder {
       PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
       resourceCounter++;
       ProgressChangeEvent progress = new ProgressChangeEvent(resourceCounter, 
-          resourceCounter + resourceBundle.getMessage(Tags.ZIPDIR_PROGRESS_TEXT));
+          resourceBundle.getMessage(Tags.ADD_TO_PACKAGE) + ": " + basePath + file.getName());
       fireChangeEvent(progress);
 
     } catch (Exception e) {
@@ -159,7 +159,6 @@ public final class ArchiveBuilder {
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
   public List<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException {
-
     List<String> nameList = new ArrayList<>();
     int counter = 0;
     try {
