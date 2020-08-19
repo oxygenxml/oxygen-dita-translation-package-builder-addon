@@ -56,17 +56,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         // Action 1: Generate Milestone
         JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.GENERATE_MILESTONE));
         menuItemMilestone.addActionListener(generateMilestoneAction);
-        menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM1));
+        menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.GENERATE_MILESTONE_TOOLTIP));
 
         // Action 2: Create Changed Files Package
         JMenuItem menuItemPakage = new JMenuItem(resourceBundle.getMessage(Tags.CREATE_MODIFIED_FILES_PACKAGE));
         menuItemPakage.addActionListener(generateChangedFilesZipAction);
-        menuItemPakage.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM2));
+        menuItemPakage.setToolTipText(resourceBundle.getMessage(Tags.CREATE_PACKAGE_TOOLTIP));
 
         // Action 3: Unzip package that came from translation.
-        JMenuItem menuItemApply = new JMenuItem(resourceBundle.getMessage(Tags.JMENU_ITEM3));
+        JMenuItem menuItemApply = new JMenuItem(resourceBundle.getMessage(Tags.APPLY_PACKAGE));
         menuItemApply.addActionListener(applyTranslatedFilesAction);
-        menuItemApply.setToolTipText(resourceBundle.getMessage(Tags.JMENU_TOOLTIP_ITEM3));
+        menuItemApply.setToolTipText(resourceBundle.getMessage(Tags.APPLY_PACKAGE_TOOLTIP));
 
         submenu.add(menuItemMilestone);
         submenu.add(menuItemPakage);
@@ -100,9 +100,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           
           final File milestoneFile = MilestoneUtil.getMilestoneFile(fileOnDisk);
           //Ask the user if he wants to override the milestone in case it was already created.
-          if(milestoneFile.exists()){
-            MilestoneGeneratorUtil.askForMilestoneOverrideConfirmation(pluginWorkspaceAccess, rootMapLocation, milestoneFile);
-          } else {
+          if(!milestoneFile.exists() || 
+              MilestoneGeneratorUtil.askForMilestoneOverrideConfirmation(pluginWorkspaceAccess, rootMapLocation)) {
             MilestoneGeneratorUtil.generateMilestone(pluginWorkspaceAccess, rootMapLocation, milestoneFile, true);
           }
         } catch (Exception e) {

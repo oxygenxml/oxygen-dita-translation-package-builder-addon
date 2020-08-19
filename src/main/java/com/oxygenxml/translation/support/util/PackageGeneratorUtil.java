@@ -118,7 +118,7 @@ public class PackageGeneratorUtil {
     ProgressDialog.install(
         zipTask, 
         (JFrame)pluginWorkspace.getParentFrame(), 
-        resourceBundle.getMessage(Tags.ACTION2_PROGRESS_DIALOG_TITLE));
+        resourceBundle.getMessage(Tags.CREATE_PACKAGE_ARCHIVE_TITLE));
 
     // This listener notifies the user about how the operation ended.
     zipTask.addProgressListener(new ProgressChangeAdapter() {     

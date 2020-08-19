@@ -457,7 +457,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     }
 
     if(logger.isDebugEnabled()){
-      logger.debug(messages.getMessage(Tags.REPORT_DIALOG_LOGGER_MESSAGE) + chosenZip.getAbsolutePath());
+      logger.debug("The choosed package location from the report dialog is: " + chosenZip.getAbsolutePath());
     }
     
     

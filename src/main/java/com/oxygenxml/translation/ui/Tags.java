@@ -28,8 +28,10 @@ public interface Tags /*NOSONAR*/ {
    * en: Generate Milestone
    */
   public final String GENERATE_MILESTONE = "Generate_milestone";
-  
-  public final String JMENU_TOOLTIP_ITEM1 = "jmenu_tooltip_item1";
+  /**
+   * Tooltip for the action that generates a milestone.
+   */
+  public final String GENERATE_MILESTONE_TOOLTIP = "Generate_milestone_tooltip";
   
   /**
    * Name of the option that generates the archive with modified files.
@@ -37,12 +39,31 @@ public interface Tags /*NOSONAR*/ {
    * en: Create modified files package
    */
   public final String CREATE_MODIFIED_FILES_PACKAGE = "create_modified_files_package";
+  /**
+   * Tooltip for the action that creates the package for translation.
+   * 
+   * en: Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.
+   */
+  public final String CREATE_PACKAGE_TOOLTIP = "Create_package_tooltip";
+  /**
+   * The name of the action that applies a translation package.
+   * 
+   * en: Apply Package
+   */
+  public final String APPLY_PACKAGE = "Apply_package";
+  /**
+   * Tooltip for the action that applies a translation package.
+   * 
+   * en: Applies a chosen archive over the root directory of the current ditamap.
+   */
+  public final String APPLY_PACKAGE_TOOLTIP ="Apply_package_tooltip";
   
-  public final String JMENU_TOOLTIP_ITEM2 = "jmenu_tooltip_item2";
-  public final String JMENU_ITEM3 = "jmenu_item3";
-  public final String JMENU_TOOLTIP_ITEM3 ="jmenu_tooltip_item3";
-  
-  public final String ACTION1_INFO_MESSAGE = "action1_infoMessage";
+  /**
+   * Notification presented to the user after a milestone file is generated.
+   * 
+   * en: Milestone created at: {0}
+   */
+  public final String MILESTONE_GENERATED = "Milestone_generated";
   
   /**
    * en: Milestone creation failed because of:
@@ -86,7 +107,12 @@ public interface Tags /*NOSONAR*/ {
   public final String YES_BUTTON = "yes_button";
   public final String NO_BUTTON = "no_button";
   
-  public final String ACTION2_PROGRESS_DIALOG_TITLE = "action2_progresDialog_title";
+  /**
+   * Progress dialog title when the files are packed into an archive.
+   * 
+   * en: Zipping directory
+   */
+  public final String CREATE_PACKAGE_ARCHIVE_TITLE = "Create_package_archive_title";
   
   /**
    * en: The directory was packed.
@@ -168,11 +194,8 @@ public interface Tags /*NOSONAR*/ {
   
   public final String PROGRESS_DIALOG_LABEL = "progressDialog_label";
   
-  public final String PACKAGEBUILDER_PROGRESS_TEXT1 = "packageBuilder_progressText1";
-  public final String PACKAGEBUILDER_PROGRESS_TEXT2 = "packageBuilder_progressText2";
   public final String CHANGE_MILESTONE_PROGRESS_TEXT = "changeMilestone_progressText";
   
-  public final String ZIPDIR_PROGRESS_TEXT = "zipDirectory_progressText";
   public final String COPYDIR_PROGRESS_TEXT = "copyDirectory_progressText";
   
   /**
@@ -186,10 +209,6 @@ public interface Tags /*NOSONAR*/ {
    * en: Last report was created on: a_date.
    */
   public final String LAST_REPORT_CREATION_TIME = "last_report_creation_time";
-  
-  public final String REPORT_DIALOG_LOGGER_MESSAGE = "reportDialog_logger_message1";
-  public final String REPORT_DIALOG_FILE_DESCRIPTOR = "reportDialog_fileDescriptor";
-  public final String REPORT_DIALOG_CHECKBOX_TEXT = "reportDialog_checkbox_text";
   
   /**
    * Save

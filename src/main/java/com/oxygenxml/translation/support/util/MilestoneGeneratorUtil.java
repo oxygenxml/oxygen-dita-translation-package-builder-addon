@@ -1,5 +1,14 @@
 package com.oxygenxml.translation.support.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Date;
+
+import javax.swing.JFrame;
+import javax.xml.bind.JAXBException;
+
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.ui.CustomDialogResults;
@@ -7,12 +16,7 @@ import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressDialog;
 import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-import javax.swing.JFrame;
-import javax.xml.bind.JAXBException;
+
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
@@ -36,11 +40,13 @@ public class MilestoneGeneratorUtil {
    * @param pluginWorkspaceAccess Entry point for accessing the DITA Maps area.
    * @param rootMap The parent directory of the current ditamap.
    * @param milestoneFile The predefined location of the milestone file.
+   * @param notifyUserWhenFinished <code>true</code> to present a message when the milestone is generated.
    */
-  public static void generateMilestone(final StandalonePluginWorkspace pluginWorkspaceAccess,
+  public static void generateMilestone(
+      final StandalonePluginWorkspace pluginWorkspaceAccess,
       final URL rootMap,
       final File milestoneFile,
-      final boolean isFromAction1) {
+      final boolean notifyUserWhenFinished) {
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
     
     // Generate the milestone on thread.
@@ -56,11 +62,9 @@ public class MilestoneGeneratorUtil {
     milestoneWorker.addProgressListener(new ProgressChangeAdapter() {
       @Override
       public void done() { 
-        if(isFromAction1){
-          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION1_INFO_MESSAGE) + milestoneFile.getPath());
-        } else {
-          // TODO Adrian THis will never put anything in the ZIP. The milestone is created for the current file states.
-          PackageGeneratorUtil.createModifiedFilesPackage(pluginWorkspaceAccess, rootMap);
+        if(notifyUserWhenFinished){
+          pluginWorkspaceAccess.showInformationMessage(
+              MessageFormat.format(resourceBundle.getMessage(Tags.MILESTONE_GENERATED), milestoneFile.getPath()));
         }
       }
       @Override
@@ -78,13 +82,15 @@ public class MilestoneGeneratorUtil {
    * 
    * @param pluginWorkspaceAccess Workspace access.
    * @param rootMapLocation       Location of the DITA map opened in DITA Maps Manager.
-   * @param milestoneFile         Milestone file.
+   * 
+   * @return <code>true</code> if a new milestone file shoud be generated.
    * 
    * @throws JAXBException        
    * @throws IOException
    */
-  public static void askForMilestoneOverrideConfirmation(final StandalonePluginWorkspace pluginWorkspaceAccess, URL rootMapLocation,
-      final File milestoneFile) throws JAXBException, IOException {
+  public static boolean askForMilestoneOverrideConfirmation(
+      final StandalonePluginWorkspace pluginWorkspaceAccess, 
+      URL rootMapLocation) throws JAXBException, IOException {
     // Creation date is written in milestone, thats why the JAXB exception is thrown.
     Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMapLocation);
     PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
@@ -100,8 +106,6 @@ public class MilestoneGeneratorUtil {
             CustomDialogResults.YES_OPTION,
             CustomDialogResults.NO_OPTION});
     
-    if(result == CustomDialogResults.YES_OPTION){
-      generateMilestone(pluginWorkspaceAccess, rootMapLocation, milestoneFile, true);
-    }
+    return result == CustomDialogResults.YES_OPTION;
   }
 }

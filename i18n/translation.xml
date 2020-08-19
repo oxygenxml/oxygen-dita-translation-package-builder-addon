@@ -65,13 +65,13 @@
         <val lang="ja_JP">Generate Milestone</val>
         <val lang="nl_NL">Generate Milestone</val>
     </key>
-    <key value="jmenu_tooltip_item1">
-        <comment>JMenu milestone tooltip.</comment>
+    <key value="Generate_milestone_tooltip">
+        <comment>Tooltip for the action that generates a milestone.</comment>
         <val lang="en_US">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
+        <val lang="fr_FR">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
+        <val lang="ja_JP">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
+        <val lang="nl_NL">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
     </key>
     <key value="create_modified_files_package">
         <comment>Contextual menu action Create Modified Files Package</comment>
@@ -81,29 +81,29 @@
         <val lang="ja_JP">Create Modified Files Package</val>
         <val lang="nl_NL">Create Modified Files Package</val>
     </key>
-    <key value="jmenu_tooltip_item2">
-        <comment>JMenu pack modified files tooltip.</comment>
+    <key value="Create_package_tooltip">
+        <comment>Tooltip for the action that creates the package for translation.</comment>
         <val lang="en_US">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
+        <val lang="fr_FR">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
+        <val lang="ja_JP">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
+        <val lang="nl_NL">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
     </key>
-    <key value="jmenu_item3">
-        <comment>JMenu apply package action.</comment>
+    <key value="Apply_package">
+        <comment>The name of the action that applies a translation package.</comment>
         <val lang="en_US">Apply Package</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Apply Package</val>
+        <val lang="fr_FR">Apply Package</val>
+        <val lang="ja_JP">Apply Package</val>
+        <val lang="nl_NL">Apply Package</val>
     </key>
-    <key value="jmenu_tooltip_item3">
-        <comment>JMenu apply package tooltip.</comment>
+    <key value="Apply_package_tooltip">
+        <comment>Tooltip for the action that applies a translation package.</comment>
         <val lang="en_US">Applies a chosen archive over the root directory of the current ditamap.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Applies a chosen archive over the root directory of the current ditamap.</val>
+        <val lang="fr_FR">Applies a chosen archive over the root directory of the current ditamap.</val>
+        <val lang="ja_JP">Applies a chosen archive over the root directory of the current ditamap.</val>
+        <val lang="nl_NL">Applies a chosen archive over the root directory of the current ditamap.</val>
     </key>
     <key value="Generating_milestone">
         <comment>Progress dialog title shown when a milestone is generating.</comment>
@@ -113,13 +113,13 @@
         <val lang="ja_JP">Generating Milestone</val>
         <val lang="nl_NL">Generating Milestone</val>
     </key>
-    <key value="action1_infoMessage">
-        <comment>Info message in generate milestone.</comment>
-        <val lang="en_US">Milestone created at: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Milestone_generated">
+        <comment>Notification presented to the user after a milestone file is generated.</comment>
+        <val lang="en_US">Milestone created at: {0}</val>
+        <val lang="de_DE">Milestone created at: {0}</val>
+        <val lang="fr_FR">Milestone created at: {0}</val>
+        <val lang="ja_JP">Milestone created at: {0}</val>
+        <val lang="nl_NL">Milestone created at: {0}</val>
     </key>
     <key value="milestone_creation_failed_because">
         <comment>Error message in generate milestone.</comment>
@@ -190,13 +190,13 @@
         <val lang="ja_JP">ja_JP_translation</val>
         <val lang="nl_NL">nl_NL_translation</val>
     </key>
-    <key value="action2_progresDialog_title">
-        <comment>Progress dialog title in pack modified files.</comment>
+    <key value="Create_package_archive_title">
+        <comment>Progress dialog title when the files are packed into an archive.</comment>
         <val lang="en_US">Zipping directory</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Zipping directory</val>
+        <val lang="fr_FR">Zipping directory</val>
+        <val lang="ja_JP">Zipping directory</val>
+        <val lang="nl_NL">Zipping directory</val>
     </key>
     <key value="directory_was_packed">
         <comment>Message dialog content in pack modified files.</comment>
@@ -488,14 +488,6 @@
         <val lang="fr_FR">Last report was created on:</val>
         <val lang="ja_JP">Last report was created on:</val>
         <val lang="nl_NL">Last report was created on:</val>
-    </key>
-    <key value="reportDialog_logger_message1">
-        <comment> Logger message.</comment>
-        <val lang="en_US">The choosed package location from the report dialog is: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
     </key>
     <key value="reportDialog_fileDescriptor">
         <comment> The file descriptor from the report dialog.</comment>
