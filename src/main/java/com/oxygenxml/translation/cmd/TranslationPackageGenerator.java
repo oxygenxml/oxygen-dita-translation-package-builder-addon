@@ -97,8 +97,8 @@ public class TranslationPackageGenerator {
     File unzipLocation = PathUtil.calculateTopLocationFile(rootMap);
     
     UnzipWorker unzipTask = new UnzipWorker(
-        unzipLocation, 
-        packageFile);
+        packageFile,
+        unzipLocation);
     
     if (ps != null) {
       unzipTask.addProgressListener(new OutputStreamProgressChangeListener(ps));
