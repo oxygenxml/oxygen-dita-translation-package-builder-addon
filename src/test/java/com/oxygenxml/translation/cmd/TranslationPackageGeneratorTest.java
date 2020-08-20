@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -15,6 +16,8 @@ import org.junit.Test;
 
 import com.oxygenxml.translation.support.core.TestUtil;
 import com.oxygenxml.translation.support.core.TranslationPackageTestBase;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Tests cases for the 3 major use cases:
@@ -91,7 +94,8 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     
     Assert.assertTrue("The translation package wasn't created", packageFile.exists());
     
-    Assert.assertEquals("topics/\n" + 
+    Assert.assertEquals(
+        "topics/\n" + 
         "topics/flowers/\n" + 
         "topics/flowers/iris.dita\n" + 
         "topics/introduction.dita\n" + 
@@ -127,7 +131,7 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     PrintStream ps = new PrintStream(out, true, "UTF-8");
     List<String> copiedResources = TranslationPackageGenerator.applyPackage(ditaMapURL, packageFile, ps );
     
-    
+    Collections.sort(copiedResources);
     Assert.assertEquals("[topics/flowers/iris.dita, topics/introduction.dita]", copiedResources.toString());
     
     assertEquals("<?xml version='1.0' encoding='UTF-8'?>\n" + 
@@ -171,16 +175,22 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
    * @throws IOException
    */
   private static String getZipEntries(File packageFile) throws ZipException, IOException {
-    StringBuilder entries = new StringBuilder();
+    List<String> entries = new ArrayList<>();
     try (ZipFile zipFile = new ZipFile(packageFile)) {
       Enumeration<?> enu = zipFile.entries();
       while (enu.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) enu.nextElement();
         String name = zipEntry.getName();
-        entries.append(name).append("\n");
+        entries.add(name);
       }
 
-      return entries.toString();
+      StringBuilder b = new StringBuilder();
+      Collections.sort(entries);
+      for (String string : entries) {
+        b.append(string).append("\n");
+      }
+      
+      return b.toString();
     }
   }
 
