@@ -9,8 +9,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-
+import java.util.zip.ZipFile;import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,7 +39,8 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
   public void testGenerateMilestone() throws Exception {
     URL ditaMapURL = new File(TestUtil.getPath("cmd/v1"), "flowers.ditamap").toURI().toURL();
     
-    PrintStream ps = new PrintStream(new ByteArrayOutputStream(), true, "UTF-8");
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(out, true, "UTF-8");
     File milestone = TranslationPackageGenerator.generateMilestone(ditaMapURL, ps );
     
     String milestoneContent = TestUtil.readFile(milestone);
@@ -67,6 +67,8 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
         "    </info-resource>\n" + 
         "</resources>\n" + 
         "", milestoneContent);
+    
+    Assert.assertEquals("", TestUtil.read(out.toByteArray(), "UTF-8"));
   }
 
   /**
@@ -82,7 +84,8 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     File parentDir = TestUtil.getPath("cmd/v2");
     URL ditaMapURL = new File(parentDir, "flowers.ditamap").toURI().toURL();
     
-    PrintStream ps = new PrintStream(new ByteArrayOutputStream(), true, "UTF-8");
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(out, true, "UTF-8");
     File packageFile = new File(parentDir, "translation.zip");
     TranslationPackageGenerator.createPackage(ditaMapURL, packageFile, ps );
     
@@ -93,6 +96,17 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
         "topics/flowers/iris.dita\n" + 
         "topics/introduction.dita\n" + 
         "", getZipEntries(packageFile).toString());
+    
+    Assert.assertEquals(
+        "25% Analyze_for_changes: flowers.ditamap\n" + 
+        "50% Analyze_for_changes: topics/introduction.dita\n" + 
+        "75% Analyze_for_changes: topics/flowers/iris.dita\n" + 
+        "100% Analyze_for_changes: topics/flowers/snowdrop.dita\n" + 
+        "25% Copy_to_package_dir\n" + 
+        "50% Copy_to_package_dir\n" + 
+        "75% Add_to_package: topics/flowers/iris.dita\n" + 
+        "75% Add_to_package: topics/introduction.dita\n" + 
+        "", TestUtil.read(out.toByteArray(), "UTF-8").replaceAll("\r", ""));
   }
   
   /**
@@ -109,7 +123,8 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     File parentDir = TestUtil.getPath("cmd/original");
     URL ditaMapURL = new File(parentDir, "flowers.ditamap").toURI().toURL();
     
-    PrintStream ps = new PrintStream(new ByteArrayOutputStream(), true, "UTF-8");
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(out, true, "UTF-8");
     List<String> copiedResources = TranslationPackageGenerator.applyPackage(ditaMapURL, packageFile, ps );
     
     
@@ -138,6 +153,11 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
         "    </body> \n" + 
         "</topic>\n" + 
         "", TestUtil.readFile(new File(parentDir, "topics/introduction.dita")));
+    
+    Assert.assertEquals(
+        "Unpack_file\n" + 
+        "Unpack_file\n" + 
+        "", TestUtil.read(out.toByteArray(), "UTF-8").replaceAll("\r", ""));
   }
   
   /**
