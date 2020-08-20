@@ -1,8 +1,5 @@
 package com.oxygenxml.translation.support.core.resource;
 
-import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
-import com.oxygenxml.translation.support.core.MilestoneUtil;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,7 +9,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+
+import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -133,25 +136,19 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
    */
   private static class RootDirResource extends DirResource implements IRootResource {
     /**
-     * Root map.
-     */
-    private File ditamapFile;
-
-    /**
      * Constructor.
      * 
      * @param file Wrapped file.
      */
-    private RootDirResource(File ditamapFile) {
-      super(ditamapFile.getParentFile(), "");
-      this.ditamapFile = ditamapFile;
+    private RootDirResource(File dir) {
+      super(dir, "");
     }
 
     /**
      * @see com.oxygenxml.translation.support.core.resource.IRootResource#getMilestoneFile()
      */
     public File getMilestoneFile() {
-      return MilestoneUtil.getMilestoneFile(ditamapFile);
+      return MilestoneUtil.getMilestoneFile(file);
     }
   }
   
@@ -212,9 +209,6 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
       locateFile = pluginWorkspace.getUtilAccess().locateFile(rootResource.getLocation());
     } else {
       locateFile = new File(rootResource.getLocation().getPath());
-      
-      System.out.println("Map " + rootResource.getLocation());
-      System.out.println("FIle " + locateFile);
     }
     
     if (locateFile.isDirectory()) {
@@ -222,7 +216,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
     }
     
     
-    return wrapDirectory(locateFile);
+    return wrapDirectory(locateFile.getParentFile());
   }
 
   /**
