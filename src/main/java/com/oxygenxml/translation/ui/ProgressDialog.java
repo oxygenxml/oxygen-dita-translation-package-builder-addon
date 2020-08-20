@@ -77,7 +77,7 @@ public class ProgressDialog extends OKCancelDialog /*NOSONAR*/ implements Progre
     
     JPanel mainPanel = new JPanel(new GridBagLayout());
     progressBar = new JProgressBar();
-    label = new JLabel(resourceBundle.getMessage(Tags.PROGRESS_DIALOG_LABEL));
+    label = new JLabel("");
     
     progressBar.setValue(0);
     progressBar.setStringPainted(true);

@@ -124,12 +124,37 @@ public interface Tags /*NOSONAR*/ {
    */
   public final String REPORT_NUMBER_OF_MODIFIED_FILES = "Report_number_of_modified_files";
   
-  public final String ACTION2_INFO_MESSAGE_EXCEPTION = "action2_infoMessage_exceptions";
-  public final String ACTION2_NO_CHANGED_FILES_EXCEPTION = "action2_NoChangedFiles_exception";
-  public final String ACTION2_ERROR_MESSAGE = "action2_error_message";
-  public final String ACTION2_PACK_MODIFIED_PROGRESS_TITLE = "action2_packOnlyModified_progress_title";
+  /**
+   * Message presented when the translation package can't be created.
+   * 
+   * en: Could not create package. 
+   */
+  public final String FAILURE_CREATING_PACKAGE = "Failure_creating_package";
+  /**
+   * Message presented when the translation package can't be buiult because there are no changed since the milestone was created.
+   * 
+   * en: There are no changed files since the milestone created on: {0}
+   */
+  public final String NO_CHANGED_FILES = "No_changed_files";
+  /**
+   * An action failed.
+   * 
+   * en: Failed because of: 
+   */
+  public final String ACTION_FAILED = "action2_error_message";
+  /**
+   * Title of the progress dialog while collecting the modified resources.
+   * 
+   * en: Collect modified resources
+   */
+  public final String COLLECT_MODIFIED_RESOURCES = "Collecting_modified_resources";
   
-  public final String ACTION3_CHOOSE_FILE_TITLE = "action3_chooseFile_title";
+  /**
+   * Title of the dialog in which the user selects the translation package to apply.
+   * 
+   * en: Choose the translated package
+   */
+  public final String CHOOSE_TRANSLATION_PACKAGE = "Choose_translation_package";
   /**
    * en: Preview Changes
    */
@@ -150,8 +175,12 @@ public interface Tags /*NOSONAR*/ {
    */
   public final String CANCEL = "cancel";
   
-  public final String ACTION3_TEMPDIR_NAME = "action3_tempDir_name";
-  public final String ACTION3_PROGRESS_DIALOG_TITLE = "action3_progresDialog_title";
+  /**
+   * Progress dialog title in apply package.
+   * 
+   * en: Opening package
+   */
+  public final String OPENING_PACKAGE = "Opening_package";
   /**
    * Preview dialog title in apply package.
    */
@@ -161,12 +190,28 @@ public interface Tags /*NOSONAR*/ {
    * en: Failed to apply package because of: 
    */
   public final String FAILED_TO_APPLY_PACKAGE = "failed_to_apply_package";
-  
-  public final String SHOW_REPORT_LABEL = "showReport_label";
-  public final String SHOW_REPORT_TITLE = "showReport_dialog_title";
-  public final String SHOW_REPORT_EXCEPTION_MESSAGE = "showReport_exception_message";
-  
-  public final String APPLY_BUTTON = "apply_button";
+  /**
+   * Notification after a translation package was applied.
+   * 
+   * en: Package applied over the current map. The overridden files are: 
+   */
+  public final String APPLY_PACKAGE_REPORT = "Apply_package_report";
+  /**
+   * Title of the report dialog after a translation package was applied.
+   * 
+   * en: Updated files
+   */
+  public final String UPDATED_FILES = "Updated_files";
+  /**
+   * Error message when we didn't extract any files from the translation package.
+   * 
+   * en: The translation package didn't contain any file.
+   */
+  public final String NO_FILES_IN_PACKAGE = "No_files_in_package";
+  /**
+   * Apply.
+   */
+  public final String APPLY_BUTTON = "Apply";
   
   /**
    * Switch to tree view
@@ -186,29 +231,59 @@ public interface Tags /*NOSONAR*/ {
    */
   public final String APPLYING_SELECTED_FILES = "Applying_selected_files";
   
-  
-  public final String PREVIEW_DIALOG_PROGRESS_INFOMESSAGE = "previewDialog_progressDialog_infoMessage";
-  public final String PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE = "previewDialog_progressDialog_errorMessage";
-  public final String PREVIEW_DIALOG_SUPPORTED_OXYFILE = "previewDialog_supportedOxyFile";
-  public final String PREVIEW_DIALOG_CHECKBOX = "preview_dialog_checkBox";
-  
-  public final String PROGRESS_DIALOG_LABEL = "progressDialog_label";
-  
-  public final String CHANGE_MILESTONE_PROGRESS_TEXT = "changeMilestone_progressText";
-  
-  public final String COPYDIR_PROGRESS_TEXT = "copyDirectory_progressText";
+  /**
+   * Notification after a translation package was applied.
+   * 
+   * en: The translated files have been applied.
+   */
+  public final String TRANSLATED_FILES_APPLIED = "Translated_files_applied";
+  /**
+   * Message presented when the translated files couldn't be copied in the map directory.
+   * 
+   * en: Couldn't copy translated files because of: 
+   */
+  public final String COPY_TRANSLATED_FILES_ERROR_MESSAGE = "Copy_translated_files_error_message";
+  /**
+   * Information message presented when the user requested to see the differences between the new file version and the old, 
+   * but the file is not supported.
+   * 
+   * en: The selected file is not supported by Oxygen XML Editor.
+   */
+  public final String FILE_TYPE_NOT_SUPPORTED = "File_type_not_supported";
+  /**
+   * Option to automatically select all presented files. The selected files are applied over their old versions.
+   * 
+   * en: Select all files
+   */
+  public final String SELECT_ALL_FILES = "Select_all_files";
+  /**
+   * Progress message while copying files.
+   * 
+   * en: Copy {0} to {1}
+   */
+  public final String COPY_FILE_TO = "Copy_file_to";
   
   /**
    * en: A report will be created at: a_date.
    */
   public final String XHTML_REPORT_LOCATION = "report_will_be_created";
-  
-  public final String REPORT_DIALOG_CHECKBOX_TOOLTIP = "reportDialog_checkbox_tooltip";
+  /**
+   * An option in the generate translation package dialog.
+   * 
+   * en: Generate a report containing the relative paths of the modified resources.
+   */
+  public final String GENERATE_REPORT_TOOLTIP = "Generate_report_tooltip";
+  /**
+   * An option in the generate translation package dialog.
+   * 
+   * en: Generate a report containing the relative paths of the modified resources.
+   */
+  public final String GENERATE_REPORT = "Generate_report";
   
   /**
-   * en: Last report was created on: a_date.
+   * en: Last report was created on {0}
    */
-  public final String LAST_REPORT_CREATION_TIME = "last_report_creation_time";
+  public final String REPORT_CREATION_TIME = "Report_creation_time";
   
   /**
    * Save

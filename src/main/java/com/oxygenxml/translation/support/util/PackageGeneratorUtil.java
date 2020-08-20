@@ -141,7 +141,7 @@ public class PackageGeneratorUtil {
       public void operationFailed(Exception ex) {  
         //Treat differently Stop by user exceptions and the custom one about nothing to pack.
         if(ex instanceof NoChangedFilesException){
-          pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());
+          pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " + ex.getMessage());
         } else if(ex instanceof StoppedByUserException) {
           logger.error(ex, ex);
         } else {
@@ -170,7 +170,7 @@ public class PackageGeneratorUtil {
     ProgressDialog.install(
         modifiedResourcesWorker, 
         (JFrame)pluginWorkspaceAccess.getParentFrame(), 
-        resourceBundle.getMessage(Tags.ACTION2_PACK_MODIFIED_PROGRESS_TITLE));
+        resourceBundle.getMessage(Tags.COLLECT_MODIFIED_RESOURCES));
 
     // This listener notifies the user about how the operation ended.
     modifiedResourcesWorker.addProgressListener(new ProgressChangeAdapter() {
@@ -182,11 +182,11 @@ public class PackageGeneratorUtil {
       @Override
       public void operationFailed(Exception ex) {
         if(ex instanceof NoChangedFilesException){
-          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " + ex.getMessage());                  
+          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " + ex.getMessage());                  
         } else if(ex instanceof StoppedByUserException) {
           logger.error(ex, ex);
         } else {
-          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_ERROR_MESSAGE) + ex.getMessage());
+          pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION_FAILED) + ex.getMessage());
         }               
       } 
     });
@@ -240,8 +240,8 @@ public class PackageGeneratorUtil {
         PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
         // Inform the user that no resources were modified.
         Date milestoneLastModified = MilestoneUtil.getMilestoneCreationDate(rootMap);
-        pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION2_INFO_MESSAGE_EXCEPTION) + "\n " +
-            resourceBundle.getMessage(Tags.ACTION2_NO_CHANGED_FILES_EXCEPTION) + milestoneLastModified);                  
+        pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " +
+            MessageFormat.format(resourceBundle.getMessage(Tags.NO_CHANGED_FILES), milestoneLastModified));                  
       } catch (JAXBException | IOException e) {
         logger.error(e, e);
       }                

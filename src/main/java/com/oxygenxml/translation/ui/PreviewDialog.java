@@ -123,7 +123,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     CheckboxTableUtil.installDiffOnMouseClick(resourcesTable, topLocation, translatedFileDir);
     
     final JScrollPane modifiedResourcesPanel = createModifiedResourcesPanel(resourcesTable);
-    final JCheckBox selectAll = new JCheckBox(messages.getMessage(Tags.PREVIEW_DIALOG_CHECKBOX));
+    final JCheckBox selectAll = new JCheckBox(messages.getMessage(Tags.SELECT_ALL_FILES));
     
     // By default all entries are selected.
     selectAll.setSelected(true); 
@@ -302,7 +302,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
         new ProgressChangeAdapter() {
           @Override
           public void done() {
-            pluginWorkspace.showInformationMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_INFOMESSAGE));
+            pluginWorkspace.showInformationMessage(messages.getMessage(Tags.TRANSLATED_FILES_APPLIED));
             try {
               FileUtils.deleteDirectory(translatedFileDir);
             } catch (IOException e) {
@@ -314,7 +314,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
           public void operationFailed(Exception ex) {
             logger.error(ex, ex);
             if(!(ex instanceof StoppedByUserException)){
-              pluginWorkspace.showErrorMessage(messages.getMessage(Tags.PREVIEW_DIALOG_PROGRESS_ERRORMESSAGE) + ex.getMessage());
+              pluginWorkspace.showErrorMessage(messages.getMessage(Tags.COPY_TRANSLATED_FILES_ERROR_MESSAGE) + ex.getMessage());
             }
             try {
               FileUtils.deleteDirectory(translatedFileDir);

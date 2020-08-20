@@ -20,6 +20,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -213,7 +214,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     }
     
     // The default location of the report file.
-    generateReportCheckbox = new JCheckBox("Generate report");
+    generateReportCheckbox = new JCheckBox(messages.getMessage(Tags.GENERATE_REPORT));
 
     getContentPane().setLayout(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
@@ -374,7 +375,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     textInfo.setText(sb.toString());
 
     generateReportCheckbox.setSelected(true);
-    generateReportCheckbox.setToolTipText(messages.getMessage(Tags.REPORT_DIALOG_CHECKBOX_TOOLTIP));
+    generateReportCheckbox.setToolTipText(messages.getMessage(Tags.GENERATE_REPORT_TOOLTIP));
     
     generateReportCheckbox.addItemListener(e -> {
       if(e.getStateChange() == ItemEvent.SELECTED){
@@ -382,7 +383,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
       } else {
         Date date = new Date(reportFile.lastModified());
         SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
-        textInfo.setText(messages.getMessage(Tags.LAST_REPORT_CREATION_TIME) +" "+ dataFormat.format(date));
+        textInfo.setText(MessageFormat.format(messages.getMessage(Tags.REPORT_CREATION_TIME), dataFormat.format(date)));
       }
     });
   }

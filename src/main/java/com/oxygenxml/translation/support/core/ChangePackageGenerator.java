@@ -325,10 +325,6 @@ public class ChangePackageGenerator {
       throw new StoppedByUserException();
     }
     
-    PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-    ProgressChangeEvent progress = new ProgressChangeEvent(resourceBundle.getMessage(Tags.CHANGE_MILESTONE_PROGRESS_TEXT) + "...");
-    fireChangeEvent(progress);
-
     return milestoneFile;
   }
 

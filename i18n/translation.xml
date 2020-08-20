@@ -44,18 +44,18 @@
     <key value="translation_package_builder_plugin_name">
         <comment>Name of the plugin</comment>
         <val lang="en_US">Translation Package Builder</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Translation Package Builder</val>
+        <val lang="fr_FR">Translation Package Builder</val>
+        <val lang="ja_JP">Translation Package Builder</val>
+        <val lang="nl_NL">Translation Package Builder</val>
     </key>
         <key value="save">
         <comment>Save message for save button</comment>
         <val lang="en_US">Save</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Save</val>
+        <val lang="fr_FR">Save</val>
+        <val lang="ja_JP">Save</val>
+        <val lang="nl_NL">Save</val>
     </key>
     <key value="Generate_milestone">
         <comment>JMenu milestone action.</comment>
@@ -177,18 +177,18 @@
     <key value="yes_button">
         <comment>"Yes" buttons.</comment>
         <val lang="en_US">Yes</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Yes</val>
+        <val lang="fr_FR">Yes</val>
+        <val lang="ja_JP">Yes</val>
+        <val lang="nl_NL">Yes</val>
     </key>
     <key value="no_button">
         <comment>"No" buttons.</comment>
         <val lang="en_US">No</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">No</val>
+        <val lang="fr_FR">No</val>
+        <val lang="ja_JP">No</val>
+        <val lang="nl_NL">No</val>
     </key>
     <key value="Create_package_archive_title">
         <comment>Progress dialog title when the files are packed into an archive.</comment>
@@ -214,38 +214,39 @@
         <val lang="ja_JP">A package containing {0} file(s) was created.</val>
         <val lang="nl_NL">A package containing {0} file(s) was created.</val>
     </key>
-    <key value="action2_infoMessage_exceptions">
-        <comment>Information message in pack modified files.</comment>
+    <key value="Failure_creating_package">
+        <comment>Message presented when the translation package can't be created.</comment>
         <val lang="en_US">Could not create package. </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Could not create package. </val>
+        <val lang="fr_FR">Could not create package. </val>
+        <val lang="ja_JP">Could not create package. </val>
+        <val lang="nl_NL">Could not create package. </val>
     </key>
    
-    <key value="action2_NoChangedFiles_exception">
-        <comment>No changed files exception message.</comment>
-        <val lang="en_US">There are no changed files since the milestone created on: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="No_changed_files">
+        <comment>Message presented when the translation package can't be buiult because there 
+        are no changed since the milestone was created.</comment>
+        <val lang="en_US">There are no changed files since the milestone created on: {0}</val>
+        <val lang="de_DE">There are no changed files since the milestone created on: {0}</val>
+        <val lang="fr_FR">There are no changed files since the milestone created on: {0}</val>
+        <val lang="ja_JP">There are no changed files since the milestone created on: {0}</val>
+        <val lang="nl_NL">There are no changed files since the milestone created on: {0}</val>
     </key>
-    <key value="action2_error_message">
-        <comment>Error messages.</comment>
+    <key value="Action_failed">
+        <comment>An action failed.</comment>
         <val lang="en_US">Failed because of: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Failed because of: </val>
+        <val lang="fr_FR">Failed because of: </val>
+        <val lang="ja_JP">Failed because of: </val>
+        <val lang="nl_NL">Failed because of: </val>
     </key>
-    <key value="action3_chooseFile_title">
-        <comment>Apply Package choose file title.</comment>
+    <key value="Choose_translation_package">
+        <comment>Title of the dialog in which the user selects the translation package to apply.</comment>
         <val lang="en_US">Choose the translated package</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Choose the translated package</val>
+        <val lang="fr_FR">Choose the translated package</val>
+        <val lang="ja_JP">Choose the translated package</val>
+        <val lang="nl_NL">Choose the translated package</val>
     </key>
     <key value="preview_changes">
         <comment>Apply Package confirm dialog title.</comment>
@@ -287,21 +288,13 @@
         <val lang="ja_JP">Cancel</val>
         <val lang="nl_NL">Cancel</val>
     </key>
-    <key value="action3_tempDir_name">
-        <comment>Apply Package name of the temporary directory.</comment>
-        <val lang="en_US">TranslatedPackage</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="action3_progresDialog_title">
+    <key value="Opening_package">
         <comment>Progress dialog title in apply package.</comment>
-        <val lang="en_US">Unzipping package</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="en_US">Opening package</val>
+        <val lang="de_DE">Opening package</val>
+        <val lang="fr_FR">Opening package</val>
+        <val lang="ja_JP">Opening package</val>
+        <val lang="nl_NL">Opening package</val>
     </key>
     <key value="failed_to_apply_package">
         <comment>Error message content title in apply package.</comment>
@@ -311,53 +304,53 @@
         <val lang="ja_JP">Failed to apply package because of: </val>
         <val lang="nl_NL">Failed to apply package because of: </val>
     </key>
-    <key value="showReport_label">
-        <comment>The label from showReport dialog.</comment>
+    <key value="Apply_package_report">
+        <comment>Notification after a translation package was applied.</comment>
         <val lang="en_US">Package applied over the current map. The overridden files are: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Package applied over the current map. The overridden files are: </val>
+        <val lang="fr_FR">Package applied over the current map. The overridden files are: </val>
+        <val lang="ja_JP">Package applied over the current map. The overridden files are: </val>
+        <val lang="nl_NL">Package applied over the current map. The overridden files are: </val>
     </key>
-    <key value="showReport_dialog_title">
-        <comment>The title of the showReport dialog.</comment>
-        <val lang="en_US">Applied files</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Updated_files">
+        <comment>Title of the report dialog after a translation package was applied.</comment>
+        <val lang="en_US">Updated files</val>
+        <val lang="de_DE">Updated files</val>
+        <val lang="fr_FR">Updated files</val>
+        <val lang="ja_JP">Updated files</val>
+        <val lang="nl_NL">Updated files</val>
     </key>
-    <key value="showReport_exception_message">
-        <comment>Exception message of the showReport dialog.</comment>
-        <val lang="en_US"> The list containing the unzipped files is empty or null.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="No_files_in_package">
+        <comment>Error message when we didn't extract any files from the translation package.</comment>
+        <val lang="en_US">The translation package didn't contain any file.</val>
+        <val lang="de_DE">The translation package didn't contain any file.</val>
+        <val lang="fr_FR">The translation package didn't contain any file.</val>
+        <val lang="ja_JP">The translation package didn't contain any file.</val>
+        <val lang="nl_NL">The translation package didn't contain any file.</val>
     </key>
-    <key value="apply_button">
-        <comment>Apply button.</comment>
+    <key value="Apply">
+        <comment>Apply.</comment>
         <val lang="en_US">Apply</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Apply</val>
+        <val lang="fr_FR">Apply</val>
+        <val lang="ja_JP">Apply</val>
+        <val lang="nl_NL">Apply</val>
     </key>
     <key value="switch_to_tree_view">
         <comment>Switch to Tree View button.</comment>
         <val lang="en_US">Switch to Tree View</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Switch to Tree View</val>
+        <val lang="fr_FR">Switch to Tree View</val>
+        <val lang="ja_JP">Switch to Tree View</val>
+        <val lang="nl_NL">Switch to Tree View</val>
     </key>
     <key value="switch_to_list_view">
         <comment>Switch to List View button.</comment>
         <val lang="en_US">Switch to List View</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Switch to List View</val>
+        <val lang="fr_FR">Switch to List View</val>
+        <val lang="ja_JP">Switch to List View</val>
+        <val lang="nl_NL">Switch to List View</val>
     </key>
     <key value="No_selected_files_to_apply">
         <comment>Message shown if the user doesn't select something in the dialog.</comment>
@@ -370,98 +363,61 @@
     <key value="Applying_selected_files">
         <comment>Progress dialog title.</comment>
         <val lang="en_US">Applying selected files</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Applying selected files</val>
+        <val lang="fr_FR">Applying selected files</val>
+        <val lang="ja_JP">Applying selected files</val>
+        <val lang="nl_NL">Applying selected files</val>
     </key>
-    <key value="previewDialog_progressDialog_infoMessage">
-        <comment>Progress dialog information message.</comment>
+    <key value="Translated_files_applied">
+        <comment>Notification after a translation package was applied.</comment>
         <val lang="en_US">The translated files have been applied.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">The translated files have been applied.</val>
+        <val lang="fr_FR">The translated files have been applied.</val>
+        <val lang="ja_JP">The translated files have been applied.</val>
+        <val lang="nl_NL">The translated files have been applied.</val>
     </key>
-    <key value="previewDialog_progressDialog_errorMessage">
-        <comment>Progress dialog error message.</comment>
-        <val lang="en_US">Couldn't apply files because of: </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Copy_translated_files_error_message">
+        <comment>Message presented when the translated files couldn't be copied in the
+        map directory.</comment>
+        <val lang="en_US">Couldn't copy translated files because of: </val>
+        <val lang="de_DE">Couldn't copy translated files because of: </val>
+        <val lang="fr_FR">Couldn't copy translated files because of: </val>
+        <val lang="ja_JP">Couldn't copy translated files because of: </val>
+        <val lang="nl_NL">Couldn't copy translated files because of: </val>
     </key>
-    <key value="previewDialog_supportedOxyFile">
-        <comment>Preview dialog information message.</comment>
+    <key value="File_type_not_supported">
+        <comment>Information message presented when the user requested to see
+        the differences between the new file version and the old, but the file is not supported.</comment>
         <val lang="en_US">The selected file is not supported by Oxygen XML Editor.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">The selected file is not supported by Oxygen XML Editor.</val>
+        <val lang="fr_FR">The selected file is not supported by Oxygen XML Editor.</val>
+        <val lang="ja_JP">The selected file is not supported by Oxygen XML Editor.</val>
+        <val lang="nl_NL">The selected file is not supported by Oxygen XML Editor.</val>
     </key>
-    <key value="progressDialog_label">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US">Here you'll see informations about the progress.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Copy_file_to">
+        <comment>Progress message while copying files.</comment>
+        <val lang="en_US">Copy {0} to {1}</val>
+        <val lang="de_DE">Copy {0} to {1}</val>
+        <val lang="fr_FR">Copy {0} to {1}</val>
+        <val lang="ja_JP">Copy {0} to {1}</val>
+        <val lang="nl_NL">Copy {0} to {1}</val>
     </key>
-    <key value="packageBuilder_progressText1">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US">Copying </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="packageBuilder_progressText2">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US"> files in order to build package</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="changeMilestone_progressText">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US">The milestone file is computed</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="zipDirectory_progressText">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US"> files packed.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="copyDirectory_progressText">
-        <comment>Progress dialog label text.</comment>
-        <val lang="en_US"> files copied.</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="preview_dialog_checkBox">
-        <comment>The select all checkbox.</comment>
+    <key value="Select_all_files">
+        <comment>Option to automatically select all presented files. The selected files
+        are applied over their old versions.</comment>
         <val lang="en_US">Select all files</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+        <val lang="de_DE">Select all files</val>
+        <val lang="fr_FR">Select all files</val>
+        <val lang="ja_JP">Select all files</val>
+        <val lang="nl_NL">Select all files</val>
     </key>
-    <key value="action2_packOnlyModified_progress_title">
-        <comment>Progress dialog title.</comment>
-        <val lang="en_US">Generating modified resources</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Collecting_modified_resources">
+        <comment>Title of the progress dialog while collecting the modified resources.</comment>
+        <val lang="en_US">Collecting modified resources</val>
+        <val lang="de_DE">Collecting modified resources</val>
+        <val lang="fr_FR">Collecting modified resources</val>
+        <val lang="ja_JP">Collecting modified resources</val>
+        <val lang="nl_NL">Collecting modified resources</val>
     </key>
     <key value="report_will_be_created">
         <comment>In "Create Modified Files..." dialog this message will show where the 
@@ -472,37 +428,29 @@
         <val lang="ja_JP">A report will be created at:</val>
         <val lang="nl_NL">A report will be created at:</val>
     </key>
-    <key value="reportDialog_checkbox_tooltip">
-        <comment> The checkbox tooltip from the report dialog.</comment>
-        <val lang="en_US">If selected a report containing the relative paths of the modified resources will be generated. </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Generate_report_tooltip">
+        <comment>An option in the generate translation package dialog.</comment>
+        <val lang="en_US">Generate a report containing the relative paths of the modified resources.</val>
+        <val lang="de_DE">Generate a report containing the relative paths of the modified resources.</val>
+        <val lang="fr_FR">Generate a report containing the relative paths of the modified resources.</val>
+        <val lang="ja_JP">Generate a report containing the relative paths of the modified resources.</val>
+        <val lang="nl_NL">Generate a report containing the relative paths of the modified resources.</val>
     </key>
-    <key value="last_report_creation_time">
+    <key value="Report_creation_time">
         <comment>In "Create Modified Files Package" is a label informing the user
         when last report was created.</comment>
-        <val lang="en_US">Last report was created on:</val>
-        <val lang="de_DE">Last report was created on:</val>
-        <val lang="fr_FR">Last report was created on:</val>
-        <val lang="ja_JP">Last report was created on:</val>
-        <val lang="nl_NL">Last report was created on:</val>
+        <val lang="en_US">Last report was created on {0}</val>
+        <val lang="de_DE">Last report was created on {0}</val>
+        <val lang="fr_FR">Last report was created on {0}</val>
+        <val lang="ja_JP">Last report was created on {0}</val>
+        <val lang="nl_NL">Last report was created on {0}</val>
     </key>
-    <key value="reportDialog_fileDescriptor">
-        <comment> The file descriptor from the report dialog.</comment>
-        <val lang="en_US">Zip Files(*.zip)</val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
-    </key>
-    <key value="reportDialog_checkbox_text">
-        <comment> The checkbox text from the report dialog.</comment>
-        <val lang="en_US">Create report </val>
-        <val lang="de_DE">de_DE_translation</val>
-        <val lang="fr_FR">fr_FR_translation</val>
-        <val lang="ja_JP">ja_JP_translation</val>
-        <val lang="nl_NL">nl_NL_translation</val>
+    <key value="Generate_report">
+        <comment>An option to generate a report.</comment>
+        <val lang="en_US">Generate report</val>
+        <val lang="de_DE">Generate report</val>
+        <val lang="fr_FR">Generate report</val>
+        <val lang="ja_JP">Generate report</val>
+        <val lang="nl_NL">Generate report</val>
     </key>
 </translation>

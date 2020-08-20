@@ -71,7 +71,7 @@ public class ApplyPackageUtil {
       ProgressDialog.install(
           unzipTask, 
           (JFrame)workspaceAccess.getParentFrame(), 
-          resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
+          resourceBundle.getMessage(Tags.OPENING_PACKAGE));
       // This listener notifies the user about how the operation ended.
       unzipTask.addProgressListener(new ProgressChangeAdapter() {
         @Override
@@ -134,7 +134,7 @@ public class ApplyPackageUtil {
     // Install the progress tracker.
     JFrame parentFrame = (JFrame) pluginWorkspaceAccess.getParentFrame();
     final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
-    ProgressDialog.install(unzipTask, parentFrame, resourceBundle.getMessage(Tags.ACTION3_PROGRESS_DIALOG_TITLE));
+    ProgressDialog.install(unzipTask, parentFrame, resourceBundle.getMessage(Tags.OPENING_PACKAGE));
     
     // This listener notifies the user about how the operation ended.
     final UnzipWorker[] taks = new UnzipWorker[] {unzipTask};
@@ -201,7 +201,7 @@ public class ApplyPackageUtil {
       gbcLabel.fill = GridBagConstraints.HORIZONTAL;
       gbcLabel.anchor = GridBagConstraints.NORTH;
 
-      panel.add(new JLabel(resourceBundle.getMessage(Tags.SHOW_REPORT_LABEL)), gbcLabel);
+      panel.add(new JLabel(resourceBundle.getMessage(Tags.APPLY_PACKAGE_REPORT)), gbcLabel);
 
       GridBagConstraints gbcScroll = new GridBagConstraints();
       gbcScroll.gridx = 0;
@@ -214,9 +214,13 @@ public class ApplyPackageUtil {
       gbcScroll.anchor = GridBagConstraints.LINE_START;
       panel.add(scroll , gbcScroll);
 
-      JOptionPane.showMessageDialog((JFrame) pluginWorkspaceAccess.getParentFrame(), panel, resourceBundle.getMessage(Tags.SHOW_REPORT_TITLE), JOptionPane.INFORMATION_MESSAGE);
+      JOptionPane.showMessageDialog(
+          (JFrame) pluginWorkspaceAccess.getParentFrame(), 
+          panel, 
+          resourceBundle.getMessage(Tags.UPDATED_FILES), 
+          JOptionPane.INFORMATION_MESSAGE);
     } else {
-      throw new IOException(resourceBundle.getMessage(Tags.SHOW_REPORT_EXCEPTION_MESSAGE));
+      throw new IOException(resourceBundle.getMessage(Tags.NO_FILES_IN_PACKAGE));
     }
   }
   
@@ -239,7 +243,7 @@ public class ApplyPackageUtil {
         pluginWorkspace.openDiffFilesApplication(leftURL, rightURL);
       } else {
         pluginWorkspace.showInformationMessage(
-            pluginWorkspace.getResourceBundle().getMessage(Tags.PREVIEW_DIALOG_SUPPORTED_OXYFILE));
+            pluginWorkspace.getResourceBundle().getMessage(Tags.FILE_TYPE_NOT_SUPPORTED));
       }
     } catch (MalformedURLException e2) {
       // Shouldn't happen.

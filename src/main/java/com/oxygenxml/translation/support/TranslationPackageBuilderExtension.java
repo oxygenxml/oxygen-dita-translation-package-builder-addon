@@ -147,7 +147,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         } catch (Exception e) {
           // Preset error to user.
           logger.error(e, e);
-          pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION2_ERROR_MESSAGE) + e.getMessage());
+          pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION_FAILED) + e.getMessage());
         }
       }
     };
@@ -183,7 +183,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         final File unzipLocation = PathUtil.calculateTopLocationFile(editorLocation);
         
         final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
-        final File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.ACTION3_CHOOSE_FILE_TITLE), new String[] {"zip"},  null);
+        final File chosenDir = pluginWorkspaceAccess.chooseFile(resourceBundle.getMessage(Tags.CHOOSE_TRANSLATION_PACKAGE), new String[] {"zip"},  null);
 
         // DIFF FLOW
         // 1. Ask user if he wants a preview.

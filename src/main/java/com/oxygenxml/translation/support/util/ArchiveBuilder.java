@@ -266,7 +266,7 @@ public final class ArchiveBuilder {
       
       PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
       ProgressChangeEvent progress = new ProgressChangeEvent(counter, 
-          String.valueOf(counter) + resourceBundle.getMessage(Tags.COPYDIR_PROGRESS_TEXT));
+          String.valueOf(counter) + resourceBundle.getMessage(Tags.COPY_FILE_TO));
       fireChangeEvent(progress);
 
     }
