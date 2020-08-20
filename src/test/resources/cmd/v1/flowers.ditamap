@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map>
+  <title>Growing Flowers</title>
+  <topicref href="topics/introduction.dita"/>
+  <topicref href="topics/index.dita" collection-type="sequence">
+      <topicref href="topics/flowers/iris.dita"/>
+      <topicref href="topics/flowers/snowdrop.dita"/>
+   
+  </topicref>
+</map>

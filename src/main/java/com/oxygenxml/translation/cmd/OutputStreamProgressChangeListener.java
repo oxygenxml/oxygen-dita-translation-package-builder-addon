@@ -6,7 +6,7 @@ import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 
 /**
- * Delegates events to the an output stream.
+ * Delegates progress events to the an output stream.
  * 
  * @author alex_jitianu
  */
@@ -35,6 +35,7 @@ public class OutputStreamProgressChangeListener implements ProgressChangeListene
     }
     
     stream.println(progress.getMessage());
+    stream.flush();
   }
 
   @Override
@@ -45,11 +46,12 @@ public class OutputStreamProgressChangeListener implements ProgressChangeListene
   @Override
   public void done() {
     stream.println("Operation done");
+    stream.flush();
   }
 
   @Override
   public void operationFailed(Exception ex) {
     ex.printStackTrace(stream);
+    stream.flush();
   }
-
 }
