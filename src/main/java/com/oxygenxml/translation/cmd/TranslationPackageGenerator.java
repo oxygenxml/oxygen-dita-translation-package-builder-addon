@@ -56,17 +56,18 @@ public class TranslationPackageGenerator {
    * @param rootMap DITA Map.
    * @param packageFile Resulting package file.
    * @param ps An optional print stream where to write progress data and errors.
+   * @param generateMilestone <code>true</code> to regenerate the milestone file after the package is created.
    * 
    * @return Resulting package file.
    * 
    * @throws InterruptedException
    * @throws ExecutionException
    */
-  public static File createPackage(
+  public static void createPackage(
       URL rootMap, 
       File packageFile, 
-      PrintStream ps) throws InterruptedException, ExecutionException {
-    // TODO add an option to generate the package when the milestone is missing.
+      PrintStream ps,
+      boolean generateMilestone) throws InterruptedException, ExecutionException {
     GenerateChangePackageWorker worker = new GenerateChangePackageWorker(rootMap, packageFile);
     
     if (ps != null) {
@@ -75,7 +76,12 @@ public class TranslationPackageGenerator {
     
     worker.execute();
     
-    return worker.get();
+    worker.get();
+    
+    // Regenerate the milestone.
+    if (generateMilestone) {
+      generateMilestone(rootMap, ps);
+    }
   }
   
   /**

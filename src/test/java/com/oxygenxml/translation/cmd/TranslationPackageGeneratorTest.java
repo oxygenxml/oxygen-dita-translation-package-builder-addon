@@ -10,14 +10,18 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
-import java.util.zip.ZipFile;import org.apache.commons.io.IOUtils;
+import java.util.zip.ZipFile;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.core.TestUtil;
 import com.oxygenxml.translation.support.core.TranslationPackageTestBase;
+import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+import ro.sync.io.FileSystemUtil;
 
 /**
  * Tests cases for the 3 major use cases:
@@ -87,10 +91,34 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     File parentDir = TestUtil.getPath("cmd/v2");
     URL ditaMapURL = new File(parentDir, "flowers.ditamap").toURI().toURL();
     
+    File milestoneFile = MilestoneUtil.getMilestoneFile(ditaMapURL);
+    String milestoneContent = TestUtil.readFile(milestoneFile).replaceAll("date=\".*\"", "date=\"\"");
+    String expectedInitialMilestoneContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<resources date=\"\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>5863a76f6983d3e97f643802cd485442</md5>\n" + 
+        "        <relativePath>flowers.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>408630b3734631d02568f1997e4df3e6</md5>\n" + 
+        "        <relativePath>topics/introduction.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>f04d2ed1f248b0033d0433be55caef52</md5>\n" + 
+        "        <relativePath>topics/flowers/iris.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>26692a27cda3dd11f8d26c87d7de050b</md5>\n" + 
+        "        <relativePath>topics/flowers/snowdrop.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "</resources>\n" + 
+        "";
+    assertEquals(expectedInitialMilestoneContent, milestoneContent);
+    
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(out, true, "UTF-8");
     File packageFile = new File(parentDir, "translation.zip");
-    TranslationPackageGenerator.createPackage(ditaMapURL, packageFile, ps );
+    TranslationPackageGenerator.createPackage(ditaMapURL, packageFile, ps, false);
     
     Assert.assertTrue("The translation package wasn't created", packageFile.exists());
     
@@ -111,6 +139,11 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
         "75% Add_to_package: topics/flowers/iris.dita\n" + 
         "75% Add_to_package: topics/introduction.dita\n" + 
         "", TestUtil.read(out.toByteArray(), "UTF-8").replaceAll("\r", ""));
+    
+    // The milestone is unchanged.
+    milestoneContent = TestUtil.readFile(milestoneFile).replaceAll("date=\".*\"", "date=\"\"");
+    Assert.assertEquals(expectedInitialMilestoneContent, milestoneContent);
+    
   }
   
   /**
@@ -164,6 +197,98 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
         "", TestUtil.read(out.toByteArray(), "UTF-8").replaceAll("\r", ""));
   }
   
+  /**
+   * <p><b>Description:</b> Tests the entry method that creates the package for translation.</p>
+   * <p><b>Bug ID:</b> EXM-46006</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails
+   */
+  @Test
+  public void testGeneratePackage_RegenerateMilestone() throws Exception {
+    File parentDir = TestUtil.getPath("cmd/v2");
+    File workingDir = new File(parentDir.getParentFile(), "v2_working");
+    FileSystemUtil.deleteRecursivelly(workingDir);
+    new ArchiveBuilder(null).copyDirectory(parentDir, workingDir, 0, true);
+    
+    URL ditaMapURL = new File(workingDir, "flowers.ditamap").toURI().toURL();
+    
+    File milestoneFile = MilestoneUtil.getMilestoneFile(ditaMapURL);
+    String milestoneContent = TestUtil.readFile(milestoneFile).replaceAll("date=\".*\"", "date=\"\"");
+    String expectedInitialMilestoneContent = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<resources date=\"\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>5863a76f6983d3e97f643802cd485442</md5>\n" + 
+        "        <relativePath>flowers.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>408630b3734631d02568f1997e4df3e6</md5>\n" + 
+        "        <relativePath>topics/introduction.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>f04d2ed1f248b0033d0433be55caef52</md5>\n" + 
+        "        <relativePath>topics/flowers/iris.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>26692a27cda3dd11f8d26c87d7de050b</md5>\n" + 
+        "        <relativePath>topics/flowers/snowdrop.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "</resources>\n" + 
+        "";
+    assertEquals(expectedInitialMilestoneContent, milestoneContent);
+    
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(out, true, "UTF-8");
+    File packageFile = new File(parentDir, "translation.zip");
+    TranslationPackageGenerator.createPackage(ditaMapURL, packageFile, ps, true);
+    
+    Assert.assertTrue("The translation package wasn't created", packageFile.exists());
+    
+    Assert.assertEquals(
+        "topics/\n" + 
+        "topics/flowers/\n" + 
+        "topics/flowers/iris.dita\n" + 
+        "topics/introduction.dita\n" + 
+        "", getZipEntries(packageFile).toString());
+    
+    Assert.assertEquals(
+        "25% Analyze_for_changes: flowers.ditamap\n" + 
+        "50% Analyze_for_changes: topics/introduction.dita\n" + 
+        "75% Analyze_for_changes: topics/flowers/iris.dita\n" + 
+        "100% Analyze_for_changes: topics/flowers/snowdrop.dita\n" + 
+        "25% Copy_to_package_dir\n" + 
+        "50% Copy_to_package_dir\n" + 
+        "75% Add_to_package: topics/flowers/iris.dita\n" + 
+        "75% Add_to_package: topics/introduction.dita\n" + 
+        "", TestUtil.read(out.toByteArray(), "UTF-8").replaceAll("\r", ""));
+    
+    // The milestone is unchanged.
+    milestoneContent = TestUtil.readFile(milestoneFile).replaceAll("date=\".*\"", "date=\"\"");
+    Assert.assertEquals(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<resources date=\"\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>5863a76f6983d3e97f643802cd485442</md5>\n" + 
+        "        <relativePath>flowers.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>4b818e2e24212cd3098c1b341ca44f6c</md5>\n" + 
+        "        <relativePath>topics/introduction.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>2e6cb38edf8cecb1d8a03e7285dd3b9b</md5>\n" + 
+        "        <relativePath>topics/flowers/iris.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>26692a27cda3dd11f8d26c87d7de050b</md5>\n" + 
+        "        <relativePath>topics/flowers/snowdrop.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "</resources>\n" + 
+        "", milestoneContent);
+    
+  }
+
   /**
    * Gets the entries in the archive.
    * 
