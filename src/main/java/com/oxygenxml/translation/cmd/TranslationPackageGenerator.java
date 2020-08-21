@@ -31,7 +31,7 @@ public class TranslationPackageGenerator {
    * on to detect file changes.
    * 
    * @param ditaMapURL DITA Map.
-   * @param progressListener An optional print stream where to write progress data and errors.
+   * @param ps An optional print stream where to write progress data and errors.
    * 
    * @return The worker that generates the milestone.
    * 
