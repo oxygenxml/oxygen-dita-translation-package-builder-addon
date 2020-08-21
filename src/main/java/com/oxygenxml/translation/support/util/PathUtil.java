@@ -133,7 +133,7 @@ public class PathUtil {
     URL location = null;
     try {
       if (packageBuilder == null) {
-        packageBuilder = new ChangePackageGenerator(null);
+        packageBuilder = new ChangePackageGenerator();
       }
       String path = calculateTopLocation(rootMapUrl, packageBuilder);
       location = new URL(path);

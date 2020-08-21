@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
 import org.apache.log4j.Logger;
+
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
 import com.oxygenxml.translation.ui.ProgressChangeEvent;
@@ -42,7 +44,7 @@ public final class ArchiveBuilder {
   /**
    * A list of ProgressChangeListener listeners.
    */
-  private List<ProgressChangeListener> listeners;
+  private List<ProgressChangeListener> listeners = new ArrayList<>();
   
   /**
    * Constructor.
@@ -50,12 +52,25 @@ public final class ArchiveBuilder {
    * @param listeners A list of listeners. Not <code>null</code>.  
    */
   public ArchiveBuilder(List<ProgressChangeListener> listeners) {
-    if (listeners == null) {
-      this.listeners = new ArrayList<>();
-    } else {
+    if (listeners != null) {
       this.listeners = listeners;
     }
   }
+  
+  /**
+   * Constructor.
+   */
+  public ArchiveBuilder() {}
+  
+  /**
+   * Adds a new listener.
+   * 
+   * @param l Listener to get notifications.
+   */
+  public void addProgressListener(ProgressChangeListener l) {
+    listeners.add(l);
+  }
+
 
   /**
    * Packs a directory.

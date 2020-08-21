@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources date="2020-08-20T14:29:55.725+03:00">
+    <info-resource>
+        <md5>5863a76f6983d3e97f643802cd485442</md5>
+        <relativePath>flowers.ditamap</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>408630b3734631d02568f1997e4df3e6</md5>
+        <relativePath>topics/introduction.dita</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>f04d2ed1f248b0033d0433be55caef52</md5>
+        <relativePath>topics/flowers/iris.dita</relativePath>
+    </info-resource>
+    <info-resource>
+        <md5>26692a27cda3dd11f8d26c87d7de050b</md5>
+        <relativePath>topics/flowers/snowdrop.dita</relativePath>
+    </info-resource>
+</resources>

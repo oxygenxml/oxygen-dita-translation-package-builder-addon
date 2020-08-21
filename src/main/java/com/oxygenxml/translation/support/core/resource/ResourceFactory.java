@@ -1,5 +1,6 @@
 package com.oxygenxml.translation.support.core.resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -39,7 +40,6 @@ public class ResourceFactory {
     }
     return instance;
   }
-
   /**
    * Creates a resource builder for the given map.
    * @param map The starting point. The root map.
@@ -47,6 +47,18 @@ public class ResourceFactory {
    * @throws IOException Failed to create the resource. 
    */
   public IRootResource getResource(URL map) throws IOException {
+    return getResource(map, null);
+  }
+  
+  /**
+   * Creates a resource builder for the given map.
+   * @param map The starting point. The root map.
+   * @param milestone The location where to generate the milestone. If <code>null</code>, the milestone will be generated 
+   * next to the map.
+   * 
+   * @throws IOException Failed to create the resource. 
+   */
+  public IRootResource getResource(URL map, File milestone) throws IOException {
     IResourceBuilder builder = null;
     // Decide which type of builder to use.
     if (detectionType == DetectionType.FILE_SYSTEM) {
@@ -57,7 +69,7 @@ public class ResourceFactory {
       throw new IllegalStateException("Unhandled detection type");
     }
 
-    return builder.wrap(new ReferencedResource(map, true));
+    return builder.wrap(new ReferencedResource(map, true), milestone);
   }
 
   /**

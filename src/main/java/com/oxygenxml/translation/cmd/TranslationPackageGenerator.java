@@ -1,15 +1,26 @@
 package com.oxygenxml.translation.cmd;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
+import javax.xml.bind.JAXBException;
+
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.core.ChangePackageGenerator;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.core.resource.ResourceFactory;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import com.oxygenxml.translation.support.util.PathUtil;
-import com.oxygenxml.translation.ui.worker.GenerateChangePackageWorker;
-import com.oxygenxml.translation.ui.worker.GenerateMilestoneWorker;
-import com.oxygenxml.translation.ui.worker.UnzipWorker;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Utility methods for the common tasks:
@@ -31,56 +42,78 @@ public class TranslationPackageGenerator {
    * on to detect file changes.
    * 
    * @param ditaMapURL DITA Map.
+   * @param milestone The location where to save the milestone file. If <code>null</code>, the milestone file is 
+   * generated next to the root map.
    * @param ps An optional print stream where to write progress data and errors.
    * 
-   * @return The worker that generates the milestone.
+   * @return The milestone file.
    * 
-   * @throws ExecutionException 
-   * @throws InterruptedException 
+   * @throws IOException Problems while generating the milestone.
+   * @throws JAXBException Problems while serializing the milestone data.
+   * @throws NoSuchAlgorithmException Problems while computing the MD5 keys needs for the milestone file.
    */
-  public static File generateMilestone(URL ditaMapURL, PrintStream ps) throws InterruptedException, ExecutionException {
-    GenerateMilestoneWorker worker = new GenerateMilestoneWorker(ditaMapURL);
+  public static File generateMilestone(URL ditaMapURL, File milestone, PrintStream ps) throws IOException, 
+  NoSuchAlgorithmException, JAXBException {
     
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
     if (ps != null) {
-      worker.addProgressListener(new OutputStreamProgressChangeListener(ps));
+      packageBuilder.addProgressListener(new OutputStreamProgressChangeListener(ps));
     }
-    
-    worker.execute();
-    
-    return worker.get();
+    IRootResource resource = ResourceFactory.getInstance().getResource(ditaMapURL, milestone);
+    try {
+      return packageBuilder.generateChangeMilestone(resource);
+    } catch (StoppedByUserException e) {
+      // The progress listener we pass can't stop process.
+      throw new IOException(e);
+    }
   }
   
   /**
    * Creates a package with all the changed files that need translating.
    * 
    * @param rootMap DITA Map.
+   * @param milestone The location of the milestone file. If <code>null</code>, the milestone file is 
+   * searched for next to the root map.
    * @param packageFile Resulting package file.
    * @param ps An optional print stream where to write progress data and errors.
    * @param generateMilestone <code>true</code> to regenerate the milestone file after the package is created.
    * 
    * @return Resulting package file.
    * 
-   * @throws InterruptedException
-   * @throws ExecutionException
+   * @throws IOException Problems while creating the package.
+   * @throws JAXBException Problems while loading the milestone file.
+   * @throws NoSuchAlgorithmException Problems while computing the MD5 keys needed to detect changes in files.
    */
   public static void createPackage(
       URL rootMap, 
+      File milestoneFile,
       File packageFile, 
       PrintStream ps,
-      boolean generateMilestone) throws InterruptedException, ExecutionException {
-    GenerateChangePackageWorker worker = new GenerateChangePackageWorker(rootMap, packageFile);
-    
+      boolean generateMilestone) throws NoSuchAlgorithmException, IOException, JAXBException {
+    ChangePackageGenerator packageBuilder = new ChangePackageGenerator();
+    OutputStreamProgressChangeListener l = null;
     if (ps != null) {
-      worker.addProgressListener(new OutputStreamProgressChangeListener(ps));
+      l = new OutputStreamProgressChangeListener(ps);
+      packageBuilder.addProgressListener(l);
     }
     
-    worker.execute();
-    
-    worker.get();
-    
-    // Regenerate the milestone.
-    if (generateMilestone) {
-      generateMilestone(rootMap, ps);
+    try {
+      List<ResourceInfo> modifiedResources = packageBuilder.collectModifiedResources(
+          ResourceFactory.getInstance().getResource(rootMap, milestoneFile));
+
+      PackageGeneratorUtil.zipModifiedResources(
+          rootMap, 
+          l != null ? Arrays.asList(new ProgressChangeListener[] {l}) : Collections.emptyList(), 
+          packageFile, 
+          modifiedResources);
+
+      // Regenerate the milestone.
+      if (generateMilestone) {
+        generateMilestone(rootMap, milestoneFile, ps);
+      }
+    } catch (StoppedByUserException e) {
+      // The progress listener we pass can't stop process.
+      throw new IOException(e);
     }
   }
   
@@ -93,25 +126,25 @@ public class TranslationPackageGenerator {
    * 
    * @return A list with the relative path of every extracted file.
    * 
-   * @throws ExecutionException 
-   * @throws InterruptedException 
+   * @throws IOException Problems while applying the package.
    */
   public static List<String> applyPackage(
       URL rootMap, 
       File packageFile, 
-      PrintStream ps) throws InterruptedException, ExecutionException {
+      PrintStream ps) throws IOException {
     File unzipLocation = PathUtil.calculateTopLocationFile(rootMap);
     
-    UnzipWorker unzipTask = new UnzipWorker(
+    ArchiveBuilder archiveBuilder = new ArchiveBuilder();
+    if (ps != null) {
+      archiveBuilder.addProgressListener(new OutputStreamProgressChangeListener(ps));
+    }
+    try {
+    return archiveBuilder.unzipDirectory(
         packageFile,
         unzipLocation);
-    
-    if (ps != null) {
-      unzipTask.addProgressListener(new OutputStreamProgressChangeListener(ps));
+    } catch (StoppedByUserException e) {
+      // The progress listener we pass can't stop process.
+      throw new IOException(e);
     }
-    
-    unzipTask.execute();
-    
-    return unzipTask.get();
   }
 }

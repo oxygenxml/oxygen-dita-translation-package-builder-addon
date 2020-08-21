@@ -105,7 +105,7 @@ public class AttributesCollectorUsingSaxTest extends TranslationPackageTestBase 
     
     ChangePackageGenerator packageBuilder = new ChangePackageGenerator(null);
     MapStructureResourceBuilder structureBuilder = new MapStructureResourceBuilder();
-    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true));
+    IRootResource rootRes = structureBuilder.wrap(new ReferencedResource(url, true), null);
     File generateChangeMilestone = packageBuilder.generateChangeMilestone(rootRes);
     String result = TestUtil.readFile(generateChangeMilestone);
     

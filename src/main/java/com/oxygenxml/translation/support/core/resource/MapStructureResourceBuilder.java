@@ -1,10 +1,5 @@
 package com.oxygenxml.translation.support.core.resource;
 
-import com.oxygenxml.translation.support.core.MilestoneUtil;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
-import com.oxygenxml.translation.support.util.OxygenParserCreator;
-import com.oxygenxml.translation.support.util.ParserCreator;
-import com.oxygenxml.translation.support.util.SAXParserCreator;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,11 +10,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import com.oxygenxml.translation.support.core.MilestoneUtil;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+import com.oxygenxml.translation.support.util.OxygenParserCreator;
+import com.oxygenxml.translation.support.util.ParserCreator;
+import com.oxygenxml.translation.support.util.SAXParserCreator;
+
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.util.URLUtil;
@@ -194,36 +198,44 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
    * The root map.
    */
   private static class RootMapResource extends SaxResource implements IRootResource {
+    /**
+     * The location where to generate the milestone. If <code>null</code>, the milestone will be generated 
+     * next to the map.
+     */
+    private File milestone;
 
     /**
      * Constructor.
      * 
      * @param resource The resource to wrap and parse for children.
+     * @param milestone The location where to generate the milestone. If <code>null</code>, the milestone will be generated 
+     * next to the map.
      * @param relativePath A path from the root resource to the current one. 
      * @param parserCreator Creates a parser.
      * @param recursivityCheck A set to collect all the parsed resources. Used to avoid infinite recursion.
      */
     private RootMapResource(
         ReferencedResource resource, 
+        File milestone, 
         String relativePath,
         ParserCreator parserCreator,
         Set<ReferencedResource> recursivityCheck) {
       super(resource, relativePath, parserCreator, recursivityCheck, resource.getLocation());
+      this.milestone = milestone;
     }
 
     /**
      * @see com.oxygenxml.translation.support.core.resource.IRootResource#getMilestoneFile()
      */
     public File getMilestoneFile() {
-      return MilestoneUtil.getMilestoneFile(resource.getLocation());
+      return milestone != null ? milestone : MilestoneUtil.getMilestoneFile(resource.getLocation());
     }
-
   }
 
   /**
-   * @see com.oxygenxml.translation.support.core.resource.IResourceBuilder#wrap(java.io.File)
+   * @see com.oxygenxml.translation.support.core.resource.IResourceBuilder#wrap(ReferencedResource, java.io.File)
    */
-  public IRootResource wrap(ReferencedResource map) throws IOException {
+  public IRootResource wrap(ReferencedResource map, File milestone) throws IOException {
     ParserCreator parserCreator = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null && pluginWorkspace.getXMLUtilAccess() != null) {
@@ -236,6 +248,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
 
     return new RootMapResource(
         map, 
+        milestone,
         "", 
         parserCreator, 
         new HashSet<ReferencedResource>());

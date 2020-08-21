@@ -64,9 +64,25 @@ public class ChangePackageGenerator {
   
   /**
    * Constructor.
+   * 
+   * @param listeners Listeners to receive notifications about progress.
    */
   public ChangePackageGenerator(List<ProgressChangeListener> listeners) {
     this.listeners = listeners; 
+  }
+  
+  /**
+   * Default constructor.
+   */
+  public ChangePackageGenerator() {}
+  
+  /**
+   * Adds a new listener.
+   * 
+   * @param l Listener to get notifications.
+   */
+  public void addProgressListener(ProgressChangeListener l) {
+    listeners.add(l);
   }
 
   /**

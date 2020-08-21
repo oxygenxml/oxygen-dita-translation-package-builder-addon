@@ -18,6 +18,7 @@ import org.junit.Test;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
 import com.oxygenxml.translation.support.core.TestUtil;
 import com.oxygenxml.translation.support.core.TranslationPackageTestBase;
+import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -48,7 +49,7 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(out, true, "UTF-8");
-    File milestone = TranslationPackageGenerator.generateMilestone(ditaMapURL, ps );
+    File milestone = TranslationPackageGenerator.generateMilestone(ditaMapURL, null, ps );
     
     String milestoneContent = TestUtil.readFile(milestone);
     
@@ -118,7 +119,7 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(out, true, "UTF-8");
     File packageFile = new File(parentDir, "translation.zip");
-    TranslationPackageGenerator.createPackage(ditaMapURL, packageFile, ps, false);
+    TranslationPackageGenerator.createPackage(ditaMapURL, null, packageFile, ps, false);
     
     Assert.assertTrue("The translation package wasn't created", packageFile.exists());
     
@@ -236,7 +237,7 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(out, true, "UTF-8");
     File packageFile = new File(parentDir, "translation.zip");
-    TranslationPackageGenerator.createPackage(ditaMapURL, packageFile, ps, true);
+    TranslationPackageGenerator.createPackage(ditaMapURL, null, packageFile, ps, true);
     
     Assert.assertTrue("The translation package wasn't created", packageFile.exists());
     
@@ -302,5 +303,85 @@ public class TranslationPackageGeneratorTest extends TranslationPackageTestBase 
       return b.toString();
     }
   }
+  
+
+
+  /**
+   * <p><b>Description:</b> Creates a milestone at a specific location.</p>
+   * <p><b>Bug ID:</b> EXM-46198</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails
+   */
+  @Test
+  public void testGenerateMilestone_SpecifyLocation() throws Exception {
+    URL ditaMapURL = new File(TestUtil.getPath("cmd/v1"), "flowers.ditamap").toURI().toURL();
+    File defaultMilestone = MilestoneUtil.getMilestoneFile(ditaMapURL);
+    assertTrue(defaultMilestone.delete());;
+    
+    File milestone = new File(TestUtil.getPath("cmd"), "mil.xml");
+    ResourceFactory.getInstance().getResource(ditaMapURL, milestone);
+    
+    TranslationPackageGenerator.generateMilestone(ditaMapURL, milestone, null);
+    
+    
+    String milestoneContent = TestUtil.readFile(milestone);
+    
+    milestoneContent = milestoneContent.replaceAll("date=\".*\"", "date=\"\"");
+    Assert.assertEquals(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+        "<resources date=\"\">\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>5863a76f6983d3e97f643802cd485442</md5>\n" + 
+        "        <relativePath>flowers.ditamap</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>408630b3734631d02568f1997e4df3e6</md5>\n" + 
+        "        <relativePath>topics/introduction.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>f04d2ed1f248b0033d0433be55caef52</md5>\n" + 
+        "        <relativePath>topics/flowers/iris.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "    <info-resource>\n" + 
+        "        <md5>26692a27cda3dd11f8d26c87d7de050b</md5>\n" + 
+        "        <relativePath>topics/flowers/snowdrop.dita</relativePath>\n" + 
+        "    </info-resource>\n" + 
+        "</resources>\n" + 
+        "", milestoneContent);
+    
+    defaultMilestone = MilestoneUtil.getMilestoneFile(ditaMapURL);
+    assertFalse("The default milestone should not be used.", defaultMilestone.exists());
+  }
+  
+  /**
+   * <p><b>Description:</b> Create a package for translation with a specified milestone.</p>
+   * <p><b>Bug ID:</b> EXM-46198</p>
+   *
+   * @author alex_jitianu
+   *
+   * @throws Exception If it fails
+   */
+  @Test
+  public void testCreatePackage_SpecifyLocation() throws Exception {
+    File parentDir = TestUtil.getPath("operation/v2");
+    URL ditaMapURL = new File(parentDir, "flowers.ditamap").toURI().toURL();
+    File milestoneFile = new File(TestUtil.getPath("operation"), "milestone.xml");
+    
+    File packageFile = new File(parentDir, "translation.zip");
+    TranslationPackageGenerator.createPackage(ditaMapURL, milestoneFile, packageFile, null, false);
+    
+    Assert.assertTrue("The translation package wasn't created", packageFile.exists());
+    
+    Assert.assertEquals(
+        "topics/\n" + 
+        "topics/flowers/\n" + 
+        "topics/flowers/iris.dita\n" + 
+        "topics/introduction.dita\n" + 
+        "", TestUtil.getZipEntries(packageFile).toString());
+    
+  }
+
 
 }

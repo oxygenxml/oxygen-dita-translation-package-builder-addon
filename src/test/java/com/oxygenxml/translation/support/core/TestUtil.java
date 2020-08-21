@@ -11,10 +11,17 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import com.oxygenxml.translation.support.storage.ResourceInfo;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Utility methods used for test.
@@ -117,6 +124,35 @@ public class TestUtil {
     }
     
     return b.toString();
-    
+  }
+
+  /**
+   * Gets the entries in the archive.
+   * 
+   * @param packageFile Archive file.
+   * 
+   * @return A list with all the entries from the archive.
+   * 
+   * @throws ZipException
+   * @throws IOException
+   */
+  public static String getZipEntries(File packageFile) throws ZipException, IOException {
+    List<String> entries = new ArrayList<>();
+    try (ZipFile zipFile = new ZipFile(packageFile)) {
+      Enumeration<?> enu = zipFile.entries();
+      while (enu.hasMoreElements()) {
+        ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+        String name = zipEntry.getName();
+        entries.add(name);
+      }
+
+      StringBuilder b = new StringBuilder();
+      Collections.sort(entries);
+      for (String string : entries) {
+        b.append(string).append("\n");
+      }
+      
+      return b.toString();
+    }
   }
 }

@@ -136,19 +136,27 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
    */
   private static class RootDirResource extends DirResource implements IRootResource {
     /**
+     * The location where to generate the milestone. If <code>null</code>, the milestone will be generated 
+     * next to the map.
+     */
+    private File milestone;
+
+    /**
      * Constructor.
+     * @param milestone 
      * 
      * @param file Wrapped file.
      */
-    private RootDirResource(File dir) {
+    private RootDirResource(File dir, File milestone) {
       super(dir, "");
+      this.milestone = milestone;
     }
 
     /**
      * @see com.oxygenxml.translation.support.core.resource.IRootResource#getMilestoneFile()
      */
     public File getMilestoneFile() {
-      return MilestoneUtil.getMilestoneFile(file);
+      return milestone != null ? milestone : MilestoneUtil.getMilestoneFile(file);
     }
   }
   
@@ -197,12 +205,14 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
    * Creates a resource over the given file.
    * 
    * @param rootResource The root map over which to iterate.
+   * @param milestone The location where to generate the milestone. If <code>null</code>, the milestone will be generated 
+   * next to the map.
    * 
    * @return An {@link IResource} wrapper over the given file.
    * 
    * @throws IOException The given file is not a directory. 
    */
-  public IRootResource wrap(ReferencedResource rootResource) throws IOException {
+  public IRootResource wrap(ReferencedResource rootResource, File milestone) throws IOException {
     File locateFile = null;
     PluginWorkspace pluginWorkspace = PluginWorkspaceProvider.getPluginWorkspace();
     if (pluginWorkspace != null) {
@@ -216,7 +226,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
     }
     
     
-    return wrapDirectory(locateFile.getParentFile());
+    return new RootDirResource(locateFile.getParentFile(), milestone);
   }
 
   /**
@@ -226,6 +236,6 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
    * @return
    */
   public IRootResource wrapDirectory(File locateFile) {
-    return new RootDirResource(locateFile);
+    return new RootDirResource(locateFile, null);
   }
 }
