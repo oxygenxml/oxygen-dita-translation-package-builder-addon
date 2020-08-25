@@ -19,7 +19,6 @@ import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
@@ -103,7 +102,7 @@ public class TranslationPackageGenerator {
 
       PackageGeneratorUtil.zipModifiedResources(
           rootMap, 
-          l != null ? Arrays.asList(new ProgressChangeListener[] {l}) : Collections.emptyList(), 
+          l != null ? java.util.Arrays.asList(new ProgressChangeListener[] {l}) : Collections.emptyList(), 
           packageFile, 
           modifiedResources);
 
