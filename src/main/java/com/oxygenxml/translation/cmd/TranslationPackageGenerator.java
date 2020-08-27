@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -18,8 +19,6 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
 import com.oxygenxml.translation.support.util.PackageGeneratorUtil;
 import com.oxygenxml.translation.support.util.PathUtil;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Utility methods for the common tasks:
