@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
+import com.oxygenxml.translation.ui.ProgressChangeListener;
 
 /**
  * Creates an AbstractWorker for unpacking a zip file.
@@ -51,9 +52,15 @@ public class UnzipWorker extends AbstractWorker<List<String>> {
    * Main task. Executed in background thread.
    */
   @Override
-  public List<String> doInBackground() throws IOException, StoppedByUserException {
+  public List<String> doInBackground() throws StoppedByUserException {
     ArchiveBuilder archiveBuilder = new ArchiveBuilder(listeners);
-    unpackedFiles = archiveBuilder.unzipDirectory(zipDir, rootDir);
+    try {
+      unpackedFiles = archiveBuilder.unzipDirectory(zipDir, rootDir);
+    } catch (IOException e) {
+      for (ProgressChangeListener progressChangeListener : listeners) {
+        progressChangeListener.operationFailed(e);
+      }
+    }
 
     return unpackedFiles;
   }

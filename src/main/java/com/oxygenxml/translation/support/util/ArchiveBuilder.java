@@ -174,47 +174,42 @@ public final class ArchiveBuilder {
    * 
    * @throws StoppedByUserException The user pressed the Cancel button.
    */
-  public List<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException {
+  public List<String> unzipDirectory(File packageLocation, File destDir) throws StoppedByUserException, IOException {
     List<String> nameList = new ArrayList<>();
     int counter = 0;
+    // Open the zip file
+    ZipFile zipFile = new ZipFile(packageLocation);
+    Enumeration<?> enu = zipFile.entries();
     try {
-      // Open the zip file
-      ZipFile zipFile = new ZipFile(packageLocation);
-      Enumeration<?> enu = zipFile.entries();
-      try {
-        while (enu.hasMoreElements()) {
-          ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-          String name = zipEntry.getName();
-          //We create the directories 
-          File file = new File(destDir, name);
-          if (name.endsWith("/")) {
-            file.mkdirs();
-            continue;
-          }
-
-          unzipInternal(zipEntry, zipFile, file);
-
-          nameList.add(name);
-
-          if(isCanceled()){
-            throw new StoppedByUserException();
-          }
-
-          PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
-          counter++;
-          ProgressChangeEvent progress = new ProgressChangeEvent(
-              counter, 
-              MessageFormat.format(
-                  resourceBundle.getMessage(Tags.UNPACK_FILE), file.getAbsolutePath()));
-          fireChangeEvent(progress);
-
+      while (enu.hasMoreElements()) {
+        ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+        String name = zipEntry.getName();
+        //We create the directories 
+        File file = new File(destDir, name);
+        if (name.endsWith("/")) {
+          file.mkdirs();
+          continue;
         }
-      } finally {
-        zipFile.close();
+
+        unzipInternal(zipEntry, zipFile, file);
+
+        nameList.add(name);
+
+        if(isCanceled()){
+          throw new StoppedByUserException();
+        }
+
+        PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
+        counter++;
+        ProgressChangeEvent progress = new ProgressChangeEvent(
+            counter, 
+            MessageFormat.format(
+                resourceBundle.getMessage(Tags.UNPACK_FILE), file.getAbsolutePath()));
+        fireChangeEvent(progress);
+
       }
-      
-    } catch (IOException e) {
-      fireOperationFailed(e);
+    } finally {
+      zipFile.close();
     }
 
     return nameList;
@@ -310,16 +305,6 @@ public final class ArchiveBuilder {
       }
     }
     return result;
-  }
-  /**
-   * Notifies all listeners that the task has failed.
-   * 
-   * @param ex An Exception.
-   */
-  private void fireOperationFailed(Exception ex) {
-    for (ProgressChangeListener progressChangeListener : listeners) {
-      progressChangeListener.operationFailed(ex);
-    }
   }
   
   /**
