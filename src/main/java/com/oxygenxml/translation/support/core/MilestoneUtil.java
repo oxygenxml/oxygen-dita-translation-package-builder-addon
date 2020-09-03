@@ -18,10 +18,12 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
 import com.oxygenxml.translation.support.storage.InfoResources;
 import com.oxygenxml.translation.support.storage.ResourceInfo;
+
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
@@ -148,6 +150,10 @@ public class MilestoneUtil {
     Marshaller marshaller = context.createMarshaller();  
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
 
+    if (!milestoneFile.exists()) {
+      milestoneFile.getParentFile().mkdirs();
+    }
+    
     marshaller.marshal(info, milestoneFile);        
   }
   
