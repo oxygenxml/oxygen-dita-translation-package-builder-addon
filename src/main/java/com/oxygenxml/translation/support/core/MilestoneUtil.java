@@ -121,7 +121,7 @@ public class MilestoneUtil {
     File milestoneFile = iRootResource.getMilestoneFile();
   
     if (!milestoneFile.exists()) {
-      throw new IOException("No milestone was created.");
+      throw new IOException("The milestone file doesn't exist: " + milestoneFile.getAbsolutePath());
     }
   
     JAXBContext jaxbContext = JAXBContext.newInstance(InfoResources.class); 
