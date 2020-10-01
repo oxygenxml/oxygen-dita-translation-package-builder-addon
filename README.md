@@ -14,7 +14,9 @@ How to install
 4. Select the **I accept all terms of the end user license agreement** option and click **Finish**.
 5. Restart the application.
 
-Result: A **Tranlation Package Builder** submenu will now be available in the contextual menu of the **DITA Maps Manager**. This submenu includes actions to generate a package of modified files that can be sent to translators, as well as an action to extract translated files back into your DITA project.
+Result: A **Translation Package Builder** submenu will now be available in the contextual menu of the **DITA Maps Manager**. This submenu includes actions to generate a package of modified files that can be sent to translators, as well as an action to extract translated files back into your DITA project.
+
+Video presentation showcasing the **Translation Package Builder** functionality: https://youtu.be/dEWc2HIHvbk?t=1957
 
 Copyright and License
 ---------------------
