@@ -41,6 +41,10 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.13</h1>
+                <ul>
+                    <li>Made add-on compatible with the new features added in Oxygen 23.</li>
+                </ul>
                 <h1>Release Notes 1.0.12</h1>
                 <ul>
                 	<li>Fixed an issue when the package with the modifiled file was wrongly overriden. </li>
