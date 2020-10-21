@@ -25,7 +25,7 @@ before_deploy:
   - ./travis/deploy.sh
 deploy:
   provider: releases
-  api_key: ${OXYGEN_PLUGIN_TOKEN}
+  api_key: ${DITA_TRANSLATION_BUILDER}
   file:
     - target/translation-package-builder-${TRAVIS_TAG}-plugin.jar
     - target/addon.xml
