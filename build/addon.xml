@@ -6,8 +6,8 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
     <xt:extension xmlns:xt="http://www.oxygenxml.com/ns/extension"
         id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
-        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.12/translation-package-builder-1.0.12-plugin.jar"/>
-        <xt:version>1.0.12</xt:version>
+        <xt:location href="https://github.com/oxygenxml/Translation-Package-Builder/releases/download/1.0.13/translation-package-builder-1.0.13-plugin.jar"/>
+        <xt:version>1.0.13</xt:version>
         <xt:oxy_version>19.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Syncro Soft SRL</xt:author>
@@ -41,6 +41,10 @@ https://www.oxygenxml.com/doc/versions/18.1/ug-editor/topics/packing-and-deployi
                     </ol>
                     
                 </div>
+                <h1>Release Notes 1.0.13</h1>
+                <ul>
+                    <li>Made add-on compatible with the new features added in Oxygen 23.</li>
+                </ul>
                 <h1>Release Notes 1.0.12</h1>
                 <ul>
                 	<li>Fixed an issue when the package with the modifiled file was wrongly overriden. </li>
