@@ -22,7 +22,7 @@ before_script:
 script:
   - mvn clean install
   - chmod +x travis/install-openjdk11.sh
-  - ./travis/install-openjdk11.sh --emit-java-home
+  - wget https://raw.githubusercontent.com/oxygenxml/oxygen-dita-translation-package-builder/master/travis/install-openjdk11.sh && . ./install-openjdk11.sh
   - mvn org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar
 before_deploy:
   - ./travis/deploy.sh
