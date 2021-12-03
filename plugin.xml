@@ -1,20 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The plugin.dtd file is located in the OXYGEN_INSATALL_DIR/plugins directory -->
+<!DOCTYPE plugin SYSTEM "../plugin.dtd">
+
 <plugin
-  class="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin"
-  classLoaderType="preferOxygenResources"
-  description="com.oxygenxml.translation.support"
-  id="com.oxygenxml.translation.support"
-  name="DITA Translation Package Builder"
-  vendor="Syncro Soft"
-  version="${project.version}">
-  <runtime>
-    <librariesFolder
-      name="lib"/>
-    <library
-      name="target/classes"/>
-    <librariesFolder
-      name="target/lib"/>
-  </runtime>
-  <extension
-    class="com.oxygenxml.translation.support.TranslationPackageBuilderExtension"
-    type="WorkspaceAccess"/>
+ id="com.oxygenxml.translation.support"
+ name="DITA Translation Package Builder"
+ description="com.oxygenxml.translation.support"
+ version="${project.version}"
+ vendor="oXygen XML"
+ class="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin"
+ classLoaderType="preferOxygenResources">
+ 
+ <runtime>
+	<librariesFolder name="lib" />
+    <library name="target/classes" />
+	<librariesFolder name="target/lib" />
+ </runtime>
+ 
+ <extension type="WorkspaceAccess" 
+  class="com.oxygenxml.translation.support.TranslationPackageBuilderExtension"/>
 </plugin>
