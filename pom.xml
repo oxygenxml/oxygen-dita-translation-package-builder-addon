@@ -8,7 +8,7 @@
     <version>24.1-SNAPSHOT</version>
   </parent>
   
-  <artifactId>dita-translation-package-builder-addon</artifactId>
+  <artifactId>oxygen-dita-translation-package-builder-addon</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
   <developers>
