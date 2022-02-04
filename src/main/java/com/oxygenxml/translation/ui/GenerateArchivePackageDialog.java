@@ -36,7 +36,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.sync.ecss.extensions.commons.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -51,7 +52,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(GenerateArchivePackageDialog.class);
+  private static Logger logger = LoggerFactory.getLogger(GenerateArchivePackageDialog.class);
   
   /**
    *  Resource bundle.
@@ -135,7 +136,7 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
       try {
         ShowModifiedFilesDialog.getInstance().showDialog(parentFrame, modifiedResources);
       } catch (IOException e1) {
-        logger.error(e1, e1);
+        logger.error(String.valueOf(e1), e1);
       }
     }
   };

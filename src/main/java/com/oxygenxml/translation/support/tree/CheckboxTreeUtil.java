@@ -17,7 +17,8 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.support.util.ApplyPackageUtil;
@@ -39,7 +40,7 @@ public class CheckboxTreeUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(CheckboxTreeUtil.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(CheckboxTreeUtil.class.getName());
 
   /**
    * Private constructor to avoid instantiation.
@@ -122,7 +123,7 @@ public class CheckboxTreeUtil {
 
               ApplyPackageUtil.showDiff(localFile, translatedFile);
             } catch (MalformedURLException e) {
-              logger.error(e, e);
+              logger.error(String.valueOf(e), e);
             }
           }
         }

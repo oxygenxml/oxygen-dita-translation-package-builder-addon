@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 
 /**
@@ -20,7 +21,7 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, Void> {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(AbstractWorker.class); 
+  private static Logger logger = LoggerFactory.getLogger(AbstractWorker.class); 
   
   /**
    * Constructor. Creates an empty list with listeners.
@@ -50,13 +51,13 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, Void> {
       }
     } catch (ExecutionException e) {
       logger.debug("Catch execution exception in abstract worker : " + e.getMessage());
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
       for(ProgressChangeListener listener : listeners){
         listener.operationFailed((Exception) e.getCause());
       }
     } catch (Exception e) {
       logger.debug("Catch exception in abstract worker : " + e.getMessage());
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
       for(ProgressChangeListener listener : listeners){
         listener.operationFailed(e);
       }

@@ -12,7 +12,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
@@ -25,7 +26,7 @@ public class HistoryUtils {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(HistoryUtils.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(HistoryUtils.class.getName());
 
   /**
    * Options key to preserve history in dialog.
@@ -63,7 +64,7 @@ public class HistoryUtils {
         entries = resources.getEntries();
       }
     } catch (JAXBException e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
 
     return entries;
@@ -87,7 +88,7 @@ public class HistoryUtils {
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); 
       marshaller.marshal(info, sw);
     } catch (JAXBException e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }  
     optionsStorage.setOption(REPORT_DIALOG_HISTORY, sw.toString());
   }

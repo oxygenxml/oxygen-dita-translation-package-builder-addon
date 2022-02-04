@@ -11,7 +11,8 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.sync.util.URLUtil;
 
 /**
@@ -31,7 +32,7 @@ public class CheckboxTableUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(CheckboxTableUtil.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(CheckboxTableUtil.class.getName());
   
   /**
    * Create a new table. Try to load API table. If fail, use a normal Java Table.
@@ -42,7 +43,7 @@ public class CheckboxTableUtil {
       Class<?> tableClass = CheckboxTableUtil.class.getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
       resourcesTable = (JTable) tableClass.newInstance();
     } catch (Exception e) {
-      logger.debug(e, e);
+      logger.debug(String.valueOf(e), e);
     }
     if (resourcesTable == null) {
       resourcesTable = new JTable();  
@@ -136,7 +137,7 @@ public class CheckboxTableUtil {
         try {
           FileUtils.forceDelete(unselected);
         } catch (IOException e1) {
-          logger.error(e1, e1);
+          logger.error(String.valueOf(e1), e1);
         }
       }
     }

@@ -23,7 +23,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.TableModelListener;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.exceptions.NothingSelectedException;
@@ -58,7 +59,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(PreviewDialog.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(PreviewDialog.class.getName());
 
   /**
    *  The tree that displays the translated files in a set of hierarchical data.
@@ -269,7 +270,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
         try {
           CheckboxTreeUtil.deleteTreeUnselectedFiles(translatedFileDir, filesToCopy);
         } catch (IOException e1) { 
-          logger.error(e1, e1);
+          logger.error(String.valueOf(e1), e1);
         }
       }
     } else {
@@ -306,20 +307,20 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
             try {
               FileUtils.deleteDirectory(translatedFileDir);
             } catch (IOException e) {
-              logger.error(e, e);
+              logger.error(String.valueOf(e), e);
             }
           }
           // Show an error message and delete the translatedFiles directory when the watched operation has failed.
           @Override
           public void operationFailed(Exception ex) {
-            logger.error(ex, ex);
+            logger.error(String.valueOf(ex), ex);
             if(!(ex instanceof StoppedByUserException)){
               pluginWorkspace.showErrorMessage(messages.getMessage(Tags.COPY_TRANSLATED_FILES_ERROR_MESSAGE) + ex.getMessage());
             }
             try {
               FileUtils.deleteDirectory(translatedFileDir);
             } catch (IOException e) {
-              logger.error(e, e);
+              logger.error(String.valueOf(e), e);
             }
           }
         });
@@ -335,7 +336,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
     try {
       FileUtils.deleteDirectory(translatedFileDir);
     } catch (IOException e1) {
-      logger.warn(e1, e1);
+      logger.warn(String.valueOf(e1), e1);
     }
   }
 

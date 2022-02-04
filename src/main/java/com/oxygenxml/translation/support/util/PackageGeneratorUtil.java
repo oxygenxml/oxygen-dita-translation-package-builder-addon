@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 import javax.swing.JFrame;
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.translation.exceptions.NoChangedFilesException;
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
@@ -55,7 +56,7 @@ public class PackageGeneratorUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(PackageGeneratorUtil.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(PackageGeneratorUtil.class.getName());
 
   /**
    * Opens the generated xhtml file that contains the packed files.
@@ -71,7 +72,7 @@ public class PackageGeneratorUtil {
         Desktop.getDesktop().open(generatedFile);
       }
     } catch (IOException e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
   }  
   
@@ -143,9 +144,9 @@ public class PackageGeneratorUtil {
         if(ex instanceof NoChangedFilesException){
           pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " + ex.getMessage());
         } else if(ex instanceof StoppedByUserException) {
-          logger.error(ex, ex);
+          logger.error(String.valueOf(ex), ex);
         } else {
-          logger.error(ex, ex);
+          logger.error(String.valueOf(ex), ex);
         }
       }
     });
@@ -184,7 +185,7 @@ public class PackageGeneratorUtil {
         if(ex instanceof NoChangedFilesException){
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " + ex.getMessage());                  
         } else if(ex instanceof StoppedByUserException) {
-          logger.error(ex, ex);
+          logger.error(String.valueOf(ex), ex);
         } else {
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.ACTION_FAILED) + ex.getMessage());
         }               
@@ -243,7 +244,7 @@ public class PackageGeneratorUtil {
         pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " +
             MessageFormat.format(resourceBundle.getMessage(Tags.NO_CHANGED_FILES), milestoneLastModified));                  
       } catch (JAXBException | IOException e) {
-        logger.error(e, e);
+        logger.error(String.valueOf(e), e);
       }                
     }
   }

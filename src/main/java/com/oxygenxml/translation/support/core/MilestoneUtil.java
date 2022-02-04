@@ -17,7 +17,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.support.core.resource.IRootResource;
@@ -39,7 +40,7 @@ public class MilestoneUtil {
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(MilestoneUtil.class);
+  private static Logger logger = LoggerFactory.getLogger(MilestoneUtil.class);
 
   /**
    * Predefined suffix of each generated milestone.
@@ -100,7 +101,7 @@ public class MilestoneUtil {
       try {
         bis.close();
       } catch (IOException e) {
-        logger.error(e, e);
+        logger.error(String.valueOf(e), e);
       }
     }
   

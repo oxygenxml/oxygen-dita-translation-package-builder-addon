@@ -14,7 +14,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.translation.exceptions.StoppedByUserException;
 import com.oxygenxml.translation.ui.ProgressChangeAdapter;
@@ -39,7 +40,7 @@ public final class ArchiveBuilder {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(ArchiveBuilder.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(ArchiveBuilder.class.getName());
 
   /**
    * A list of ProgressChangeListener listeners.
@@ -90,7 +91,7 @@ public final class ArchiveBuilder {
         ZipOutputStream zout = new ZipOutputStream(fout) ) {
       zipSubDirectory("", dir, zout, 0);
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
   }
 
@@ -158,7 +159,7 @@ public final class ArchiveBuilder {
       fireChangeEvent(progress);
 
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
   }
 
@@ -237,7 +238,7 @@ public final class ArchiveBuilder {
         FileOutputStream fos = new FileOutputStream(file) ) {
       FileSystemUtil.copyInputStreamToOutputStream(is, fos, true);
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
   }
 

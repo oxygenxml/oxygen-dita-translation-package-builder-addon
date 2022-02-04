@@ -10,7 +10,8 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class used for Undo and Redo actions.
@@ -22,7 +23,7 @@ public class UndoRedoUtils {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(UndoRedoUtils.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(UndoRedoUtils.class.getName());
   
   /**
    * Private constructor to avoid instantiation.
@@ -54,7 +55,7 @@ public class UndoRedoUtils {
             undo.undo();
           }
         } catch (CannotUndoException e) {
-          logger.error(e, e);
+          logger.error(String.valueOf(e), e);
         }
       }
     });
@@ -69,7 +70,7 @@ public class UndoRedoUtils {
             undo.redo();
           }
         } catch (CannotRedoException e) {
-          logger.error(e, e);
+          logger.error(String.valueOf(e), e);
         }
       }
     });

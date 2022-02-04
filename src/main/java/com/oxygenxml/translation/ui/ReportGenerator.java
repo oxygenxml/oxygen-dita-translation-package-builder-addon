@@ -19,7 +19,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Creates a .xhtml report file, a list with all the modified resources.
  * 
@@ -36,7 +37,7 @@ public class ReportGenerator {
   /**
    *  Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(ReportGenerator.class); 
+  private static Logger logger = LoggerFactory.getLogger(ReportGenerator.class); 
   
   /**
    * 
@@ -91,7 +92,7 @@ public class ReportGenerator {
     try {
       xmlReport = storeReportFile(resources, rootDir);
     } catch (JAXBException e2) {
-      logger.error(e2, e2);
+      logger.error(String.valueOf(e2), e2);
     }
     
     //Transform the .xml report file into a .xhtml file
@@ -120,7 +121,7 @@ public class ReportGenerator {
       transformer.transform(xmlSource, outputTarget);
       
     } catch (Exception ex) {
-      logger.error(ex, ex);
+      logger.error(String.valueOf(ex), ex);
     } 
     
     //Delete the .xml report file after converting it to a .xhtml file
@@ -129,7 +130,7 @@ public class ReportGenerator {
         FileUtils.forceDelete(xmlReport);
       }
     } catch (IOException e2) {  
-      logger.error(e2, e2);
+      logger.error(String.valueOf(e2), e2);
     }
   }
 }

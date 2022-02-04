@@ -16,7 +16,8 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -31,7 +32,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(TranslationPackageBuilderExtension.class.getName());
   /**
    * @see ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension#applicationStarted(ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace)
    */
@@ -146,7 +147,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           }
         } catch (Exception e) {
           // Preset error to user.
-          logger.error(e, e);
+          logger.error(String.valueOf(e), e);
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.ACTION_FAILED) + e.getMessage());
         }
       }

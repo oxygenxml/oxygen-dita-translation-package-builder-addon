@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.oxygenxml.translation.support.TranslationPackageBuilderExtension;
 import com.oxygenxml.translation.support.core.MilestoneUtil;
@@ -26,7 +27,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
   /**
    * Logger for logging.
    */
-  private static Logger logger = Logger.getLogger(TranslationPackageBuilderExtension.class); 
+  private static Logger logger = LoggerFactory.getLogger(TranslationPackageBuilderExtension.class); 
   
   /**
    * An implementation over a local File. 
@@ -195,7 +196,7 @@ public class FileSystemResourceBuilder implements IResourceBuilder {
         url = file.toURI().toURL();
       } catch (MalformedURLException e) {
         // warn
-        logger.warn(e, e);
+        logger.warn(String.valueOf(e), e);
       }
       return url;
     }

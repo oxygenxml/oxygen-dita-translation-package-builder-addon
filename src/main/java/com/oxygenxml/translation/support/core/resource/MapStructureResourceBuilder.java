@@ -13,7 +13,8 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -37,7 +38,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(MapStructureResourceBuilder.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(MapStructureResourceBuilder.class.getName());
   
   /**
    * An implementation that detects the resources referred inside the content of
@@ -123,7 +124,7 @@ public class MapStructureResourceBuilder implements IResourceBuilder {
             }
           }
         } catch (Exception e) {
-          logger.error(e, e);
+          logger.error(String.valueOf(e), e);
         } 
       }
 

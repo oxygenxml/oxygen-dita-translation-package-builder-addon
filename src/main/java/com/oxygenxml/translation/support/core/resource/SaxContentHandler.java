@@ -3,7 +3,8 @@ package com.oxygenxml.translation.support.core.resource;
 import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -16,7 +17,7 @@ public class SaxContentHandler extends DefaultHandler {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(SaxContentHandler.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(SaxContentHandler.class.getName());
   /**
    * The name of the attribute that represents a reference.
    */

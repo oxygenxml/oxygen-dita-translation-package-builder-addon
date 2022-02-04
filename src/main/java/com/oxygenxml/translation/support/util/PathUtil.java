@@ -13,7 +13,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.util.URLUtil;
@@ -25,7 +26,7 @@ public class PathUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(PathUtil.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(PathUtil.class.getName());
 
   /**
    * Private constructor.
@@ -117,7 +118,7 @@ public class PathUtil {
         }
       }
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
     return toReturn;
   }
@@ -138,7 +139,7 @@ public class PathUtil {
       String path = calculateTopLocation(rootMapUrl, packageBuilder);
       location = new URL(path);
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
     return location;
   }
@@ -163,7 +164,7 @@ public class PathUtil {
         path = PathUtil.commonPath(visited);
       }
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
     return path;
   }
@@ -178,7 +179,7 @@ public class PathUtil {
       Path tempPath = Files.createTempDirectory("D_T_B_temp");
       return tempPath.toFile();
     } catch (Exception e) {
-      logger.error(e, e);
+      logger.error(String.valueOf(e), e);
     }
     
     return null;

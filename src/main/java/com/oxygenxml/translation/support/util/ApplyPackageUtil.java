@@ -20,7 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
@@ -43,7 +44,7 @@ public class ApplyPackageUtil {
   /**
    * Logger for logging.
    */
-  private static final Logger logger = Logger.getLogger(ApplyPackageUtil.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(ApplyPackageUtil.class.getName());
 
   
   /**
@@ -110,7 +111,7 @@ public class ApplyPackageUtil {
       try { 
         unzipTask = unZippit(pluginWorkspaceAccess, unzippingLocation, archiveLocation);
       } catch (Exception e) {
-        logger.error(e, e);
+        logger.error(String.valueOf(e), e);
         // Preset error to user.
         pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.FAILED_TO_APPLY_PACKAGE) + e.getMessage());
       }
@@ -145,7 +146,7 @@ public class ApplyPackageUtil {
           showUnZippedFilesReport(pluginWorkspaceAccess, taks[0].getUnpackedFiles());
         } catch (Exception e) {
           if (logger.isDebugEnabled()) {
-            logger.debug(e, e);
+            logger.debug(String.valueOf(e), e);
           }
         }
       }
@@ -247,7 +248,7 @@ public class ApplyPackageUtil {
       }
     } catch (MalformedURLException e2) {
       // Shouldn't happen.
-      logger.error(e2, e2);
+      logger.error(String.valueOf(e2), e2);
     }
   }
   
