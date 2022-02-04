@@ -32,6 +32,11 @@
       <outputDirectory>/lib</outputDirectory>
     </file>
     <file>
+      <source>third-party-components.xml</source>
+      <outputDirectory>/lib</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+    <file>
       <source>plugin.xml</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
