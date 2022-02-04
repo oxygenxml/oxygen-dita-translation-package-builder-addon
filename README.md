@@ -1,4 +1,4 @@
-# Translation Package Builder
+# DITA Translation Package Builder
 This add-on contributes contextual menu actions that help you build a translation package for DITA files that can be sent to translators. You can also extract the changed files back into your project once you receive the package back from the translators.
 
 Once installed, a sub-menu named *Translation Package Builder* is available in contextual menu of the *DITA Maps Manager* with the following actions:

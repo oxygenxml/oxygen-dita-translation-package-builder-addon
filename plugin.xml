@@ -6,7 +6,7 @@
  id="com.oxygenxml.translation.support"
  name="DITA Translation Package Builder"
  description="com.oxygenxml.translation.support"
- version="${project.version}"
+ version="${project.nosnapshot.version}"
  vendor="Syncro Soft"
  class="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin"
  classLoaderType="preferOxygenResources">
