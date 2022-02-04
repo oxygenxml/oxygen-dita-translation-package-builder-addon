@@ -53,8 +53,22 @@
       <groupId>com.oxygenxml</groupId>
       <artifactId>oxygen-sdk</artifactId>
       <version>19.0.0.0</version>
+      <exclusions>
+		<exclusion>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</exclusion>
+      </exclusions>
       <scope>provided</scope>
     </dependency>
+
+	<!-- This is used by Oxygen-sdk 19 in TCs. I added it with 'test' scope to avoid using it accidentally. -->
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.14</version>
+		<scope>test</scope>
+	</dependency>
     
     <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 	<dependency>
