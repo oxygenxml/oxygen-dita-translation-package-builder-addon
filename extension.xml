@@ -3,7 +3,7 @@
 	id="com.oxygenxml.translation.support.TranslationPackageBuilderPlugin">
 	<xt:location href="${project.build.finalName}-plugin.jar" />
 	<xt:version>${project.nosnapshot.version}</xt:version>
-	<xt:oxy_version>19.0+</xt:oxy_version>
+	<xt:oxy_version>22.0+</xt:oxy_version>
 	<xt:type>plugin</xt:type>
 	<xt:author>Syncro Soft</xt:author>
 	<xt:name>DITA Translation Package Builder</xt:name>
