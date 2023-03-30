@@ -26,7 +26,6 @@ import com.oxygenxml.translation.ui.Icons;
 
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
-import ro.sync.ui.hidpi.RetinaDetector;
 import ro.sync.util.URLUtil;
 
 
@@ -249,9 +248,6 @@ public class CheckboxTreeUtil {
     tree.setRootVisible(true);
   
     int rowHeight = 20;
-    if (RetinaDetector.getInstance().isRetinaNoImplicitSupport()) {
-      rowHeight *= RetinaDetector.getInstance().getScalingFactor();
-    }
     
     tree.setRowHeight(rowHeight);
     tree.setSelectionRow(0);
