@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.oxygenxml</groupId>
     <artifactId>oxygen-addons-superpom</artifactId>
-    <version>24.1-SNAPSHOT</version>
+    <version>25.1-SNAPSHOT</version>
   </parent>
   
   <artifactId>oxygen-dita-translation-package-builder-addon</artifactId>
@@ -31,7 +31,7 @@
   <properties>
    	<maven.compiler.source>1.8</maven.compiler.source>
    	<maven.compiler.target>1.8</maven.compiler.target>
-   	<oxygen.version>19.0.0.0</oxygen.version>
+   	<oxygen.version>25.1-SNAPSHOT</oxygen.version>
   </properties>
   
   <repositories>
@@ -52,7 +52,7 @@
     <dependency>
       <groupId>com.oxygenxml</groupId>
       <artifactId>oxygen-sdk</artifactId>
-      <version>19.0.0.0</version>
+      <version>${oxygen.version}</version>
       <exclusions>
 		<exclusion>
 			<groupId>log4j</groupId>
