@@ -453,11 +453,6 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
       HistoryUtils.storeSelectedPaths(new ComboHistory(comboItems));
     }
     
-    // Generate report if the user selected the checkbox
-    if(generateReportCheckbox.isSelected() && getResult() == RESULT_OK){    
-      new ReportGenerator(rootMapFile, modifiedResources, reportFile);
-    }
-
     if(logger.isDebugEnabled()){
       logger.debug("The choosed package location from the report dialog is: " + chosenZip.getAbsolutePath());
     }
@@ -466,6 +461,10 @@ public class GenerateArchivePackageDialog extends OKCancelDialog /*NOSONAR*/{
     if (response == JOptionPane.YES_OPTION || 
         response == -1) {
       super.doOK();
+      // Generate report if the user selected the checkbox
+      if(generateReportCheckbox.isSelected() && getResult() == RESULT_OK){    
+        new ReportGenerator(rootMapFile, modifiedResources, reportFile);
+      }
     }
   }
   
