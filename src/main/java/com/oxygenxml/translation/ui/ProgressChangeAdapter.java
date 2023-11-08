@@ -30,7 +30,7 @@ public class ProgressChangeAdapter implements ProgressChangeListener {
    * 
    * @param ex The exception that stopped the operation.
    */
-  public void operationFailed(Exception ex) {
+  public void operationFailed(Throwable ex) {
     // dummy implementation
   }
 

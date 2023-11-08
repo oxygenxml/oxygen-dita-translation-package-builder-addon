@@ -85,7 +85,7 @@ public class ApplyPackageUtil {
           }
         }
         @Override
-        public void operationFailed(Exception ex) {
+        public void operationFailed(Throwable ex) {
           if(!(ex instanceof StoppedByUserException)){
             workspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.FAILED_TO_APPLY_PACKAGE) + ex.getMessage());
           }
@@ -151,7 +151,7 @@ public class ApplyPackageUtil {
         }
       }
       @Override
-      public void operationFailed(Exception ex) {
+      public void operationFailed(Throwable ex) {
         if(!(ex instanceof StoppedByUserException)){
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.FAILED_TO_APPLY_PACKAGE) + ex.getMessage());
         }

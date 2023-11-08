@@ -53,7 +53,10 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, Void> {
       logger.debug("Catch execution exception in abstract worker : " + e.getMessage());
       logger.error(String.valueOf(e), e);
       for(ProgressChangeListener listener : listeners){
-        listener.operationFailed((Exception) e.getCause());
+        
+        
+        
+        listener.operationFailed(e.getCause());
       }
     } catch (Exception e) {
       logger.debug("Catch exception in abstract worker : " + e.getMessage());

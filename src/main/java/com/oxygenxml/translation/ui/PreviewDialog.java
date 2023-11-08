@@ -312,7 +312,7 @@ public class PreviewDialog extends OKCancelDialog { //NOSONAR
           }
           // Show an error message and delete the translatedFiles directory when the watched operation has failed.
           @Override
-          public void operationFailed(Exception ex) {
+          public void operationFailed(Throwable ex) {
             logger.error(String.valueOf(ex), ex);
             if(!(ex instanceof StoppedByUserException)){
               pluginWorkspace.showErrorMessage(messages.getMessage(Tags.COPY_TRANSLATED_FILES_ERROR_MESSAGE) + ex.getMessage());

@@ -68,7 +68,7 @@ public class MilestoneGeneratorUtil {
         }
       }
       @Override
-      public void operationFailed(Exception ex) {
+      public void operationFailed(Throwable ex) {
         if(!(ex instanceof StoppedByUserException)){
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.MILESTONE_CREATION_FAILED_BECAUSE) + ex.getMessage());
         }

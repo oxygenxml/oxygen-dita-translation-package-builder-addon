@@ -139,7 +139,7 @@ public class PackageGeneratorUtil {
       }
             
       @Override
-      public void operationFailed(Exception ex) {  
+      public void operationFailed(Throwable ex) {  
         //Treat differently Stop by user exceptions and the custom one about nothing to pack.
         if(ex instanceof NoChangedFilesException){
           pluginWorkspace.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " + ex.getMessage());
@@ -181,7 +181,7 @@ public class PackageGeneratorUtil {
       }
       
       @Override
-      public void operationFailed(Exception ex) {
+      public void operationFailed(Throwable ex) {
         if(ex instanceof NoChangedFilesException){
           pluginWorkspaceAccess.showInformationMessage(resourceBundle.getMessage(Tags.FAILURE_CREATING_PACKAGE) + "\n " + ex.getMessage());                  
         } else if(ex instanceof StoppedByUserException) {

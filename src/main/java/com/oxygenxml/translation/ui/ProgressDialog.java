@@ -173,7 +173,7 @@ public class ProgressDialog extends OKCancelDialog /*NOSONAR*/ implements Progre
   /**
    *  The watched operation has failed.
    */
-  public void operationFailed(Exception ex) {
+  public void operationFailed(Throwable ex) {
     // Just close the dialog.
     done();
   }

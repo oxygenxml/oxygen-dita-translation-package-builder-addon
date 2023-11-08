@@ -50,7 +50,7 @@ public class OutputStreamProgressChangeListener implements ProgressChangeListene
   }
 
   @Override
-  public void operationFailed(Exception ex) {
+  public void operationFailed(Throwable ex) {
     ex.printStackTrace(stream);
     stream.flush();
   }

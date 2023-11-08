@@ -28,6 +28,6 @@ public interface ProgressChangeListener {
    * 
    * @param ex The exception that stopped the operation.
    */
-  void operationFailed(Exception ex);
+  void operationFailed(Throwable ex);
 
 }
