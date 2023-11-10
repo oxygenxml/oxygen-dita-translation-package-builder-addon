@@ -23,10 +23,10 @@ import com.oxygenxml.translation.ui.ProgressChangeEvent;
 import com.oxygenxml.translation.ui.ProgressChangeListener;
 import com.oxygenxml.translation.ui.Tags;
 
+import ro.sync.basic.io.FileSystemUtil;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.io.FileSystemUtil;
 
 /**
  * 
@@ -85,13 +85,19 @@ public final class ArchiveBuilder {
    */
   public void zipDirectory(File dir, File zipFile) throws IOException, StoppedByUserException {
     zipFile.getParentFile().mkdirs();
-
+    //EXM-53873 Zip in a temporary file and then copy the temporary zip over the destination zip
+    File zipInTempFolder = File.createTempFile(zipFile.getName(), ".zip");
+    zipInTempFolder.deleteOnExit();
     try (
-        FileOutputStream fout = new FileOutputStream(zipFile);
+        FileOutputStream fout = new FileOutputStream(zipInTempFolder);
         ZipOutputStream zout = new ZipOutputStream(fout) ) {
       zipSubDirectory("", dir, zout, 0);
+      
+      ro.sync.basic.io.FileSystemUtil.renameFileTo(zipInTempFolder, zipFile);
     } catch (Exception e) {
       logger.error(String.valueOf(e), e);
+    } finally {
+      zipInTempFolder.delete();
     }
   }
 
