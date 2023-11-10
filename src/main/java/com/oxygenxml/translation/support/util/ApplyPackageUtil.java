@@ -1,11 +1,5 @@
 package com.oxygenxml.translation.support.util;
 
-import com.oxygenxml.translation.exceptions.StoppedByUserException;
-import com.oxygenxml.translation.ui.PreviewDialog;
-import com.oxygenxml.translation.ui.ProgressChangeAdapter;
-import com.oxygenxml.translation.ui.ProgressDialog;
-import com.oxygenxml.translation.ui.Tags;
-import com.oxygenxml.translation.ui.worker.UnzipWorker;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
@@ -13,6 +7,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,12 +15,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.ui.PreviewDialog;
+import com.oxygenxml.translation.ui.ProgressChangeAdapter;
+import com.oxygenxml.translation.ui.ProgressDialog;
+import com.oxygenxml.translation.ui.Tags;
+import com.oxygenxml.translation.ui.worker.UnzipWorker;
+
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
-import ro.sync.util.URLUtil;
 
 /**
  * Utility class used in the process of applying the translated package.

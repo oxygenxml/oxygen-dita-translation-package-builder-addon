@@ -25,9 +25,9 @@ import com.oxygenxml.translation.support.util.OxygenParserCreator;
 import com.oxygenxml.translation.support.util.ParserCreator;
 import com.oxygenxml.translation.support.util.SAXParserCreator;
 
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.util.URLUtil;
 
 /**
  * An implementation that detects the resources referred inside the content of

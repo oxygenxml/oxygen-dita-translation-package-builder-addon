@@ -31,13 +31,13 @@ import com.oxygenxml.translation.ui.Tags;
 import com.oxygenxml.translation.ui.worker.GenerateModifiedResourcesWorker;
 import com.oxygenxml.translation.ui.worker.ZipWorker;
 
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 import ro.sync.exml.workspace.api.util.UtilAccess;
-import ro.sync.util.URLUtil;
 
 /**
  * Utility class used in the process of creation the archive with the modified files.

@@ -24,9 +24,9 @@ import com.jidesoft.swing.CheckBoxTree;
 import com.oxygenxml.translation.support.util.ApplyPackageUtil;
 import com.oxygenxml.translation.ui.Icons;
 
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.images.ImageUtilities;
-import ro.sync.util.URLUtil;
 
 
 /**
@@ -209,7 +209,6 @@ public class CheckboxTreeUtil {
         selectedTreeFiles.add(selectedFile);
       } else {
         // Folder
-        @SuppressWarnings("unchecked")
         Collection<File> allFiles = FileUtils.listFiles(selectedFile, null, true);
         selectedTreeFiles.addAll(allFiles);
       }

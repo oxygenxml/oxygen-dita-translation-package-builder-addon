@@ -1,6 +1,5 @@
 package com.oxygenxml.translation.support.table;
 
-import com.oxygenxml.translation.support.util.ApplyPackageUtil;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,12 +7,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.sync.util.URLUtil;
+
+import com.oxygenxml.translation.support.util.ApplyPackageUtil;
+
+import ro.sync.basic.util.URLUtil;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * Utility class for checkbox tables.
@@ -38,20 +43,7 @@ public class CheckboxTableUtil {
    * Create a new table. Try to load API table. If fail, use a normal Java Table.
    */
   public static JTable createResourcesTable(ResourcesTableModel model) {
-    JTable resourcesTable = null;
-    try {
-      Class<?> tableClass = CheckboxTableUtil.class.getClassLoader().loadClass("ro.sync.exml.workspace.api.standalone.ui.Table");
-      resourcesTable = (JTable) tableClass.newInstance();
-    } catch (Exception e) {
-      logger.debug(String.valueOf(e), e);
-    }
-    if (resourcesTable == null) {
-      resourcesTable = new JTable();  
-    }
-    
-    if (model != null) {
-      resourcesTable.setModel(model);
-    }
+    JTable resourcesTable = OxygenUIComponentsFactory.createTable(model);
     
     resourcesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);     
     resourcesTable.setTableHeader(null);

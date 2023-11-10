@@ -22,7 +22,7 @@ import com.oxygenxml.translation.support.core.resource.ResourceFactory;
 import com.oxygenxml.translation.support.util.ArchiveBuilder;
 
 import edu.emory.mathcs.backport.java.util.Collections;
-import ro.sync.io.FileSystemUtil;
+import ro.sync.basic.io.FileSystemUtil;
 
 /**
  * Tests cases for the 3 major use cases:

@@ -3,12 +3,14 @@ package com.oxygenxml.translation.support.core.resource;
 import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import ro.sync.util.URLUtil;
+
+import ro.sync.basic.util.URLUtil;
 
 /**
  * Detects the "href" attributes and extracts the referenced files. 

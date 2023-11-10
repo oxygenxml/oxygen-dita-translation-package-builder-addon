@@ -11,7 +11,7 @@ import com.oxygenxml.translation.support.storage.ResourceInfo;
  * 
  * @author Bivolan Dalina
  */
-public class GenerateModifiedResourcesWorker extends AbstractWorker {
+public class GenerateModifiedResourcesWorker extends AbstractWorker<Void> {
   /**
    * The root map.
    */

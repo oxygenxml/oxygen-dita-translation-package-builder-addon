@@ -118,7 +118,6 @@ public class CheckBoxTreeTest extends TestCase{
    *
    * @throws Exception
    */
-  @SuppressWarnings("unchecked")
   public void testDeleteFiles() throws Exception {
     
     List<File> filesToKeep = new ArrayList<>();

@@ -1,14 +1,16 @@
 package com.oxygenxml.translation.support.core;
 
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
-import com.oxygenxml.translation.support.core.resource.ReferencedResource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.ReferencedResource;
+
+import ro.sync.basic.util.URLUtil;
 import ro.sync.ecss.css.csstopdf.facade.CatalogResolverFacade;
-import ro.sync.util.URLUtil;
 
 /**
  * Issue #9 test class.

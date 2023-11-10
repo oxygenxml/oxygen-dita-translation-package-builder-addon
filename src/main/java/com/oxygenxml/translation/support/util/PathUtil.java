@@ -1,9 +1,5 @@
 package com.oxygenxml.translation.support.util;
 
-import com.oxygenxml.translation.support.core.ChangePackageGenerator;
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.core.resource.ResourceFactory;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
@@ -13,11 +9,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.oxygenxml.translation.support.core.ChangePackageGenerator;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.core.resource.ResourceFactory;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.util.URLUtil;
 
 /**
  * Utility class.

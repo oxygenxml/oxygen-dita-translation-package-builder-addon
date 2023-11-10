@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -11,9 +12,6 @@ import javax.swing.Timer;
 
 import com.oxygenxml.translation.ui.worker.AbstractWorker;
 
-import ro.sync.exml.workspace.api.PluginResourceBundle;
-import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
 /**
  * Creates a dialog to show the progress of a time consuming task.
@@ -21,10 +19,6 @@ import ro.sync.exml.workspace.api.standalone.ui.OKCancelDialog;
  * @author Bivolan Dalina
  */
 public class ProgressDialog extends OKCancelDialog /*NOSONAR*/ implements ProgressChangeListener {
-  /**
-   *  Resource bundle.
-   */
-  private static final PluginResourceBundle resourceBundle = ((StandalonePluginWorkspace)PluginWorkspaceProvider.getPluginWorkspace()).getResourceBundle();
   /**
    *  A swing progress bar.
    */

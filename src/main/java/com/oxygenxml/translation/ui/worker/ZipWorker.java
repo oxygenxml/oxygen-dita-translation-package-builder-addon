@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.results.ResultsManager.ResultType;
  * Creates an AbstractWorker for packing a directory.
  * @author Bivolan Dalina
  */
-public class ZipWorker extends AbstractWorker {
+public class ZipWorker extends AbstractWorker<Void> {
   
   /**
    *  Where to put the created package.

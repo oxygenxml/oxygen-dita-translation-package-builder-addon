@@ -9,7 +9,7 @@ import com.oxygenxml.translation.support.util.ArchiveBuilder;
  *  
  * @author Bivolan Dalina
  */
-public class CopyDirectoryWorker extends AbstractWorker {
+public class CopyDirectoryWorker extends AbstractWorker<Void> {
   /**
    *  The location of the destination directory.
    */

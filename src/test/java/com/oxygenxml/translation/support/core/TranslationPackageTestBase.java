@@ -1,14 +1,5 @@
 package com.oxygenxml.translation.support.core;
 
-import com.oxygenxml.translation.exceptions.StoppedByUserException;
-import com.oxygenxml.translation.support.core.resource.DetectionType;
-import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
-import com.oxygenxml.translation.support.core.resource.IRootResource;
-import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
-import com.oxygenxml.translation.support.core.resource.ReferencedResource;
-import com.oxygenxml.translation.support.core.resource.ResourceFactory;
-import com.oxygenxml.translation.support.core.resource.SaxContentHandler;
-import com.oxygenxml.translation.support.storage.ResourceInfo;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,22 +9,35 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import junit.framework.TestCase;
+
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
+
+import com.oxygenxml.translation.exceptions.StoppedByUserException;
+import com.oxygenxml.translation.support.core.resource.DetectionType;
+import com.oxygenxml.translation.support.core.resource.FileSystemResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.IRootResource;
+import com.oxygenxml.translation.support.core.resource.MapStructureResourceBuilder;
+import com.oxygenxml.translation.support.core.resource.ReferencedResource;
+import com.oxygenxml.translation.support.core.resource.ResourceFactory;
+import com.oxygenxml.translation.support.core.resource.SaxContentHandler;
+import com.oxygenxml.translation.support.storage.ResourceInfo;
+
+import junit.framework.TestCase;
+import ro.sync.basic.util.URLUtil;
 import ro.sync.exml.workspace.api.PluginResourceBundle;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.util.UtilAccess;
-import ro.sync.util.URLUtil;
 
 /**
  * This is a test base for all translation package builder add-on. 
