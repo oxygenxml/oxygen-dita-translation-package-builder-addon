@@ -24,6 +24,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.editor.page.ditamap.WSDITAMapEditorPage;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.actions.MenusAndToolbarsContributorCustomizer;
+import ro.sync.exml.workspace.api.standalone.ui.OxygenUIComponentsFactory;
 
 /**
  * Plug-in extension - workspace access extension.
@@ -51,23 +52,17 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
       public void customizeDITAMapPopUpMenu(JPopupMenu popUp, WSDITAMapEditorPage ditaMapEditorPage) {
         //Create a submenu "Translation Package Builder" for the 3 actions.
         // Tooltips for all actions.
-        JMenu submenu = new JMenu(resourceBundle.getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME));
+        JMenu submenu = OxygenUIComponentsFactory.createMenu(resourceBundle.getMessage(Tags.TRANSLATION_PACKAGE_BUILDER_PLUIGIN_NAME));;
         submenu.setMnemonic(KeyEvent.VK_S);
 
         // Action 1: Generate Milestone
-        JMenuItem menuItemMilestone = new JMenuItem(resourceBundle.getMessage(Tags.GENERATE_MILESTONE));
-        menuItemMilestone.addActionListener(generateMilestoneAction);
-        menuItemMilestone.setToolTipText(resourceBundle.getMessage(Tags.GENERATE_MILESTONE_TOOLTIP));
+        JMenuItem menuItemMilestone = OxygenUIComponentsFactory.createMenuItem(generateMilestoneAction);
 
         // Action 2: Create Changed Files Package
-        JMenuItem menuItemPakage = new JMenuItem(resourceBundle.getMessage(Tags.CREATE_MODIFIED_FILES_PACKAGE));
-        menuItemPakage.addActionListener(generateChangedFilesZipAction);
-        menuItemPakage.setToolTipText(resourceBundle.getMessage(Tags.CREATE_PACKAGE_TOOLTIP));
+        JMenuItem menuItemPakage = OxygenUIComponentsFactory.createMenuItem(generateChangedFilesZipAction);
 
         // Action 3: Unzip package that came from translation.
-        JMenuItem menuItemApply = new JMenuItem(resourceBundle.getMessage(Tags.APPLY_PACKAGE));
-        menuItemApply.addActionListener(applyTranslatedFilesAction);
-        menuItemApply.setToolTipText(resourceBundle.getMessage(Tags.APPLY_PACKAGE_TOOLTIP));
+        JMenuItem menuItemApply = OxygenUIComponentsFactory.createMenuItem(applyTranslatedFilesAction);
 
         submenu.add(menuItemMilestone);
         submenu.add(menuItemPakage);
@@ -86,7 +81,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    */
   private AbstractAction createMilestoneAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
-    return new AbstractAction("Generate Milestone") {
+    AbstractAction action = new AbstractAction(pluginWorkspaceAccess.getResourceBundle().getMessage(Tags.GENERATE_MILESTONE)) {
       public void actionPerformed(ActionEvent actionevent) {
         // 1. Extract the parent directory of the current map.
         // 2. Generate the milestone file in the dir
@@ -111,8 +106,9 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
           pluginWorkspaceAccess.showErrorMessage(resourceBundle.getMessage(Tags.MILESTONE_CREATION_FAILED_BECAUSE) + e.getMessage());
         }
       }
-      
     };
+    action.putValue(Action.SHORT_DESCRIPTION, pluginWorkspaceAccess.getResourceBundle().getMessage(Tags.GENERATE_MILESTONE_TOOLTIP));
+    return action;
   }
 
   /**
@@ -123,7 +119,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    */
   private AbstractAction createChangedFilesZipAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
-    return new AbstractAction("Create Modified Files Package") {
+    AbstractAction action = new AbstractAction(pluginWorkspaceAccess.getResourceBundle().getMessage(Tags.CREATE_MODIFIED_FILES_PACKAGE)) {
       public void actionPerformed(ActionEvent actionevent) {
         final PluginResourceBundle resourceBundle = pluginWorkspaceAccess.getResourceBundle();
         
@@ -152,6 +148,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         }
       }
     };
+    action.putValue(Action.SHORT_DESCRIPTION, pluginWorkspaceAccess.getResourceBundle().getMessage(Tags.CREATE_PACKAGE_TOOLTIP));
+    return action;
   }
   
   /**
@@ -163,7 +161,7 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
    */
   private AbstractAction createApplyTranslatedFilesAction(
       final StandalonePluginWorkspace pluginWorkspaceAccess) {
-    return new AbstractAction("Apply Package") {
+    AbstractAction action = new AbstractAction(pluginWorkspaceAccess.getResourceBundle().getMessage(Tags.APPLY_PACKAGE)) {
       /**
        * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
        */
@@ -218,6 +216,8 @@ public class TranslationPackageBuilderExtension implements WorkspaceAccessPlugin
         }
       }
     };
+    action.putValue(Action.SHORT_DESCRIPTION, pluginWorkspaceAccess.getResourceBundle().getMessage(Tags.APPLY_PACKAGE_TOOLTIP));
+    return action;
   }
   
   /**
