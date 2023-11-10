@@ -92,12 +92,13 @@ public final class ArchiveBuilder {
         FileOutputStream fout = new FileOutputStream(zipInTempFolder);
         ZipOutputStream zout = new ZipOutputStream(fout) ) {
       zipSubDirectory("", dir, zout, 0);
-      
-      ro.sync.basic.io.FileSystemUtil.renameFileTo(zipInTempFolder, zipFile);
     } catch (Exception e) {
       logger.error(String.valueOf(e), e);
     } finally {
-      zipInTempFolder.delete();
+      if(zipInTempFolder.exists()) {
+        FileSystemUtil.copyFile(zipInTempFolder, zipFile, true);
+        zipInTempFolder.delete();
+      }
     }
   }
 
