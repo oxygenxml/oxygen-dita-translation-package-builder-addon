@@ -30,7 +30,7 @@
 
   <properties>
 	<maven.compiler.release>11</maven.compiler.release>
-	<oxygen.version>25.0-SNAPSHOT</oxygen.version>
+	<oxygen.version>27.0-SNAPSHOT</oxygen.version>
   </properties>
   
   <repositories>
@@ -66,14 +66,6 @@
       <scope>provided</scope>
     </dependency>
 
-	<!-- This is used by Oxygen-sdk 19 in TCs. I added it with 'test' scope to avoid using it accidentally. -->
-	<dependency>
-		<groupId>log4j</groupId>
-		<artifactId>log4j</artifactId>
-		<version>1.2.14</version>
-		<scope>test</scope>
-	</dependency>
-    
     <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 	<dependency>
 		<groupId>org.slf4j</groupId>
