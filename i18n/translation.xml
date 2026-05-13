@@ -10,35 +10,35 @@
     <key value="Copy_to_package_dir">
         <comment>Progress message. A file is copied into the temporary package directory.</comment>
         <val lang="en_US">Copy to package directory: {0}</val>
-        <val lang="de_DE">Copy to package directory: {0}</val>
-        <val lang="fr_FR">Copy to package directory: {0}</val>
-        <val lang="ja_JP">Copy to package directory: {0}</val>
-        <val lang="nl_NL">Copy to package directory: {0}</val>
+        <val lang="de_DE">In Paketverzeichnis kopieren: {0}</val>
+        <val lang="fr_FR">Copier vers le répertoire du package : {0}</val>
+        <val lang="ja_JP">パッケージディレクトリにコピー: {0}</val>
+        <val lang="nl_NL">Kopiëren naar pakketmap: {0}</val>
     </key>
     <key value="Unpack_file">
         <comment>Progress message. A file is unpacked from the translation package.</comment>
         <val lang="en_US">Unpack new version to: {0}</val>
-        <val lang="de_DE">Unpack new version to: {0}</val>
-        <val lang="fr_FR">Unpack new version to: {0}</val>
-        <val lang="ja_JP">Unpack new version to: {0}</val>
-        <val lang="nl_NL">Unpack new version to: {0}</val>
+        <val lang="de_DE">Neue Version entpacken nach: {0}</val>
+        <val lang="fr_FR">Décompresser la nouvelle version vers : {0}</val>
+        <val lang="ja_JP">新しいバージョンを次に展開: {0}</val>
+        <val lang="nl_NL">Nieuwe versie uitpakken naar: {0}</val>
     </key>    
     <key value="Analyze_for_changes">
         <comment>Progress message. A file is being analyzed to see if it has changes compared to the milestone version.</comment>
         <val lang="en_US">Analyze for changes</val>
-        <val lang="de_DE">Analyze for changes</val>
-        <val lang="fr_FR">Analyze for changes</val>
-        <val lang="ja_JP">Analyze for changes</val>
-        <val lang="nl_NL">Analyze for changes</val>
+        <val lang="de_DE">Auf Änderungen analysieren</val>
+        <val lang="fr_FR">Analyser les modifications</val>
+        <val lang="ja_JP">変更を分析</val>
+        <val lang="nl_NL">Analyseren op wijzigingen</val>
     </key>
     
     <key value="Add_to_package">
         <comment>Progress message. A file is being added to the translation package.</comment>
         <val lang="en_US">Add to package</val>
-        <val lang="de_DE">Add to package</val>
-        <val lang="fr_FR">Add to package</val>
-        <val lang="ja_JP">Add to package</val>
-        <val lang="nl_NL">Add to package</val>
+        <val lang="de_DE">Zum Paket hinzufügen</val>
+        <val lang="fr_FR">Ajouter au package</val>
+        <val lang="ja_JP">パッケージに追加</val>
+        <val lang="nl_NL">Toevoegen aan pakket</val>
     </key>
     
     <key value="translation_package_builder_plugin_name">
@@ -52,405 +52,405 @@
         <key value="save">
         <comment>Save message for save button</comment>
         <val lang="en_US">Save</val>
-        <val lang="de_DE">Save</val>
-        <val lang="fr_FR">Save</val>
-        <val lang="ja_JP">Save</val>
-        <val lang="nl_NL">Save</val>
+        <val lang="de_DE">Speichern</val>
+        <val lang="fr_FR">Enregistrer</val>
+        <val lang="ja_JP">保存</val>
+        <val lang="nl_NL">Opslaan</val>
     </key>
     <key value="Generate_milestone">
         <comment>JMenu milestone action.</comment>
         <val lang="en_US">Generate Milestone</val>
-        <val lang="de_DE">Generate Milestone</val>
-        <val lang="fr_FR">Generate Milestone</val>
-        <val lang="ja_JP">Generate Milestone</val>
-        <val lang="nl_NL">Generate Milestone</val>
+        <val lang="de_DE">Meilenstein generieren</val>
+        <val lang="fr_FR">Générer un jalon</val>
+        <val lang="ja_JP">マイルストーンを生成</val>
+        <val lang="nl_NL">Mijlpaal genereren</val>
     </key>
     <key value="Generate_milestone_tooltip">
         <comment>Tooltip for the action that generates a milestone.</comment>
         <val lang="en_US">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
-        <val lang="de_DE">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
-        <val lang="fr_FR">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
-        <val lang="ja_JP">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
-        <val lang="nl_NL">Save a state of the current project resources to an XML document. The state can be later used to find out which resources have changed.</val>
+        <val lang="de_DE">Speichert einen Status der aktuellen Projektressourcen in einem XML-Dokument. Der Status kann später verwendet werden, um herauszufinden, welche Ressourcen sich geändert haben.</val>
+        <val lang="fr_FR">Enregistre un état des ressources du projet actuel dans un document XML. L'état peut être utilisé ultérieurement pour découvrir quelles ressources ont été modifiées.</val>
+        <val lang="ja_JP">現在のプロジェクトリソースの状態をXMLドキュメントに保存します。この状態は、後でどのリソースが変更されたかを確認するために使用できます。</val>
+        <val lang="nl_NL">Slaat een status van de huidige projectbronnen op in een XML-document. De status kan later worden gebruikt om te bepalen welke bronnen zijn gewijzigd.</val>
     </key>
     <key value="create_modified_files_package">
         <comment>Contextual menu action Create Modified Files Package</comment>
         <val lang="en_US">Create Modified Files Package</val>
-        <val lang="de_DE">Create Modified Files Package</val>
-        <val lang="fr_FR">Create Modified Files Package</val>
-        <val lang="ja_JP">Create Modified Files Package</val>
-        <val lang="nl_NL">Create Modified Files Package</val>
+        <val lang="de_DE">Paket mit geänderten Dateien erstellen</val>
+        <val lang="fr_FR">Créer un package de fichiers modifiés</val>
+        <val lang="ja_JP">変更されたファイルのパッケージを作成</val>
+        <val lang="nl_NL">Pakket met gewijzigde bestanden maken</val>
     </key>
     <key value="Create_package_tooltip">
         <comment>Tooltip for the action that creates the package for translation.</comment>
         <val lang="en_US">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
-        <val lang="de_DE">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
-        <val lang="fr_FR">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
-        <val lang="ja_JP">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
-        <val lang="nl_NL">Creates a package with all the files that were modified (since the last generation of a translation_builder_milestone.xml file) at a chosen location.</val>
+        <val lang="de_DE">Erstellt ein Paket mit allen Dateien, die (seit der letzten Generierung einer translation_builder_milestone.xml-Datei) an einem ausgewählten Speicherort geändert wurden.</val>
+        <val lang="fr_FR">Crée un package avec tous les fichiers qui ont été modifiés (depuis la dernière génération d'un fichier translation_builder_milestone.xml) à un emplacement choisi.</val>
+        <val lang="ja_JP">選択した場所で（translation_builder_milestone.xmlファイルの最後の生成以降に）変更されたすべてのファイルを含むパッケージを作成します。</val>
+        <val lang="nl_NL">Maakt een pakket met alle bestanden die zijn gewijzigd (sinds de laatste generatie van een translation_builder_milestone.xml-bestand) op een gekozen locatie.</val>
     </key>
     <key value="Apply_package">
         <comment>The name of the action that applies a translation package.</comment>
         <val lang="en_US">Apply Package</val>
-        <val lang="de_DE">Apply Package</val>
-        <val lang="fr_FR">Apply Package</val>
-        <val lang="ja_JP">Apply Package</val>
-        <val lang="nl_NL">Apply Package</val>
+        <val lang="de_DE">Paket anwenden</val>
+        <val lang="fr_FR">Appliquer le package</val>
+        <val lang="ja_JP">パッケージを適用</val>
+        <val lang="nl_NL">Pakket toepassen</val>
     </key>
     <key value="Apply_package_tooltip">
         <comment>Tooltip for the action that applies a translation package.</comment>
         <val lang="en_US">Applies a chosen archive over the root directory of the current ditamap.</val>
-        <val lang="de_DE">Applies a chosen archive over the root directory of the current ditamap.</val>
-        <val lang="fr_FR">Applies a chosen archive over the root directory of the current ditamap.</val>
-        <val lang="ja_JP">Applies a chosen archive over the root directory of the current ditamap.</val>
-        <val lang="nl_NL">Applies a chosen archive over the root directory of the current ditamap.</val>
+        <val lang="de_DE">Wendet ein ausgewähltes Archiv auf das Stammverzeichnis der aktuellen Ditamap an.</val>
+        <val lang="fr_FR">Applique une archive choisie sur le répertoire racine de la ditamap actuelle.</val>
+        <val lang="ja_JP">現在のditamapのルートディレクトリに選択したアーカイブを適用します。</val>
+        <val lang="nl_NL">Past een gekozen archief toe over de hoofdmap van de huidige ditamap.</val>
     </key>
     <key value="Generating_milestone">
         <comment>Progress dialog title shown when a milestone is generating.</comment>
         <val lang="en_US">Generating Milestone</val>
-        <val lang="de_DE">Generating Milestone</val>
-        <val lang="fr_FR">Generating Milestone</val>
-        <val lang="ja_JP">Generating Milestone</val>
-        <val lang="nl_NL">Generating Milestone</val>
+        <val lang="de_DE">Meilenstein wird generiert</val>
+        <val lang="fr_FR">Génération du jalon</val>
+        <val lang="ja_JP">マイルストーンを生成中</val>
+        <val lang="nl_NL">Mijlpaal wordt gegenereerd</val>
     </key>
     <key value="Milestone_generated">
         <comment>Notification presented to the user after a milestone file is generated.</comment>
         <val lang="en_US">Milestone created at: {0}</val>
-        <val lang="de_DE">Milestone created at: {0}</val>
-        <val lang="fr_FR">Milestone created at: {0}</val>
-        <val lang="ja_JP">Milestone created at: {0}</val>
-        <val lang="nl_NL">Milestone created at: {0}</val>
+        <val lang="de_DE">Meilenstein erstellt unter: {0}</val>
+        <val lang="fr_FR">Jalon créé à : {0}</val>
+        <val lang="ja_JP">マイルストーン作成場所: {0}</val>
+        <val lang="nl_NL">Mijlpaal gemaakt op: {0}</val>
     </key>
     <key value="milestone_creation_failed_because">
         <comment>Error message in generate milestone.</comment>
         <val lang="en_US">Milestone creation failed because of: </val>
-        <val lang="de_DE">Milestone creation failed because of: </val>
-        <val lang="fr_FR">Milestone creation failed because of: </val>
-        <val lang="ja_JP">Milestone creation failed because of: </val>
-        <val lang="nl_NL">Milestone creation failed because of: </val>
+        <val lang="de_DE">Meilensteinerstellung fehlgeschlagen wegen: </val>
+        <val lang="fr_FR">La création du jalon a échoué à cause de : </val>
+        <val lang="ja_JP">マイルストーンの作成に失敗しました。理由: </val>
+        <val lang="nl_NL">Maken van mijlpaal is mislukt vanwege: </val>
     </key>
     <key value="Package_location">
         <comment>Title of dialog.</comment>
         <val lang="en_US">Package Location</val>
-        <val lang="de_DE">Package Location</val>
-        <val lang="fr_FR">Package Location</val>
-        <val lang="ja_JP">Package Location</val>
-        <val lang="nl_NL">Package Location</val>
+        <val lang="de_DE">Paketspeicherort</val>
+        <val lang="fr_FR">Emplacement du package</val>
+        <val lang="ja_JP">パッケージの場所</val>
+        <val lang="nl_NL">Pakketlocatie</val>
     </key>
     <key value="Zip_files">
         <comment>Zip Files</comment>
         <val lang="en_US">Zip Files</val>
-        <val lang="de_DE">Zip Files</val>
-        <val lang="fr_FR">Zip Files</val>
-        <val lang="ja_JP">Zip Files</val>
-        <val lang="nl_NL">Zip Files</val>
+        <val lang="de_DE">Zip-Dateien</val>
+        <val lang="fr_FR">Fichiers Zip</val>
+        <val lang="ja_JP">Zipファイル</val>
+        <val lang="nl_NL">Zip-bestanden</val>
     </key>
     
     <key value="Milestone_missing">
         <comment>Confirm dialog title in pack modified files.</comment>
         <val lang="en_US">Milestone Missing</val>
-        <val lang="de_DE">Milestone Missing</val>
-        <val lang="fr_FR">Milestone Missing</val>
-        <val lang="ja_JP">Milestone Missing</val>
-        <val lang="nl_NL">Milestone Missing</val>
+        <val lang="de_DE">Meilenstein fehlt</val>
+        <val lang="fr_FR">Jalon manquant</val>
+        <val lang="ja_JP">マイルストーンが見つかりません</val>
+        <val lang="nl_NL">Mijlpaal ontbreekt</val>
     </key>
     <key value="Create_new_milestone">
         <comment>When the user wants to create the archive with modfied files, 
         but the milestone is missing.</comment>
         <val lang="en_US">Create new milestone?\n''{0}''</val>
-        <val lang="de_DE">Create new milestone?\n''{0}''</val>
-        <val lang="fr_FR">Create new milestone?\n''{0}''</val>
-        <val lang="ja_JP">Create new milestone?\n''{0}''</val>
-        <val lang="nl_NL">Create new milestone?\n''{0}''</val>
+        <val lang="de_DE">Neuen Meilenstein erstellen?\n''{0}''</val>
+        <val lang="fr_FR">Créer un nouveau jalon ?\n''{0}''</val>
+        <val lang="ja_JP">新しいマイルストーンを作成しますか？\n''{0}''</val>
+        <val lang="nl_NL">Nieuwe mijlpaal maken?\n''{0}''</val>
     </key>
     
     <key value="Pack_entire_dir">
         <comment>Modified files generation, milestone is missing. We can generate
         a new milestone or archive an entire directory. </comment>
         <val lang="en_US">Pack entire dir</val>
-        <val lang="de_DE">Pack entire dir</val>
-        <val lang="fr_FR">Pack entire dir</val>
-        <val lang="ja_JP">Pack entire dir</val>
-        <val lang="nl_NL">Pack entire dir</val>
+        <val lang="de_DE">Gesamtes Verzeichnis packen</val>
+        <val lang="fr_FR">Empaqueter tout le répertoire</val>
+        <val lang="ja_JP">ディレクトリ全体をパック</val>
+        <val lang="nl_NL">Volledige map inpakken</val>
     </key>
     
     <key value="yes_button">
         <comment>"Yes" buttons.</comment>
         <val lang="en_US">Yes</val>
-        <val lang="de_DE">Yes</val>
-        <val lang="fr_FR">Yes</val>
-        <val lang="ja_JP">Yes</val>
-        <val lang="nl_NL">Yes</val>
+        <val lang="de_DE">Ja</val>
+        <val lang="fr_FR">Oui</val>
+        <val lang="ja_JP">はい</val>
+        <val lang="nl_NL">Ja</val>
     </key>
     <key value="no_button">
         <comment>"No" buttons.</comment>
         <val lang="en_US">No</val>
-        <val lang="de_DE">No</val>
-        <val lang="fr_FR">No</val>
-        <val lang="ja_JP">No</val>
-        <val lang="nl_NL">No</val>
+        <val lang="de_DE">Nein</val>
+        <val lang="fr_FR">Non</val>
+        <val lang="ja_JP">いいえ</val>
+        <val lang="nl_NL">Nee</val>
     </key>
     <key value="Create_package_archive_title">
         <comment>Progress dialog title when the files are packed into an archive.</comment>
         <val lang="en_US">Zipping directory</val>
-        <val lang="de_DE">Zipping directory</val>
-        <val lang="fr_FR">Zipping directory</val>
-        <val lang="ja_JP">Zipping directory</val>
-        <val lang="nl_NL">Zipping directory</val>
+        <val lang="de_DE">Verzeichnis wird gezippt</val>
+        <val lang="fr_FR">Compression du répertoire</val>
+        <val lang="ja_JP">ディレクトリをZip圧縮中</val>
+        <val lang="nl_NL">Map comprimeren</val>
     </key>
     <key value="directory_was_packed">
         <comment>Message dialog content in pack modified files.</comment>
         <val lang="en_US">The directory was packed.</val>
-        <val lang="de_DE">The directory was packed.</val>
-        <val lang="fr_FR">The directory was packed.</val>
-        <val lang="ja_JP">The directory was packed.</val>
-        <val lang="nl_NL">The directory was packed.</val>
+        <val lang="de_DE">Das Verzeichnis wurde gepackt.</val>
+        <val lang="fr_FR">Le répertoire a été empaqueté.</val>
+        <val lang="ja_JP">ディレクトリがパックされました。</val>
+        <val lang="nl_NL">De map is ingepakt.</val>
     </key>
     <key value="Report_number_of_modified_files">
         <comment>When the modified files archive is generated, it shows how many files were added.</comment>
         <val lang="en_US">A package containing {0} file(s) was created.</val>
-        <val lang="de_DE">A package containing {0} file(s) was created.</val>
-        <val lang="fr_FR">A package containing {0} file(s) was created.</val>
-        <val lang="ja_JP">A package containing {0} file(s) was created.</val>
-        <val lang="nl_NL">A package containing {0} file(s) was created.</val>
+        <val lang="de_DE">Ein Paket mit {0} Datei(en) wurde erstellt.</val>
+        <val lang="fr_FR">Un package contenant {0} fichier(s) a été créé.</val>
+        <val lang="ja_JP">{0} 個のファイルを含むパッケージが作成されました。</val>
+        <val lang="nl_NL">Er is een pakket met {0} bestand(en) gemaakt.</val>
     </key>
     <key value="Failure_creating_package">
         <comment>Message presented when the translation package can't be created.</comment>
         <val lang="en_US">Could not create package. </val>
-        <val lang="de_DE">Could not create package. </val>
-        <val lang="fr_FR">Could not create package. </val>
-        <val lang="ja_JP">Could not create package. </val>
-        <val lang="nl_NL">Could not create package. </val>
+        <val lang="de_DE">Paket konnte nicht erstellt werden. </val>
+        <val lang="fr_FR">Impossible de créer le package. </val>
+        <val lang="ja_JP">パッケージを作成できませんでした。 </val>
+        <val lang="nl_NL">Kan pakket niet maken. </val>
     </key>
    
     <key value="No_changed_files">
         <comment>Message presented when the translation package can't be buiult because there 
         are no changed since the milestone was created.</comment>
         <val lang="en_US">There are no changed files since the milestone created on: {0}</val>
-        <val lang="de_DE">There are no changed files since the milestone created on: {0}</val>
-        <val lang="fr_FR">There are no changed files since the milestone created on: {0}</val>
-        <val lang="ja_JP">There are no changed files since the milestone created on: {0}</val>
-        <val lang="nl_NL">There are no changed files since the milestone created on: {0}</val>
+        <val lang="de_DE">Es gibt keine geänderten Dateien seit dem Meilenstein vom: {0}</val>
+        <val lang="fr_FR">Il n'y a aucun fichier modifié depuis le jalon créé le : {0}</val>
+        <val lang="ja_JP">次に作成されたマイルストーン以降、変更されたファイルはありません: {0}</val>
+        <val lang="nl_NL">Er zijn geen gewijzigde bestanden sinds de mijlpaal gemaakt op: {0}</val>
     </key>
     <key value="Action_failed">
         <comment>An action failed.</comment>
         <val lang="en_US">Failed because of: </val>
-        <val lang="de_DE">Failed because of: </val>
-        <val lang="fr_FR">Failed because of: </val>
-        <val lang="ja_JP">Failed because of: </val>
-        <val lang="nl_NL">Failed because of: </val>
+        <val lang="de_DE">Fehlgeschlagen wegen: </val>
+        <val lang="fr_FR">Échec à cause de : </val>
+        <val lang="ja_JP">失敗した理由: </val>
+        <val lang="nl_NL">Mislukt vanwege: </val>
     </key>
     <key value="Choose_translation_package">
         <comment>Title of the dialog in which the user selects the translation package to apply.</comment>
         <val lang="en_US">Choose the translated package</val>
-        <val lang="de_DE">Choose the translated package</val>
-        <val lang="fr_FR">Choose the translated package</val>
-        <val lang="ja_JP">Choose the translated package</val>
-        <val lang="nl_NL">Choose the translated package</val>
+        <val lang="de_DE">Übersetztes Paket auswählen</val>
+        <val lang="fr_FR">Choisir le package traduit</val>
+        <val lang="ja_JP">翻訳されたパッケージを選択</val>
+        <val lang="nl_NL">Kies het vertaalde pakket</val>
     </key>
     <key value="preview_changes">
         <comment>Apply Package confirm dialog title.</comment>
         <val lang="en_US">Preview Changes</val>
-        <val lang="de_DE">Preview Changes</val>
-        <val lang="fr_FR">Preview Changes</val>
-        <val lang="ja_JP">Preview Changes</val>
-        <val lang="nl_NL">Preview Changes</val>
+        <val lang="de_DE">Änderungen in der Vorschau anzeigen</val>
+        <val lang="fr_FR">Aperçu des modifications</val>
+        <val lang="ja_JP">変更のプレビュー</val>
+        <val lang="nl_NL">Voorbeeld van wijzigingen</val>
     </key>
     <key value="preview_changes_user_question">
         <comment>Apply Package confirm dialog message.</comment>
         <val lang="en_US">Do you want you to preview all the changes that will be made before applying them?</val>
-        <val lang="de_DE">Do you want you to preview all the changes that will be made before applying them?</val>
-        <val lang="fr_FR">Do you want you to preview all the changes that will be made before applying them?</val>
-        <val lang="ja_JP">Do you want you to preview all the changes that will be made before applying them?</val>
-        <val lang="nl_NL">Do you want you to preview all the changes that will be made before applying them?</val>
+        <val lang="de_DE">Möchten Sie eine Vorschau aller Änderungen sehen, bevor diese angewendet werden?</val>
+        <val lang="fr_FR">Voulez-vous avoir un aperçu de toutes les modifications qui seront apportées avant de les appliquer ?</val>
+        <val lang="ja_JP">適用する前に、行われるすべての変更をプレビューしますか？</val>
+        <val lang="nl_NL">Wilt u een voorbeeld zien van alle wijzigingen die worden aangebracht voordat u ze toepast?</val>
     </key>
     <key value="preview">
         <comment>Apply Package confirm dialog "Preview" button.</comment>
         <val lang="en_US">Preview</val>
-        <val lang="de_DE">Preview</val>
-        <val lang="fr_FR">Preview</val>
-        <val lang="ja_JP">Preview</val>
-        <val lang="nl_NL">Preview</val>
+        <val lang="de_DE">Vorschau</val>
+        <val lang="fr_FR">Aperçu</val>
+        <val lang="ja_JP">プレビュー</val>
+        <val lang="nl_NL">Voorbeeld</val>
     </key>
     <key value="apply_all">
         <comment>Apply Package confirm dialog "Apply All" button.</comment>
         <val lang="en_US">Apply All</val>
-        <val lang="de_DE">Apply All</val>
-        <val lang="fr_FR">Apply All</val>
-        <val lang="ja_JP">Apply All</val>
-        <val lang="nl_NL"></val>
+        <val lang="de_DE">Alle anwenden</val>
+        <val lang="fr_FR">Tout appliquer</val>
+        <val lang="ja_JP">すべて適用</val>
+        <val lang="nl_NL">Alles toepassen</val>
     </key>
     <key value="cancel">
         <comment>Apply Package confirm dialog "Cancel" button.</comment>
         <val lang="en_US">Cancel</val>
-        <val lang="de_DE">Cancel</val>
-        <val lang="fr_FR">Cancel</val>
-        <val lang="ja_JP">Cancel</val>
-        <val lang="nl_NL">Cancel</val>
+        <val lang="de_DE">Abbrechen</val>
+        <val lang="fr_FR">Annuler</val>
+        <val lang="ja_JP">キャンセル</val>
+        <val lang="nl_NL">Annuleren</val>
     </key>
     <key value="Opening_package">
         <comment>Progress dialog title in apply package.</comment>
         <val lang="en_US">Opening package</val>
-        <val lang="de_DE">Opening package</val>
-        <val lang="fr_FR">Opening package</val>
-        <val lang="ja_JP">Opening package</val>
-        <val lang="nl_NL">Opening package</val>
+        <val lang="de_DE">Paket wird geöffnet</val>
+        <val lang="fr_FR">Ouverture du package</val>
+        <val lang="ja_JP">パッケージを開いています</val>
+        <val lang="nl_NL">Pakket openen</val>
     </key>
     <key value="failed_to_apply_package">
         <comment>Error message content title in apply package.</comment>
         <val lang="en_US">Failed to apply package because of: </val>
-        <val lang="de_DE">Failed to apply package because of: </val>
-        <val lang="fr_FR">Failed to apply package because of: </val>
-        <val lang="ja_JP">Failed to apply package because of: </val>
-        <val lang="nl_NL">Failed to apply package because of: </val>
+        <val lang="de_DE">Paket konnte nicht angewendet werden wegen: </val>
+        <val lang="fr_FR">Impossible d'appliquer le package à cause de : </val>
+        <val lang="ja_JP">パッケージの適用に失敗しました。理由: </val>
+        <val lang="nl_NL">Kan pakket niet toepassen vanwege: </val>
     </key>
     <key value="Apply_package_report">
         <comment>Notification after a translation package was applied.</comment>
         <val lang="en_US">Package applied over the current map. The overridden files are: </val>
-        <val lang="de_DE">Package applied over the current map. The overridden files are: </val>
-        <val lang="fr_FR">Package applied over the current map. The overridden files are: </val>
-        <val lang="ja_JP">Package applied over the current map. The overridden files are: </val>
-        <val lang="nl_NL">Package applied over the current map. The overridden files are: </val>
+        <val lang="de_DE">Paket auf die aktuelle Map angewendet. Die überschriebenen Dateien sind: </val>
+        <val lang="fr_FR">Package appliqué sur la carte actuelle. Les fichiers remplacés sont : </val>
+        <val lang="ja_JP">パッケージが現在のマップに適用されました。上書きされたファイルは次のとおりです: </val>
+        <val lang="nl_NL">Pakket toegepast over de huidige map. De overschreven bestanden zijn: </val>
     </key>
     <key value="Updated_files">
         <comment>Title of the report dialog after a translation package was applied.</comment>
         <val lang="en_US">Updated files</val>
-        <val lang="de_DE">Updated files</val>
-        <val lang="fr_FR">Updated files</val>
-        <val lang="ja_JP">Updated files</val>
-        <val lang="nl_NL">Updated files</val>
+        <val lang="de_DE">Aktualisierte Dateien</val>
+        <val lang="fr_FR">Fichiers mis à jour</val>
+        <val lang="ja_JP">更新されたファイル</val>
+        <val lang="nl_NL">Bijgewerkte bestanden</val>
     </key>
     <key value="No_files_in_package">
         <comment>Error message when we didn't extract any files from the translation package.</comment>
         <val lang="en_US">The translation package didn't contain any file.</val>
-        <val lang="de_DE">The translation package didn't contain any file.</val>
-        <val lang="fr_FR">The translation package didn't contain any file.</val>
-        <val lang="ja_JP">The translation package didn't contain any file.</val>
-        <val lang="nl_NL">The translation package didn't contain any file.</val>
+        <val lang="de_DE">Das Übersetzungspaket enthielt keine Datei.</val>
+        <val lang="fr_FR">Le package de traduction ne contenait aucun fichier.</val>
+        <val lang="ja_JP">翻訳パッケージにファイルが含まれていませんでした。</val>
+        <val lang="nl_NL">Het vertaalpakket bevatte geen enkel bestand.</val>
     </key>
     <key value="Apply">
         <comment>Apply.</comment>
         <val lang="en_US">Apply</val>
-        <val lang="de_DE">Apply</val>
-        <val lang="fr_FR">Apply</val>
-        <val lang="ja_JP">Apply</val>
-        <val lang="nl_NL">Apply</val>
+        <val lang="de_DE">Anwenden</val>
+        <val lang="fr_FR">Appliquer</val>
+        <val lang="ja_JP">適用</val>
+        <val lang="nl_NL">Toepassen</val>
     </key>
     <key value="switch_to_tree_view">
         <comment>Switch to Tree View button.</comment>
         <val lang="en_US">Switch to Tree View</val>
-        <val lang="de_DE">Switch to Tree View</val>
-        <val lang="fr_FR">Switch to Tree View</val>
-        <val lang="ja_JP">Switch to Tree View</val>
-        <val lang="nl_NL">Switch to Tree View</val>
+        <val lang="de_DE">Zur Baumansicht wechseln</val>
+        <val lang="fr_FR">Passer à l'arborescence</val>
+        <val lang="ja_JP">ツリービューに切り替え</val>
+        <val lang="nl_NL">Overschakelen naar boomweergave</val>
     </key>
     <key value="switch_to_list_view">
         <comment>Switch to List View button.</comment>
         <val lang="en_US">Switch to List View</val>
-        <val lang="de_DE">Switch to List View</val>
-        <val lang="fr_FR">Switch to List View</val>
-        <val lang="ja_JP">Switch to List View</val>
-        <val lang="nl_NL">Switch to List View</val>
+        <val lang="de_DE">Zur Listenansicht wechseln</val>
+        <val lang="fr_FR">Passer à la vue en liste</val>
+        <val lang="ja_JP">リストビューに切り替え</val>
+        <val lang="nl_NL">Overschakelen naar lijstweergave</val>
     </key>
     <key value="No_selected_files_to_apply">
         <comment>Message shown if the user doesn't select something in the dialog.</comment>
         <val lang="en_US">There are no selected files to apply.</val>
-        <val lang="de_DE">There are no selected files to apply.</val>
-        <val lang="fr_FR">There are no selected files to apply.</val>
-        <val lang="ja_JP">There are no selected files to apply.</val>
-        <val lang="nl_NL">There are no selected files to apply.</val>
+        <val lang="de_DE">Es gibt keine ausgewählten Dateien zum Anwenden.</val>
+        <val lang="fr_FR">Il n'y a aucun fichier sélectionné à appliquer.</val>
+        <val lang="ja_JP">適用するファイルが選択されていません。</val>
+        <val lang="nl_NL">Er zijn geen geselecteerde bestanden om toe te passen.</val>
     </key>
     <key value="Applying_selected_files">
         <comment>Progress dialog title.</comment>
         <val lang="en_US">Applying selected files</val>
-        <val lang="de_DE">Applying selected files</val>
-        <val lang="fr_FR">Applying selected files</val>
-        <val lang="ja_JP">Applying selected files</val>
-        <val lang="nl_NL">Applying selected files</val>
+        <val lang="de_DE">Ausgewählte Dateien werden angewendet</val>
+        <val lang="fr_FR">Application des fichiers sélectionnés</val>
+        <val lang="ja_JP">選択したファイルを適用中</val>
+        <val lang="nl_NL">Geselecteerde bestanden toepassen</val>
     </key>
     <key value="Translated_files_applied">
         <comment>Notification after a translation package was applied.</comment>
         <val lang="en_US">The translated files have been applied.</val>
-        <val lang="de_DE">The translated files have been applied.</val>
-        <val lang="fr_FR">The translated files have been applied.</val>
-        <val lang="ja_JP">The translated files have been applied.</val>
-        <val lang="nl_NL">The translated files have been applied.</val>
+        <val lang="de_DE">Die übersetzten Dateien wurden angewendet.</val>
+        <val lang="fr_FR">Les fichiers traduits ont été appliqués.</val>
+        <val lang="ja_JP">翻訳されたファイルが適用されました。</val>
+        <val lang="nl_NL">De vertaalde bestanden zijn toegepast.</val>
     </key>
     <key value="Copy_translated_files_error_message">
         <comment>Message presented when the translated files couldn't be copied in the
         map directory.</comment>
         <val lang="en_US">Couldn't copy translated files because of: </val>
-        <val lang="de_DE">Couldn't copy translated files because of: </val>
-        <val lang="fr_FR">Couldn't copy translated files because of: </val>
-        <val lang="ja_JP">Couldn't copy translated files because of: </val>
-        <val lang="nl_NL">Couldn't copy translated files because of: </val>
+        <val lang="de_DE">Die übersetzten Dateien konnten nicht kopiert werden wegen: </val>
+        <val lang="fr_FR">Impossible de copier les fichiers traduits à cause de : </val>
+        <val lang="ja_JP">翻訳されたファイルをコピーできませんでした。理由: </val>
+        <val lang="nl_NL">Kan vertaalde bestanden niet kopiëren vanwege: </val>
     </key>
     <key value="File_type_not_supported">
         <comment>Information message presented when the user requested to see
         the differences between the new file version and the old, but the file is not supported.</comment>
         <val lang="en_US">The selected file is not supported by Oxygen XML Editor.</val>
-        <val lang="de_DE">The selected file is not supported by Oxygen XML Editor.</val>
-        <val lang="fr_FR">The selected file is not supported by Oxygen XML Editor.</val>
-        <val lang="ja_JP">The selected file is not supported by Oxygen XML Editor.</val>
-        <val lang="nl_NL">The selected file is not supported by Oxygen XML Editor.</val>
+        <val lang="de_DE">Die ausgewählte Datei wird vom Oxygen XML Editor nicht unterstützt.</val>
+        <val lang="fr_FR">Le fichier sélectionné n'est pas pris en charge par Oxygen XML Editor.</val>
+        <val lang="ja_JP">選択したファイルはOxygen XML Editorでサポートされていません。</val>
+        <val lang="nl_NL">Het geselecteerde bestand wordt niet ondersteund door Oxygen XML Editor.</val>
     </key>
     <key value="Copy_file_to">
         <comment>Progress message while copying files.</comment>
         <val lang="en_US">Copy {0} to {1}</val>
-        <val lang="de_DE">Copy {0} to {1}</val>
-        <val lang="fr_FR">Copy {0} to {1}</val>
-        <val lang="ja_JP">Copy {0} to {1}</val>
-        <val lang="nl_NL">Copy {0} to {1}</val>
+        <val lang="de_DE">Kopiere {0} nach {1}</val>
+        <val lang="fr_FR">Copier {0} vers {1}</val>
+        <val lang="ja_JP">{0} を {1} にコピー</val>
+        <val lang="nl_NL">Kopieer {0} naar {1}</val>
     </key>
     <key value="Select_all_files">
         <comment>Option to automatically select all presented files. The selected files
         are applied over their old versions.</comment>
         <val lang="en_US">Select all files</val>
-        <val lang="de_DE">Select all files</val>
-        <val lang="fr_FR">Select all files</val>
-        <val lang="ja_JP">Select all files</val>
-        <val lang="nl_NL">Select all files</val>
+        <val lang="de_DE">Alle Dateien auswählen</val>
+        <val lang="fr_FR">Sélectionner tous les fichiers</val>
+        <val lang="ja_JP">すべてのファイルを選択</val>
+        <val lang="nl_NL">Alle bestanden selecteren</val>
     </key>
     <key value="Collecting_modified_resources">
         <comment>Title of the progress dialog while collecting the modified resources.</comment>
         <val lang="en_US">Collecting modified resources</val>
-        <val lang="de_DE">Collecting modified resources</val>
-        <val lang="fr_FR">Collecting modified resources</val>
-        <val lang="ja_JP">Collecting modified resources</val>
-        <val lang="nl_NL">Collecting modified resources</val>
+        <val lang="de_DE">Geänderte Ressourcen werden gesammelt</val>
+        <val lang="fr_FR">Collecte des ressources modifiées</val>
+        <val lang="ja_JP">変更されたリソースを収集しています</val>
+        <val lang="nl_NL">Gewijzigde bronnen verzamelen</val>
     </key>
     <key value="report_will_be_created">
         <comment>In "Create Modified Files..." dialog this message will show where the 
         report with files added to package will be saved.</comment>
         <val lang="en_US">A report will be created at:</val>
-        <val lang="de_DE">A report will be created at:</val>
-        <val lang="fr_FR">A report will be created at:</val>
-        <val lang="ja_JP">A report will be created at:</val>
-        <val lang="nl_NL">A report will be created at:</val>
+        <val lang="de_DE">Ein Bericht wird erstellt unter:</val>
+        <val lang="fr_FR">Un rapport sera créé à :</val>
+        <val lang="ja_JP">レポートの作成先:</val>
+        <val lang="nl_NL">Er wordt een rapport gemaakt in:</val>
     </key>
     <key value="Generate_report_tooltip">
         <comment>An option in the generate translation package dialog.</comment>
         <val lang="en_US">Generate a report containing the relative paths of the modified resources.</val>
-        <val lang="de_DE">Generate a report containing the relative paths of the modified resources.</val>
-        <val lang="fr_FR">Generate a report containing the relative paths of the modified resources.</val>
-        <val lang="ja_JP">Generate a report containing the relative paths of the modified resources.</val>
-        <val lang="nl_NL">Generate a report containing the relative paths of the modified resources.</val>
+        <val lang="de_DE">Einen Bericht generieren, der die relativen Pfade der geänderten Ressourcen enthält.</val>
+        <val lang="fr_FR">Générer un rapport contenant les chemins relatifs des ressources modifiées.</val>
+        <val lang="ja_JP">変更されたリソースの相対パスを含むレポートを生成します。</val>
+        <val lang="nl_NL">Een rapport genereren met de relatieve paden van de gewijzigde bronnen.</val>
     </key>
     <key value="Report_creation_time">
         <comment>In "Create Modified Files Package" is a label informing the user
         when last report was created.</comment>
         <val lang="en_US">Last report was created on {0}</val>
-        <val lang="de_DE">Last report was created on {0}</val>
-        <val lang="fr_FR">Last report was created on {0}</val>
-        <val lang="ja_JP">Last report was created on {0}</val>
-        <val lang="nl_NL">Last report was created on {0}</val>
+        <val lang="de_DE">Letzter Bericht wurde erstellt am {0}</val>
+        <val lang="fr_FR">Le dernier rapport a été créé le {0}</val>
+        <val lang="ja_JP">最終レポート作成日時 {0}</val>
+        <val lang="nl_NL">Laatste rapport is gemaakt op {0}</val>
     </key>
     <key value="Generate_report">
         <comment>An option to generate a report.</comment>
         <val lang="en_US">Generate report</val>
-        <val lang="de_DE">Generate report</val>
-        <val lang="fr_FR">Generate report</val>
-        <val lang="ja_JP">Generate report</val>
-        <val lang="nl_NL">Generate report</val>
+        <val lang="de_DE">Bericht generieren</val>
+        <val lang="fr_FR">Générer un rapport</val>
+        <val lang="ja_JP">レポートを生成</val>
+        <val lang="nl_NL">Rapport genereren</val>
     </key>
 </translation>
